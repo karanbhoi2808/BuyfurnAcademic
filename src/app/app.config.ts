@@ -5,9 +5,13 @@ import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './Auth/auth.interceptor';
-import { provideServiceWorker } from '@angular/service-worker';
 import { UpdateService } from './Service/update.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideClientHydration(), provideHttpClient(withInterceptors([authInterceptor]))]
+};
+
+export const environment = {
+  baseUrlAdmin: 'http://localhost:8090/api/admin',
+  baseUrlLocal: 'http://localhost:8090/api'
 };

@@ -55,19 +55,52 @@ export class ProductDetailComponent {
       return
     }
 
-    this.productService.addToCart(cartId, this.quantity).subscribe(
-      (response) => {
-        Swal.fire("Product added to your cart!")
-      },
-      (error) => {
+    // this.productService.addToCart(cartId, this.quantity).subscribe(
+    //   (response) => {
+    //     Swal.fire("Product added to your cart!")
+    //   },
+    //   (error) => {
 
-        console.log(error);
-        if (error.status == 500) {
-          window.location.reload()
-          this.productService.clearCache()
+    //     console.log(error);
+    //     if (error.status == 500) {
+    //       window.location.reload()
+    //       this.productService.clearCache()
+    //     }
+    //   }
+    // )
+
+    // Check the stock status of the product before adding it to the cart
+    if (this.product.stockStatus === "In Stock") {
+      // If the product is in stock, proceed with adding it to the cart
+      this.productService.addToCart(cartId, this.quantity).subscribe(
+        (response) => {
+          Swal.fire("Product added to your cart!");
+        },
+        (error) => {
+          console.log(error);
+          if (error.status === 500) {
+            window.location.reload();
+            this.productService.clearCache();
+          }
         }
-      }
-    )
+      );
+    } else if (this.product.stockStatus === "Out of Stock" || this.product.stockStatus === "In Stock soon") {
+      // If the product is out of stock or soon in stock, show a warning message
+      Swal.fire({
+        title: "Out of Stock",
+        text: "This product is not in stock at the moment.",
+        icon: "warning",
+        confirmButtonText: "OK"
+      });
+    } else {
+      // If the stock status is unknown or something else, show an error message
+      Swal.fire({
+        title: "Try again later",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
+    }
+
   }
 
   buyNow(productId: any) {

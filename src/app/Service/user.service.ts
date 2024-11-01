@@ -3,21 +3,20 @@ import { Injectable } from '@angular/core';
 import { User } from '../Interface/user';
 import { Observable } from 'rxjs';
 import { UserAuthService } from './user-auth.service';
+import { environment } from '../app.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  // baseUrl: String = "https://buyfurnbackend-xzhj.onrender.com/api"
-  // baseUrl: String = "http://buyfurn.ap-south-1.elasticbeanstalk.com/api"
-  baseUrl: String = "https://buyfurnbackend.site/api"
 
-  // baseUrl: String = "http://localhost:5000/api"
+  private baseUrlLocal = environment.baseUrlLocal;
+
   constructor(private httpClient: HttpClient, private userAuthService: UserAuthService) { }
 
   login(): Observable<any> {
-    return this.httpClient.get(`${this.baseUrl}/login`);
+    return this.httpClient.get(`${this.baseUrlLocal}/login`);
   }
 
   roleMatch(allowroles: any[]): boolean {
@@ -44,27 +43,27 @@ export class UserService {
 
 
   register(user: User): Observable<any> {
-    return this.httpClient.post(`${this.baseUrl}/register`, user);
+    return this.httpClient.post(`${this.baseUrlLocal}/register`, user);
   }
 
   generateOtp(email: string): Observable<any> {
-    return this.httpClient.post(`${this.baseUrl}/generate-otp`, { email });
+    return this.httpClient.post(`${this.baseUrlLocal}/generate-otp`, { email });
   }
 
   verifyOtp(email: string, otp: string): Observable<any> {
-    return this.httpClient.post(`${this.baseUrl}/verify-otp`, { email, otp });
+    return this.httpClient.post(`${this.baseUrlLocal}/verify-otp`, { email, otp });
   }
 
   delteMyAccont(): Observable<any> {
-    return this.httpClient.delete(`${this.baseUrl}/user/delete`)
+    return this.httpClient.delete(`${this.baseUrlLocal}/user/delete`)
   }
 
   findByEmail(email: string): Observable<any> {
-    return this.httpClient.get(`${this.baseUrl}/user/getByEmail/${email}`)
+    return this.httpClient.get(`${this.baseUrlLocal}/user/getByEmail/${email}`)
   }
 
   updatePassword(user: any) {
-    return this.httpClient.post(`${this.baseUrl}/updatepassword`, user)
+    return this.httpClient.post(`${this.baseUrlLocal}/updatepassword`, user)
   }
   updateUser(user: any, img?: File): Observable<any> {
     // debugger
@@ -72,12 +71,12 @@ export class UserService {
       const formData: FormData = new FormData();
       formData.append('user', JSON.stringify(user));
       formData.append('img', img, img.name);
-      return this.httpClient.post(`${this.baseUrl}/user/updateuser`, formData)
+      return this.httpClient.post(`${this.baseUrlLocal}/user/updateuser`, formData)
     }
     else {
       const formData: FormData = new FormData();
       formData.append('user', JSON.stringify(user));
-      return this.httpClient.post(`${this.baseUrl}/user/updateuser`, formData)
+      return this.httpClient.post(`${this.baseUrlLocal}/user/updateuser`, formData)
     }
 
   }

@@ -22,7 +22,7 @@ export class ProductSectionComponent implements OnChanges {
   constructor(private productService: ProductService, private router: Router) { }
 
 
-  categories: string[] = ['Living Room', 'Bedroom', 'Dining Room', 'Office Furniture', 'Outdoor Furniture', 'Storage Solutions'];
+  categories: string[] = ['All', 'Living Room', 'Bedroom', 'Dining Room', 'Office Furniture', 'Outdoor Furniture', 'Storage Solutions'];
 
   ngOnChanges(changes: SimpleChanges) {
 
@@ -34,14 +34,18 @@ export class ProductSectionComponent implements OnChanges {
   }
   filterProductByCategory(event: Event) {
     this.selectedCategory = (event.target as HTMLSelectElement).value;
+
     this.pageNumber = 0;
     this.products = [];
     this.productService.clearCache()
     this.getAllProducts()
-
   }
 
   getAllProducts() {
+    if (this.selectedCategory === "All") {
+      this.selectedCategory = "";
+
+    }
     this.productService.getAllProducts(this.pageNumber, this.filterText, this.selectedCategory).subscribe(
       (response) => {
         if (response.length > 0) {
@@ -60,8 +64,10 @@ export class ProductSectionComponent implements OnChanges {
   }
 
   loadMoreProducts() {
+    this.productService.clearCache()
     this.pageNumber++;
     this.getAllProducts();
+
   }
 
   productDetailPage(id: any) {
