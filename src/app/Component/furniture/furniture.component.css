@@ -2,7 +2,6 @@
     background-color: #3b5d50;
     color: white;
     height: 20vh;
-    /* Full viewport height */
     display: flex;
     align-items: center;
 }
@@ -14,7 +13,6 @@
 .filter-section {
     width: 100%;
     max-width: 400px;
-    /* Adjust the max-width as needed */
 }
 
 .filter-section .form-control {
@@ -42,15 +40,8 @@
     background-color: #ffce09;
 }
 
-/* input:focus {
-    box-shadow: none;
-} */
-
-
-
 @media (max-width: 767.98px) {
     .search {
-        /* background-color: red; */
         padding-top: 10px;
     }
 }

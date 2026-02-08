@@ -3,7 +3,7 @@ import { ProductService } from '../../Service/product.service';
 import { error, log } from 'console';
 import { Product } from '../../Interface/product';
 import { NgFor, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { LoadingComponent } from '../loading/loading.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { LoadingComponent } from '../loading/loading.component';
 export class LatestproductComponent implements OnInit {
   isLoading: boolean = false;
 
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService, private router: Router) { }
   ngOnInit(): void {
     this.getLatestProduct()
   }
@@ -40,5 +40,13 @@ export class LatestproductComponent implements OnInit {
       this.isLoading = false;
     }
     )
+  }
+
+  productDetailPage(id: any) {
+    this.router.navigate(['/product'], {
+      queryParams: {
+        productId: id
+      }
+    })
   }
 }

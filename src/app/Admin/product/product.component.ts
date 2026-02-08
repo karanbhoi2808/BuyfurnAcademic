@@ -3,7 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ProductService } from '../../Service/product.service';
 import Swal from 'sweetalert2';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { response } from 'express';
 import { error } from 'console';
 import { AdminService } from '../../Service/admin.service';
@@ -25,7 +25,7 @@ export class ProductComponent implements OnInit {
   showLoadButton: boolean = false;
   isLoading: boolean = false;
 
-  constructor(private productService: ProductService, private adminService: AdminService) { }
+  constructor(private productService: ProductService, private adminService: AdminService, private router: Router) { }
   ngOnInit(): void {
     this.getAllProducts()
   }
@@ -81,5 +81,11 @@ export class ProductComponent implements OnInit {
     this.searchKey = searchKey;
   }
 
-
+  productDetailPage(id: any) {
+    this.router.navigate(['/admin/productdetails'], {
+      queryParams: {
+        productId: id
+      }
+    })
+  }
 }

@@ -30,3 +30,12 @@ input:focus {
 textarea:focus {
     box-shadow: none !important;
 }
+
+a {
+    cursor: pointer;
+}
+
+select {
+    cursor: pointer;
+    box-shadow: none !important;
+}

@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <h2 class="text-center mb-4">Add Product</h2>
-            <form (ngSubmit)="onSubmit()">
+            <form (ngSubmit)="onSubmit()" #productForm="ngForm">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" class="form-control" id="title" [(ngModel)]="product.title" name="title">
@@ -15,13 +15,16 @@
                 <div class="form-group">
                     <label for="productImages">Product Images</label>
                     <input type="file" class="form-control" id="productImages" multiple (change)="onFileChange($event)">
+                    <div *ngIf="productForm.submitted && !product.images" class="text-danger">
+                        Product images are required.
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="price">Price</label>
                     <input type="number" step="10" class="form-control" id="price" [(ngModel)]="product.price"
                         name="price">
                 </div>
-                <div class="form-group">
+                <div class=" form-group">
                     <label for="warranty">Warranty</label>
                     <input type="text" class="form-control" id="warranty" [(ngModel)]="product.warranty"
                         name="warranty">
@@ -63,10 +66,12 @@
                     <select class="form-control" id="stock" [(ngModel)]="product.stockStatus" name="stock" required>
                         <option value="" disabled selected>Select stock option</option>
                         <option *ngFor="let stock of stockOptions" [value]="stock">{{stock}}</option>
+
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Add Product</button>
+                <button type="submit" class="btn btn-primary btn-block" [disabled]="!productForm.valid">Add
+                    Product</button>
             </form>
         </div>
     </div>

@@ -3,6 +3,7 @@ import { ProductSectionComponent } from '../products-all-section/product-section
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from '../loading/loading.component';
+import { ProductService } from '../../Service/product.service';
 
 @Component({
   selector: 'app-furniture',
@@ -13,7 +14,7 @@ import { LoadingComponent } from '../loading/loading.component';
 })
 export class FurnitureComponent {
 
-
+  constructor(private productService: ProductService) { }
 
   filterText: string = '';
 
@@ -21,6 +22,7 @@ export class FurnitureComponent {
 
 
   onSearch() {
+    this.productService.clearCache()
     this.search = this.filterText
   }
 

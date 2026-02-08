@@ -5,7 +5,7 @@
                 <h2>Furniture</h2>
             </div>
             <div class="search mt-3 mt-md-0">
-                <div class="filter-section input-group">
+                <div class="filter-section input-group" style="max-width: 400px;">
                     <input type="text" class="form-control" placeholder="Search Product" [(ngModel)]="filterText">
                     <button class="btn" (click)="onSearch()">
                         <i class="bi bi-search" style="color: #3b5d50;"></i>
@@ -15,9 +15,5 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 <app-product-section [filterText]="search"></app-product-section>

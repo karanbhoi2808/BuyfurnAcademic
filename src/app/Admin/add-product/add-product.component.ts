@@ -41,15 +41,17 @@ export class AddProductComponent {
 
   onSubmit() {
     // console.log(typeof (this.product.stockStatus), this.product.stockStatus);
+    if (this.selectedFiles.length != 0) {
+      this.productService.addProduct(this.product, this.selectedFiles)
+        .subscribe(response => {
+          Swal.fire("Product added!");
+          this.resetForm();
+          this.router.navigateByUrl('/admin/product')
+        }, error => {
+          Swal.fire('Error adding product. Try again..');
+        });
+    }
 
-    this.productService.addProduct(this.product, this.selectedFiles)
-      .subscribe(response => {
-        Swal.fire("Product added!");
-        this.resetForm();
-        this.router.navigateByUrl('/admin/product')
-      }, error => {
-        Swal.fire('Error adding product. Try again..');
-      });
   }
 
 

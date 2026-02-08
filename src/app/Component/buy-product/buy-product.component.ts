@@ -9,6 +9,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { UserAuthService } from '../../Service/user-auth.service';
 import { LoadingComponent } from '../loading/loading.component';
 import Swal from 'sweetalert2';
+import { EmailService } from '../../Service/email.service';
 // import Razorpay from 'razorpay';
 declare var Razorpay: any;
 @Component({
@@ -37,12 +38,18 @@ export class BuyProductComponent implements OnInit {
 
   isSingleProductCheckout: any;
 
+  EmailRequest: any = {
+    to: '',
+    subject: '',
+    text: ''
+  }
   constructor(
     private userService: UserService,
     private route: ActivatedRoute,
     private productService: ProductService,
     private router: Router,
-    private userAuthService: UserAuthService
+    private userAuthService: UserAuthService,
+    private emailService: EmailService
   ) { }
 
   ngOnInit(): void {
@@ -100,6 +107,25 @@ export class BuyProductComponent implements OnInit {
     this.productService.placeOrder(this.orderDetails, this.isSingleProductCheckout).subscribe(
       (response) => {
         this.userAuthService.setOrderPlaced(true);
+        console.log(this.user.email);
+        this.EmailRequest.to = this.user.email.trim();
+        this.EmailRequest.subject = "Order Confirm"
+        this.EmailRequest.text = `
+Dear ${this.orderDetails.fullName},
+
+Thank you for your order with BuyFurn. Your order has been successfully placed. We are preparing your order and will notify you once it is on its way.
+
+Estimated Delivery: 5-6 Working Days.
+
+Thank you for shopping with us!
+
+Best regards,
+BuyFurn Team
+`;
+
+        this.emailService.sendMail(this.EmailRequest).subscribe(mailResponse => {
+
+        });
         this.router.navigate(['/orderplaced']);
       },
       (error) => {

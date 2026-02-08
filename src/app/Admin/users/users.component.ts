@@ -67,11 +67,11 @@ export class UsersComponent implements OnInit {
     const chart = new Chart('userChart', {
       type: 'bar',
       data: {
-        labels: ['ADMIN', 'USER', 'CUSTOMER'],
+        labels: ['ADMIN', 'USER'],
         datasets: [{
           label: 'Number of Users',
-          data: [this.roleCounts.ADMIN, this.roleCounts.USER, this.roleCounts.CUSTOMER],
-          backgroundColor: ['#1f77b4', '#ff5733', '#97f037'],  // Color for ADMIN and USER bars
+          data: [this.roleCounts.ADMIN, this.roleCounts.USER],
+          backgroundColor: ['#1f77b4', '#ff5733'],  // Color for ADMIN and USER bars
         }]
       },
       options: {
