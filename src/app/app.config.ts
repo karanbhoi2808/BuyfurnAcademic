@@ -11,7 +11,12 @@ export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideClientHydration(), provideHttpClient(withFetch(), withInterceptors([authInterceptor]))]
 };
 
+// export const environment = {
+//   baseUrlAdmin: 'http://localhost:8080/api/admin',
+//   baseUrlLocal: 'http://localhost:8080/api'
+// };
+
 export const environment = {
-  baseUrlAdmin: 'http://localhost:8090/api/admin',
-  baseUrlLocal: 'http://localhost:8090/api'
+  baseUrlAdmin: 'https://buyfurnbackend-production.up.railway.app/api',
+  baseUrlLocal: 'https://buyfurnbackend-production.up.railway.app/api'
 };
