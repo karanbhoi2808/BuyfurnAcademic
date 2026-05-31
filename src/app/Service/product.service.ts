@@ -31,24 +31,20 @@ export class ProductService {
     searchKey: string,
     category: string
   ): Observable<any> {
-    if (this.products) {
-      return of(this.products); // Return cached products
-    } else {
-      return this.httpclient
-        .get(
-          `${this.baseUrlLocal}/getallproducts?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`
-        )
-        .pipe(
-          map((data: any) => {
-            this.products = data; // Cache the data
-            return data;
-          }),
-          catchError((error) => {
-            console.error('Error fetching products', error);
-            return of([]); // Handle error and return an empty array
-          })
-        );
-    }
+    return this.httpclient
+      .get(
+        `${this.baseUrlLocal}/getallproducts?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`
+      )
+      .pipe(
+        map((data: any) => {
+          this.products = data; // Cache the data
+          return data;
+        }),
+        catchError((error) => {
+          console.error('Error fetching products', error);
+          return of([]); // Handle error and return an empty array
+        })
+      );
   }
 
   private latestProduct: Product[] | null = null; // Cached product data
