@@ -17,6 +17,6 @@ export const appConfig: ApplicationConfig = {
 // };
 
 export const environment = {
-  baseUrlAdmin: 'https://buyfurnbackend-production.up.railway.app/api',
+  baseUrlAdmin: 'https://buyfurnbackend-production.up.railway.app/api/admin',
   baseUrlLocal: 'https://buyfurnbackend-production.up.railway.app/api'
 };
