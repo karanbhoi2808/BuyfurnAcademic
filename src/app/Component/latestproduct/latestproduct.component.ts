@@ -15,13 +15,14 @@ import { LoadingComponent } from '../loading/loading.component';
 })
 export class LatestproductComponent implements OnInit {
   isLoading: boolean = false;
+  products: Product[] = [];
+  isEmpty: boolean = false;
 
   constructor(private productService: ProductService, private router: Router) { }
+
   ngOnInit(): void {
     this.getLatestProduct()
   }
-  products: Product[] = [];
-  isEmpty: boolean = false
 
   getLatestProduct() {
     this.isLoading = true;
