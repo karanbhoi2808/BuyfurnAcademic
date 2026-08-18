@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../Service/product.service';
-import { CommonModule, NgFor } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-edit-product',
-  standalone: true,
-  imports: [CommonModule, FormsModule, NgFor],
-  templateUrl: './edit-product.component.html',
-  styleUrl: './edit-product.component.css'
+    selector: 'app-edit-product',
+    imports: [FormsModule],
+    templateUrl: './edit-product.component.html',
+    styleUrl: './edit-product.component.css'
 })
 export class EditProductComponent implements OnInit {
+  private activateroute = inject(ActivatedRoute);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+
 
   categories: string[] = ['Living Room', 'Bedroom', 'Dining Room', 'Office Furniture', 'Outdoor Furniture', 'Storage Solutions'];
   stockOptions: string[] = ['In Stock', 'In Stock soon', 'Out of Stock']
@@ -32,8 +35,6 @@ export class EditProductComponent implements OnInit {
     stockStatus: '',
   };
   selectedFiles: File[] = [];
-
-  constructor(private activateroute: ActivatedRoute, private productService: ProductService, private router: Router) { }
 
 
   productId: string | null = null;

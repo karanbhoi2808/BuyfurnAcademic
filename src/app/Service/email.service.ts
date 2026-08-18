@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '../app.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmailService {
+  private httpClient = inject(HttpClient);
 
-  constructor(private httpClient: HttpClient) { }
 
 
   private baseUrlLocal = environment.baseUrlLocal;

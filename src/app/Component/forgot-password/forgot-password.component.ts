@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../Service/user.service';
 import { Router } from '@angular/router';
@@ -9,18 +9,20 @@ import Swal from 'sweetalert2';
 import { UserAuthService } from '../../Service/user-auth.service';
 
 @Component({
-  selector: 'app-forgot-password',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css'
+    selector: 'app-forgot-password',
+    imports: [FormsModule],
+    templateUrl: './forgot-password.component.html',
+    styleUrl: './forgot-password.component.css'
 })
 export class ForgotPasswordComponent {
+  private userservice = inject(UserService);
+  private router = inject(Router);
+  private userAuthService = inject(UserAuthService);
+
 
   verificationError: any;
   loading: boolean = false;
   displayPassword: boolean = false
-  constructor(private userservice: UserService, private router: Router, private userAuthService: UserAuthService) { }
 
   ngOnInit(): void {
     if (typeof localStorage !== 'undefined') {

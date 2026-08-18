@@ -1,24 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ProductService } from '../../Service/product.service';
-import { response } from 'express';
-import { error } from 'console';
-import { NgFor, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { LoadingComponent } from '../loading/loading.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-cart',
-  standalone: true,
-  imports: [NgFor, NgIf, RouterLink, LoadingComponent],
+  imports: [RouterLink],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
 export class CartComponent implements OnInit {
+  private productService = inject(ProductService);
+  private router = inject(Router);
+
   isLoading: boolean = true;
   products: any = [];
   isNoProducts: boolean = false;
-  constructor(private productService: ProductService, private router: Router) { }
   ngOnInit(): void {
     this.getCartDetails();
   }

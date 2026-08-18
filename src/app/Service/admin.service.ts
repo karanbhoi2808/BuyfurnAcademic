@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../app.config';
 
@@ -7,8 +7,8 @@ import { environment } from '../app.config';
   providedIn: 'root'
 })
 export class AdminService {
+  private httpClient = inject(HttpClient);
 
-  constructor(private httpClient: HttpClient) { }
 
   private baseUrlAdmin = environment.baseUrlAdmin;
   private baseUrlLocal = environment.baseUrlLocal;

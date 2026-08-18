@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Product } from '../Interface/product';
 import { OrderDetails } from '../Interface/orderdetails';
@@ -9,10 +9,10 @@ import { environment } from '../app.config';
   providedIn: 'root',
 })
 export class ProductService {
+  private httpclient = inject(HttpClient);
+
   private baseUrlAdmin = environment.baseUrlAdmin;
   private baseUrlLocal = environment.baseUrlLocal;
-
-  constructor(private httpclient: HttpClient) {}
 
   addProduct(product: any, images: File[]): Observable<any> {
     const formData: FormData = new FormData();

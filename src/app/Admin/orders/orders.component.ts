@@ -1,24 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ProductService } from '../../Service/product.service';
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { AdminService } from '../../Service/admin.service';
 import { RouterLink } from '@angular/router';
 
 
 @Component({
-  selector: 'app-orders',
-  standalone: true,
-  imports: [NgFor, NgIf, DatePipe, RouterLink],
-  templateUrl: './orders.component.html',
-  styleUrl: './orders.component.css'
+    selector: 'app-orders',
+    imports: [DatePipe, RouterLink],
+    templateUrl: './orders.component.html',
+    styleUrl: './orders.component.css'
 })
 export class OrdersComponent implements OnInit {
+  private productService = inject(ProductService);
+  private adminService = inject(AdminService);
+
 
   orderDetails: any = [];
   isOrderIsEmpty: boolean = false;
   notDelivered: boolean = true
   isLoading: boolean = false;
-  constructor(private productService: ProductService, private adminService: AdminService) { }
 
   status: string = "all"
   ngOnInit(): void {

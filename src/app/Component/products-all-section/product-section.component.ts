@@ -1,52 +1,50 @@
-import { Component, Input, OnChanges, OnInit, SimpleChange, SimpleChanges } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, inject, input, effect } from '@angular/core';
+import { Router } from '@angular/router';
 import { ProductService } from '../../Service/product.service';
-import { LoadingComponent } from '../loading/loading.component';
-import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-product-section',
-  standalone: true,
-  imports: [RouterLink, LoadingComponent, NgFor, NgIf],
+  imports: [],
   templateUrl: './product-section.component.html',
   styleUrl: './product-section.component.css'
 })
-export class ProductSectionComponent implements OnChanges {
-  noFilteredItems: boolean = false
+export class ProductSectionComponent {
+  private productService = inject(ProductService);
+  private router = inject(Router);
+
+  noFilteredItems: boolean = false;
   pageNumber: number = 0;
   showLoadButton: boolean = false;
   products: any[] = [];
-  @Input() filterText: string = '';
+  readonly filterText = input<string>('');
   selectedCategory: string = '';
-
-  constructor(private productService: ProductService, private router: Router) { }
-
 
   categories: string[] = ['All', 'Living Room', 'Bedroom', 'Dining Room', 'Office Furniture', 'Outdoor Furniture', 'Storage Solutions'];
 
-  ngOnChanges(changes: SimpleChanges) {
-
-    if (changes['filterText']) {
+  constructor() {
+    effect(() => {
+      // Track filterText signal
+      const text = this.filterText();
       this.pageNumber = 0;
       this.products = [];
       this.getAllProducts();
-    }
+    });
   }
+
   filterProductByCategory(event: Event) {
     this.selectedCategory = (event.target as HTMLSelectElement).value;
 
     this.pageNumber = 0;
     this.products = [];
-    this.productService.clearCache()
-    this.getAllProducts()
+    this.productService.clearCache();
+    this.getAllProducts();
   }
 
   getAllProducts() {
     if (this.selectedCategory === "All") {
       this.selectedCategory = "";
-
     }
-    this.productService.getAllProducts(this.pageNumber, this.filterText, this.selectedCategory).subscribe(
+    this.productService.getAllProducts(this.pageNumber, this.filterText(), this.selectedCategory).subscribe(
       (response) => {
         if (response.length > 0) {
           this.products = [...this.products, ...response];
@@ -64,10 +62,9 @@ export class ProductSectionComponent implements OnChanges {
   }
 
   loadMoreProducts() {
-    this.productService.clearCache()
+    this.productService.clearCache();
     this.pageNumber++;
     this.getAllProducts();
-
   }
 
   productDetailPage(id: any) {
@@ -75,6 +72,6 @@ export class ProductSectionComponent implements OnChanges {
       queryParams: {
         productId: id
       }
-    })
+    });
   }
 }

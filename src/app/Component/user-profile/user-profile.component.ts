@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { UserService } from '../../Service/user.service';
-import { NgIf } from '@angular/common';
+
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UserAuthService } from '../../Service/user-auth.service';
-import { LoadingComponent } from '../loading/loading.component';
 
 @Component({
   selector: 'app-user-profile',
-  standalone: true,
-  imports: [NgIf, RouterLink, LoadingComponent],
+  imports: [RouterLink],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
 export class UserProfileComponent implements OnInit {
+  private userService = inject(UserService);
+  private userAuthService = inject(UserAuthService);
+  private router = inject(Router);
+
 
   hasProfile: boolean = false;
   decodeString: any;
@@ -28,8 +30,6 @@ export class UserProfileComponent implements OnInit {
       state: ''
     },
   };
-
-  constructor(private userService: UserService, private userAuthService: UserAuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadUserData();

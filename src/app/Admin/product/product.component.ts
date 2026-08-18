@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ProductService } from '../../Service/product.service';
 import Swal from 'sweetalert2';
@@ -9,14 +9,17 @@ import { error } from 'console';
 import { AdminService } from '../../Service/admin.service';
 
 @Component({
-  selector: 'app-product',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './product.component.html',
-  styleUrl: './product.component.css'
+    selector: 'app-product',
+    imports: [FormsModule, RouterLink],
+    templateUrl: './product.component.html',
+    styleUrl: './product.component.css'
 })
 
 export class ProductComponent implements OnInit {
+  private productService = inject(ProductService);
+  private adminService = inject(AdminService);
+  private router = inject(Router);
+
 
   products: any = []
   isNoProductAvailabel: boolean = false
@@ -24,8 +27,6 @@ export class ProductComponent implements OnInit {
   searchKey: string = '';
   showLoadButton: boolean = false;
   isLoading: boolean = false;
-
-  constructor(private productService: ProductService, private adminService: AdminService, private router: Router) { }
   ngOnInit(): void {
     this.getAllProducts()
   }

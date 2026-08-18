@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { UserService } from '../../Service/user.service';
 import { FormsModule } from '@angular/forms';
 import { response } from 'express';
@@ -7,15 +7,15 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-update-user',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './update-user.component.html',
-  styleUrl: './update-user.component.css'
+    selector: 'app-update-user',
+    imports: [FormsModule],
+    templateUrl: './update-user.component.html',
+    styleUrl: './update-user.component.css'
 })
 export class UpdateUserComponent implements OnInit {
+  private userService = inject(UserService);
+  private router = inject(Router);
 
-  constructor(private userService: UserService, private router: Router) { }
   user: any = {
     name: '',
     email: '',

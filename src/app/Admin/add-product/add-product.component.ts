@@ -1,18 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
 import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { ProductService } from '../../Service/product.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-add-product',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
-  templateUrl: './add-product.component.html',
-  styleUrl: './add-product.component.css'
+    selector: 'app-add-product',
+    imports: [FormsModule],
+    templateUrl: './add-product.component.html',
+    styleUrl: './add-product.component.css'
 })
 export class AddProductComponent {
+  private productService = inject(ProductService);
+  private router = inject(Router);
+
 
   categories: string[] = ['Living Room', 'Bedroom', 'Dining Room', 'Office Furniture', 'Outdoor Furniture', 'Storage Solutions'];
   stockOptions: string[] = ['In Stock', 'In Stock soon', 'Out of Stock']
@@ -36,8 +38,6 @@ export class AddProductComponent {
     this.selectedFiles = Array.from(files); // Convert FileList to Array
 
   }
-
-  constructor(private productService: ProductService, private router: Router) { }
 
   onSubmit() {
     // console.log(typeof (this.product.stockStatus), this.product.stockStatus);

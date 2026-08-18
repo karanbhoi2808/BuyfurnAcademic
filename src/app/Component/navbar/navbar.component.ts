@@ -1,20 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../Service/user.service';
 import { UserAuthService } from '../../Service/user-auth.service';
-import { NgIf } from '@angular/common';
+
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  imports: [RouterLink, NgIf],
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+    selector: 'app-navbar',
+    imports: [RouterLink],
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+  private router = inject(Router);
+  private userAuthService = inject(UserAuthService);
 
-
-  constructor(private router: Router, private userAuthService: UserAuthService) { }
 
   loggedIn = this.userAuthService.isLoggedIn()
 

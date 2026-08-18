@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { User } from '../Interface/user';
 import { Observable } from 'rxjs';
 import { UserAuthService } from './user-auth.service';
@@ -9,11 +9,12 @@ import { environment } from '../app.config';
   providedIn: 'root'
 })
 export class UserService {
+  private httpClient = inject(HttpClient);
+  private userAuthService = inject(UserAuthService);
+
 
 
   private baseUrlLocal = environment.baseUrlLocal;
-
-  constructor(private httpClient: HttpClient, private userAuthService: UserAuthService) { }
 
   login(): Observable<any> {
     return this.httpClient.get(`${this.baseUrlLocal}/login`);
