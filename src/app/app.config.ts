@@ -10,10 +10,4 @@ import { UpdateService } from './Service/update.service';
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideClientHydration(), provideHttpClient(withFetch(), withInterceptors([authInterceptor]))]
 };
-
-export const environment = {
-  baseUrlAdmin: 'http://localhost:8080/api/admin',
-  baseUrlLocal: 'http://localhost:8080/api'
-  // baseUrlAdmin: 'https://buyfurnbackend-production-c0d1.up.railway.app/api/admin',
-  // baseUrlLocal: 'https://buyfurnbackend-production-c0d1.up.railway.app/api'
-};
+

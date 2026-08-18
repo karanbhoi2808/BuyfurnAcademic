@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { User } from '../Interface/user';
 import { Observable } from 'rxjs';
 import { UserAuthService } from './user-auth.service';
-import { environment } from '../app.config';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
