@@ -19,6 +19,6 @@ export class AdminService {
   }
 
   getAllProducts(pageNumber: number, searchKey: string, category: string): Observable<any> {
-    return this.httpClient.get(`${this.baseUrlAdmin}/getAllProductsForAdmin?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`);
+    return this.httpClient.get(`${this.baseUrlAdmin}/get-all-products-for-admin?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`);
   }
 }

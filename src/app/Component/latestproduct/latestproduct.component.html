@@ -6,7 +6,7 @@
         <div class="col-12 col-md-4 col-lg-3 mb-5">
           <a class="product-item card h-100 d-flex flex-column align-items-center"
             (click)="productDetailPage(product.id)">
-            <img [src]="'data:image/' + product.productImages[0].type + ';base64,' + product.productImages[0].picBytes"
+            <img [src]="product.productImages[0]?.url"
               alt="{{ product.title}}">
               <h3 id="product-title" class="pt-3">{{ product.title }}</h3>
               <strong id="product-price">₹{{ product.price.toFixed(2) }}</strong>

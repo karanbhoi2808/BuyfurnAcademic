@@ -30,7 +30,7 @@
           @for (item of products; track item) {
             <tr>
               <td class="text-center"> <!-- Center image -->
-                <img [src]="'data:image/' + item.product.productImages[0].type + ';base64,' + item.product.productImages[0].picBytes"
+                <img [src]="item.product.productImages[0]?.url"
                   alt="{{ item.product.title }}">
                 </td>
                 <td>{{ item.product.title }}</td>
