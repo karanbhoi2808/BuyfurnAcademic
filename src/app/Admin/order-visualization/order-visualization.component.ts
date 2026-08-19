@@ -4,10 +4,10 @@ import { ProductService } from '../../Service/product.service';
 import { AdminService } from '../../Service/admin.service';
 
 @Component({
-    selector: 'app-order-visualization',
-    imports: [],
-    templateUrl: './order-visualization.component.html',
-    styleUrls: ['./order-visualization.component.css']
+  selector: 'app-order-visualization',
+  imports: [],
+  templateUrl: './order-visualization.component.html',
+  styleUrls: ['./order-visualization.component.css']
 })
 export class OrderVisualizationComponent implements OnInit {
   private productService = inject(ProductService);
@@ -23,7 +23,7 @@ export class OrderVisualizationComponent implements OnInit {
     Chart.register(...registerables);
   }
 
-  status: string = "delivered";
+  status: string = "Delivered";
 
   ngOnInit(): void {
     this.getOrderDetails(this.status);
