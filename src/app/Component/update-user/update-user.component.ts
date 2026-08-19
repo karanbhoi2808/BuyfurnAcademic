@@ -1,8 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { UserService } from '../../Service/user.service';
 import { FormsModule } from '@angular/forms';
-import { response } from 'express';
-import { error } from 'console';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
@@ -36,53 +34,18 @@ export class UpdateUserComponent implements OnInit {
   };
 
   onSubmit() {
-    if (this.selectedFile) {
-      if (this.user && this.user.email) {
-        // console.log(this.user);
-
-        this.userService.updateUser(this.user, this.selectedFile).subscribe(
-          response => {
-            Swal.fire("Your information updated!")
-            this.router.navigate(['/userprofile']);
-          },
-          error => {
-            console.log(error);
-
-          }
-        )
-      }
-
-
+    this.user.address = this.newAddress;
+    if (this.user && this.user.email) {
+      this.userService.updateUser(this.user).subscribe(
+        response => {
+          Swal.fire("Your information is updated");
+          this.router.navigate(['/userprofile']);
+        },
+        error => {
+          console.log(error);
+        }
+      );
     }
-    else {
-      // console.log(this.user);
-      this.user.address = this.newAddress;
-      if (this.user && this.user.email) {
-
-        this.userService.updateUser(this.user).subscribe(
-          response => {
-            Swal.fire("Your information is updated")
-            this.router.navigate(['/userprofile']);
-          },
-          error => {
-            console.log(error);
-
-          }
-        )
-      }
-    }
-
-
-  }
-
-
-
-
-  selectedFile: File | null = null;
-
-  onFileChange(event: any) {
-    const file: File = event.target.files[0];
-    this.selectedFile = file;
   }
 
   ngOnInit(): void {
@@ -95,7 +58,14 @@ export class UpdateUserComponent implements OnInit {
       this.userService.findByEmail(username).subscribe(
         response => {
           this.user = response || {};
-
+          if (this.user.address) {
+            this.newAddress = {
+              address: this.user.address.address || '',
+              pincode: this.user.address.pincode || '',
+              city: this.user.address.city || '',
+              state: this.user.address.state || ''
+            };
+          }
         },
         error => {
           console.log(error);
@@ -105,5 +75,4 @@ export class UpdateUserComponent implements OnInit {
       console.log('Username is null or undefined');
     }
   }
-
 }
