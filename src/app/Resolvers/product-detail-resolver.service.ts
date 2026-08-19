@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ProductService } from '../Service/product.service';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { catchError, Observable, of } from 'rxjs';
@@ -7,8 +7,8 @@ import { catchError, Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductDetailResolverService {
+  private productService = inject(ProductService);
 
-  constructor(private productService: ProductService) { }
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
 
     const id = route.queryParams['productId'];

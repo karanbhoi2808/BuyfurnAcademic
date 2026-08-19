@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../Service/user.service';
@@ -11,13 +11,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+    selector: 'app-login',
+    imports: [FormsModule, RouterLink],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  private userService = inject(UserService);
+  private router = inject(Router);
+  private userAuthService = inject(UserAuthService);
+  private emailService = inject(EmailService);
+
 
   username: string = "";
   password: string = "";
@@ -25,10 +29,6 @@ export class LoginComponent {
   loding: boolean = false;
   loginMsg: string = ""
   loginError: boolean = false;
-
-  constructor(private userService: UserService, private router: Router, private userAuthService: UserAuthService,
-    private emailService: EmailService
-  ) { }
 
   login(): void {
     this.userAuthService.setUserEmail(this.username)

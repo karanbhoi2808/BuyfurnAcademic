@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ProductService } from '../../Service/product.service';
 import { error, log } from 'console';
 import { Product } from '../../Interface/product';
-import { NgFor, NgIf } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { LoadingComponent } from '../loading/loading.component';
+
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-latestproduct',
-  standalone: true,
-  imports: [NgFor, RouterLink, NgIf, LoadingComponent],
+  imports: [],
   templateUrl: './latestproduct.component.html',
   styleUrl: './latestproduct.component.css'
 })
@@ -18,7 +16,8 @@ export class LatestproductComponent implements OnInit {
   products: Product[] = [];
   isEmpty: boolean = false;
 
-  constructor(private productService: ProductService, private router: Router) { }
+  private productService = inject(ProductService);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.getLatestProduct()

@@ -1,22 +1,25 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../Service/product.service';
 import e, { response } from 'express';
 import { error } from 'console';
 import { UserAuthService } from '../../Service/user-auth.service';
-import { LoadingComponent } from '../loading/loading.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-detail',
-  standalone: true,
-  imports: [CommonModule, FormsModule, LoadingComponent],
+  imports: [FormsModule],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.css'
 })
 export class ProductDetailComponent {
+  private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+  private authService = inject(UserAuthService);
+
 
   product: any;
   productId: string | null = null;
@@ -24,7 +27,6 @@ export class ProductDetailComponent {
   quantity: number = 1;
   isLoading = true;
   productNotAvailable: boolean = false
-  constructor(private route: ActivatedRoute, private productService: ProductService, private router: Router, private authService: UserAuthService) { }
 
   ngOnInit(): void {
     this.route.data.subscribe((response: any) => {

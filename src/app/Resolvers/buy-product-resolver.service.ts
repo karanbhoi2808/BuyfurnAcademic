@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, MaybeAsync, Resolve, Router, RouterStateSnapshot } from '@angular/router';
 import { Product } from '../Interface/product';
 import { ProductSectionComponent } from '../Component/products-all-section/product-section.component';
@@ -10,8 +10,9 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class BuyProductResolverService implements Resolve<Product[]> {
+  private productService = inject(ProductService);
+  private router = inject(Router);
 
-  constructor(private productService: ProductService, private router: Router) { }
 
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<Product[]> {

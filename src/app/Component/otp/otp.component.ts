@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { UserService } from '../../Service/user.service';
 import { response } from 'express';
@@ -8,17 +8,17 @@ import { User } from '../../Interface/user';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-otp',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './otp.component.html',
-  styleUrl: './otp.component.css'
+    selector: 'app-otp',
+    imports: [FormsModule],
+    templateUrl: './otp.component.html',
+    styleUrl: './otp.component.css'
 })
 export class OtpComponent implements OnInit {
+  private userservice = inject(UserService);
+  private router = inject(Router);
+
   verificationError: any;
   loading: boolean = false;
-
-  constructor(private userservice: UserService, private router: Router) { }
 
   ngOnInit(): void {
     if (typeof localStorage !== 'undefined') {

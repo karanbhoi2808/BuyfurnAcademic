@@ -1,27 +1,29 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
 import { Chart, ChartOptions, ChartType, registerables } from 'chart.js';
 import { ProductService } from '../../Service/product.service';
 import { AdminService } from '../../Service/admin.service';
 
 @Component({
   selector: 'app-order-visualization',
-  standalone: true,
   imports: [],
   templateUrl: './order-visualization.component.html',
   styleUrls: ['./order-visualization.component.css']
 })
 export class OrderVisualizationComponent implements OnInit {
-  @ViewChild('lineChart') private lineChartRef!: ElementRef;
+  private productService = inject(ProductService);
+  private adminService = inject(AdminService);
+
+  private readonly lineChartRef = viewChild.required<ElementRef>('lineChart');
   orderDetails: any = [];
   isOrderIsEmpty: boolean = false;
   isLoading: boolean = false;
   chart!: Chart;
 
-  constructor(private productService: ProductService, private adminService: AdminService) {
+  constructor() {
     Chart.register(...registerables);
   }
 
-  status: string = "delivered";
+  status: string = "Delivered";
 
   ngOnInit(): void {
     this.getOrderDetails(this.status);
@@ -48,7 +50,7 @@ export class OrderVisualizationComponent implements OnInit {
   }
 
   createChart() {
-    const canvas = this.lineChartRef.nativeElement as HTMLCanvasElement;
+    const canvas = this.lineChartRef().nativeElement as HTMLCanvasElement;
 
     if (this.chart) {
       this.chart.destroy();

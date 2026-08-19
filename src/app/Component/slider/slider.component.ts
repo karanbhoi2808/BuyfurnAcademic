@@ -1,7 +1,5 @@
-import { NgClass, NgFor } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Observable, of } from 'rxjs';
 export interface Slide {
   imageUrl: string;
   captionTitle: string;
@@ -10,8 +8,7 @@ export interface Slide {
 
 @Component({
   selector: 'app-slider',
-  standalone: true,
-  imports: [NgFor, NgClass, RouterLink],
+  imports: [RouterLink],
   templateUrl: './slider.component.html',
   styleUrl: './slider.component.css'
 })

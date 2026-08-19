@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../Service/user.service';
@@ -9,13 +9,16 @@ import { error, log } from 'console';
 import { EmailService } from '../../Service/email.service';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+    selector: 'app-register',
+    imports: [FormsModule, RouterLink],
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  private userSerive = inject(UserService);
+  private route = inject(Router);
+  private emailService = inject(EmailService);
+
   // routerLink="/otp"
 
   EmailRequest: any = {
@@ -31,10 +34,6 @@ export class RegisterComponent {
   }
 
   loding: boolean = false;
-
-  constructor(private userSerive: UserService, private route: Router, private emailService: EmailService) {
-
-  }
   registrationError: any;
   emailIdExits: any;
   generateOtp() {

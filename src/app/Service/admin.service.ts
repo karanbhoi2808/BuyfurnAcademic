@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../app.config';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
+  private httpClient = inject(HttpClient);
 
-  constructor(private httpClient: HttpClient) { }
 
   private baseUrlAdmin = environment.baseUrlAdmin;
   private baseUrlLocal = environment.baseUrlLocal;
@@ -19,6 +19,6 @@ export class AdminService {
   }
 
   getAllProducts(pageNumber: number, searchKey: string, category: string): Observable<any> {
-    return this.httpClient.get(`${this.baseUrlAdmin}/getAllProductsForAdmin?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`);
+    return this.httpClient.get(`${this.baseUrlAdmin}/get-all-products-for-admin?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`);
   }
 }

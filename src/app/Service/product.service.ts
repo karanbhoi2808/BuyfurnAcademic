@@ -1,18 +1,18 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Product } from '../Interface/product';
 import { OrderDetails } from '../Interface/orderdetails';
-import { environment } from '../app.config';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
+  private httpclient = inject(HttpClient);
+
   private baseUrlAdmin = environment.baseUrlAdmin;
   private baseUrlLocal = environment.baseUrlLocal;
-
-  constructor(private httpclient: HttpClient) {}
 
   addProduct(product: any, images: File[]): Observable<any> {
     const formData: FormData = new FormData();
@@ -22,7 +22,7 @@ export class ProductService {
       formData.append('imgs', image, image.name);
     });
 
-    return this.httpclient.post(`${this.baseUrlAdmin}/addproduct`, formData);
+    return this.httpclient.post(`${this.baseUrlAdmin}/add-product`, formData);
   }
 
   private products: Product[] | null = null; // Cached product data
@@ -33,7 +33,7 @@ export class ProductService {
   ): Observable<any> {
     return this.httpclient
       .get(
-        `${this.baseUrlLocal}/getallproducts?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`
+        `${this.baseUrlLocal}/get-all-products?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`
       )
       .pipe(
         map((data: any) => {
@@ -68,11 +68,11 @@ export class ProductService {
   }
 
   getProductById(id: any): Observable<any> {
-    return this.httpclient.get(`${this.baseUrlLocal}/getbyid/${id}`);
+    return this.httpclient.get(`${this.baseUrlLocal}/get-by-id/${id}`);
   }
 
   deleteProductById(id: any): Observable<any> {
-    return this.httpclient.delete(`${this.baseUrlAdmin}/deletebyid/${id}`);
+    return this.httpclient.delete(`${this.baseUrlAdmin}/delete-by-id/${id}`);
   }
 
   updateProduct(product: any, images: File[]): Observable<any> {
@@ -82,7 +82,7 @@ export class ProductService {
     images.forEach((image) => {
       formData.append('img', image, image.name);
     });
-    return this.httpclient.post(`${this.baseUrlAdmin}/updateproduct`, formData);
+    return this.httpclient.post(`${this.baseUrlAdmin}/update-product`, formData);
   }
 
   placeOrder(orderDetails: OrderDetails, isCartCheckout: boolean) {
@@ -106,7 +106,7 @@ export class ProductService {
 
   getProductDetails(isSinbleProductCheckout: any, productId: any) {
     return this.httpclient.get<Product[]>(
-      `${this.baseUrlLocal}/user/getproductdetails/${isSinbleProductCheckout}/${productId}`
+      `${this.baseUrlLocal}/user/get-product-details/${isSinbleProductCheckout}/${productId}`
     );
   }
 

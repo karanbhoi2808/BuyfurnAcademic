@@ -1,25 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ProductService } from '../../Service/product.service';
 import { Product } from '../../Interface/product';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { UserService } from '../../Service/user.service';
 import { OrderDetails } from '../../Interface/orderdetails';
-import { NgFor, NgIf } from '@angular/common';
+
 import { FormsModule, NgForm } from '@angular/forms';
 import { UserAuthService } from '../../Service/user-auth.service';
-import { LoadingComponent } from '../loading/loading.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../Service/email.service';
-// import Razorpay from 'razorpay';
 declare var Razorpay: any;
 @Component({
   selector: 'app-buy-product',
-  standalone: true,
-  imports: [NgIf, FormsModule, NgFor, LoadingComponent],
+  imports: [FormsModule],
   templateUrl: './buy-product.component.html',
   styleUrls: ['./buy-product.component.css']
 })
 export class BuyProductComponent implements OnInit {
+  private userService = inject(UserService);
+  private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+  private userAuthService = inject(UserAuthService);
+  private emailService = inject(EmailService);
+
 
   isLoading: boolean = true;
 
@@ -43,14 +47,6 @@ export class BuyProductComponent implements OnInit {
     subject: '',
     text: ''
   }
-  constructor(
-    private userService: UserService,
-    private route: ActivatedRoute,
-    private productService: ProductService,
-    private router: Router,
-    private userAuthService: UserAuthService,
-    private emailService: EmailService
-  ) { }
 
   ngOnInit(): void {
     this.loadUserData();
