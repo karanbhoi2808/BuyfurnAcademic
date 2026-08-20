@@ -43,3 +43,10 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Environment & Auth state
+.env
+.env.local
+playwright/.auth/
+screenshots/
+
