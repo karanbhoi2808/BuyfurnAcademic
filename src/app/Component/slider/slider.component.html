@@ -1,23 +1,37 @@
-<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+<div id="heroCarousel" class="carousel slide hero-section" data-bs-ride="carousel">
   <div class="carousel-inner">
-    <!-- Slide Items -->
     @for (slide of slides; track slide; let i = $index) {
       <div class="carousel-item" [class.active]="i === 0">
-        <div class="container">
-          <div class="row justify-content-between align-items-center">
-            <div class="col-lg-6"> <!-- Adjusted column width -->
-              <div class="intro-excerpt">
-                <h1>{{ slide.captionTitle }}</h1>
-                <h1 class="mb-4">{{ slide.captionText }}</h1>
-                <p>
-                  <a routerLink="/furniture" class="btn btn-secondary custom-btn">Shop Now</a>
+        <div class="container py-4 py-lg-5">
+          <div class="row align-items-center g-4">
+            <!-- Left Text Content -->
+            <div class="col-lg-6">
+              <div class="hero-content pe-lg-4">
+                <div class="badge-chip mb-3 d-inline-flex align-items-center gap-2">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <span>Premium Furniture Collection 2026</span>
+                </div>
+                <h1 class="hero-title display-4 font-serif text-white fw-bold mb-3">
+                  {{ slide.captionTitle }}
+                </h1>
+                <p class="hero-subtitle lead text-light opacity-87 mb-4">
+                  {{ slide.captionText }}. Discover handcrafted, ergonomically designed furniture to transform your living spaces with elegance.
                 </p>
+                <div class="hero-cta-group d-flex flex-wrap align-items-center gap-3">
+                  <a routerLink="/furniture" class="btn btn-gold btn-lg rounded-pill px-4 py-3 fw-semibold">
+                    Shop Collection <i class="bi bi-arrow-right ms-2"></i>
+                  </a>
+                  <a routerLink="/furniture" class="btn btn-outline-light btn-lg rounded-pill px-4 py-3 fw-semibold">
+                    Explore Brand
+                  </a>
+                </div>
               </div>
             </div>
-            <div class="col-lg-6"> <!-- Adjusted column width -->
-              <div class="hero-img-wrap text-lg-end">
-                <!-- Added class `text-lg-end` for right alignment on lg screens -->
-                <img [src]="slide.imageUrl" class="img-fluid">
+
+            <!-- Right Hero Image -->
+            <div class="col-lg-6">
+              <div class="hero-img-wrap text-center text-lg-end position-relative">
+                <img [src]="slide.imageUrl" [alt]="slide.captionTitle" class="img-fluid hero-img">
               </div>
             </div>
           </div>
@@ -26,10 +40,17 @@
     }
   </div>
 
-  <!-- Carousel Controls -->
-  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+  <!-- Carousel Indicators / Navigation -->
+  <div class="carousel-indicators custom-indicators">
+    @for (slide of slides; track slide; let i = $index) {
+      <button
+        type="button"
+        data-bs-target="#heroCarousel"
+        [attr.data-bs-slide-to]="i"
+        [class.active]="i === 0"
+        [attr.aria-current]="i === 0 ? 'true' : null"
+        [attr.aria-label]="'Slide ' + (i + 1)"
+      ></button>
+    }
+  </div>
+</div>

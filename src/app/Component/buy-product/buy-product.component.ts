@@ -1,22 +1,27 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../Service/product.service';
 import { Product } from '../../Interface/product';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { UserService } from '../../Service/user.service';
 import { OrderDetails } from '../../Interface/orderdetails';
-
-import { FormsModule, NgForm } from '@angular/forms';
 import { UserAuthService } from '../../Service/user-auth.service';
+import { OrderSummaryComponent } from '../order-summary/order-summary.component';
 import Swal from 'sweetalert2';
 import { EmailService } from '../../Service/email.service';
+
 declare var Razorpay: any;
+
 @Component({
   selector: 'app-buy-product',
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, OrderSummaryComponent],
   templateUrl: './buy-product.component.html',
   styleUrls: ['./buy-product.component.css']
 })
 export class BuyProductComponent implements OnInit {
+  @ViewChild('orderForm') orderForm?: NgForm;
+
   private userService = inject(UserService);
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
@@ -24,14 +29,18 @@ export class BuyProductComponent implements OnInit {
   private userAuthService = inject(UserAuthService);
   private emailService = inject(EmailService);
 
-
   isLoading: boolean = true;
-
+  isSubmitting: boolean = false;
   productQuantities: { [key: number]: number } = {};
 
   orderDetails: OrderDetails = {
     fullName: '',
-    address: {},
+    address: {
+      address: '',
+      pincode: '',
+      city: '',
+      state: ''
+    },
     contactNumber: '',
     orderquantities: [],
     transactionId: ''
@@ -39,14 +48,13 @@ export class BuyProductComponent implements OnInit {
 
   products: Product[] | undefined;
   user: any = {};
-
-  isSingleProductCheckout: any;
+  isSingleProductCheckout: boolean = false;
 
   EmailRequest: any = {
     to: '',
     subject: '',
     text: ''
-  }
+  };
 
   ngOnInit(): void {
     this.loadUserData();
@@ -64,52 +72,68 @@ export class BuyProductComponent implements OnInit {
     }
   }
 
-  loadUserData() {
-
-    if (typeof window !== 'undefined' && localStorage.getItem("basicAuth")) {
-
-      this.userService.login().subscribe(
-        response => {
+  loadUserData(): void {
+    if (typeof window !== 'undefined' && localStorage.getItem('basicAuth')) {
+      this.userService.login().subscribe({
+        next: (response) => {
           this.isLoading = false;
           this.user = response || {};
-          // this.user.address = this.user.address || { address: '', pincode: '', state: '' };  // Ensure address is not null
-          this.orderDetails.fullName = this.user.name;
-          this.orderDetails.address = this.user.address || { address: '', pincode: '', state: '' };
-          this.orderDetails.contactNumber = this.user.contactNumber;
+          this.orderDetails.fullName = this.user.name || '';
+          this.orderDetails.address = this.user.address || { address: '', pincode: '', city: '', state: '' };
+          this.orderDetails.contactNumber = this.user.contactNumber || '';
         },
-        error => {
-          console.log(error);
+        error: (error) => {
+          console.error(error);
+          this.isLoading = false;
         }
-      );
+      });
+    } else {
+      this.isLoading = false;
     }
   }
 
-  placeOrder(orderForm: NgForm) {
-    const formValues = orderForm.value;
+  increaseQty(productId: number): void {
+    const current = this.productQuantities[productId] || 1;
+    if (current < 10) {
+      this.productQuantities[productId] = current + 1;
+    }
+  }
 
-    this.orderDetails.fullName = formValues.fullName;
+  decreaseQty(productId: number): void {
+    const current = this.productQuantities[productId] || 1;
+    if (current > 1) {
+      this.productQuantities[productId] = current - 1;
+    }
+  }
+
+  placeOrder(form?: NgForm): void {
+    const currentForm = form || this.orderForm;
+    const formValues = currentForm ? currentForm.value : {};
+
+    this.orderDetails.fullName = formValues.fullName || this.user.name || this.orderDetails.fullName;
     this.orderDetails.address = {
-      address: formValues.address,
-      pincode: formValues.pincode,
-      city: formValues.city,
-      state: formValues.state
+      address: formValues.address || this.orderDetails.address?.address,
+      pincode: formValues.pincode || this.orderDetails.address?.pincode,
+      city: formValues.city || this.orderDetails.address?.city,
+      state: formValues.state || this.orderDetails.address?.state
     };
-    this.orderDetails.contactNumber = formValues.contactNumber;
+    this.orderDetails.contactNumber = formValues.contactNumber || this.orderDetails.contactNumber;
+    this.orderDetails.orderquantities = this.getQuntity();
 
-    this.orderDetails.orderquantities = this.getQuntity()
+    this.isSubmitting = true;
 
-    // console.log(this.orderDetails);
-
-    this.productService.placeOrder(this.orderDetails, this.isSingleProductCheckout).subscribe(
-      (response) => {
+    this.productService.placeOrder(this.orderDetails, this.isSingleProductCheckout).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
         this.userAuthService.setOrderPlaced(true);
-        console.log(this.user.email);
-        this.EmailRequest.to = this.user.email.trim();
-        this.EmailRequest.subject = "Order Confirm"
-        this.EmailRequest.text = `
+
+        if (this.user.email) {
+          this.EmailRequest.to = this.user.email.trim();
+          this.EmailRequest.subject = 'Order Confirmation - BuyFurn';
+          this.EmailRequest.text = `
 Dear ${this.orderDetails.fullName},
 
-Thank you for your order with BuyFurn. Your order has been successfully placed. We are preparing your order and will notify you once it is on its way.
+Thank you for your order with BuyFurn! Your order has been successfully placed. We are preparing your order and will notify you once it is dispatched.
 
 Estimated Delivery: 5-6 Working Days.
 
@@ -118,98 +142,114 @@ Thank you for shopping with us!
 Best regards,
 BuyFurn Team
 `;
+          this.emailService.sendMail(this.EmailRequest).subscribe();
+        }
 
-        this.emailService.sendMail(this.EmailRequest).subscribe(mailResponse => {
-
-        });
         this.router.navigate(['/orderplaced']);
       },
-      (error) => {
-        console.log("Place error", error);
+      error: (error) => {
+        this.isSubmitting = false;
+        console.error('Place order error', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Order Placement Failed',
+          text: 'There was an issue processing your order. Please try again.',
+          confirmButtonColor: '#cca038'
+        });
       }
-    );
+    });
   }
 
-  getQuntity() {
+  getQuntity(): { productId: number; quantity: number }[] {
     return Object.keys(this.productQuantities).map(productId => {
       return { productId: Number(productId), quantity: this.productQuantities[Number(productId)] };
     });
   }
 
-
   getCalculateTotal(price: number, productId: number): number {
     const quantity = this.productQuantities[productId] || 1;
-
     return price * quantity;
   }
 
-
-
-  calculateGrandTotal() {
+  calculateGrandTotal(): number {
     if (!this.products) return 0;
-
-    const total = this.products.reduce((accumulator, product) => {
+    return this.products.reduce((accumulator, product) => {
       const quantity = this.productQuantities[product.id] || 1;
       return accumulator + (product.price * quantity);
     }, 0);
-
-    return total;
   }
 
+  createTransactionAndPlaceOrder(form?: NgForm): void {
+    const currentForm = form || this.orderForm;
+    if (currentForm && currentForm.invalid) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Incomplete Information',
+        text: 'Please fill in all the required delivery details.',
+        confirmButtonColor: '#cca038'
+      });
+      return;
+    }
 
-  createTransactionAndPlaceOrder(orderForm: NgForm) {
-    let grandTotal = this.calculateGrandTotal()
-    this.productService.createTransaction(grandTotal).subscribe(
-      response => {
-        this.openTransactionModel(response, orderForm);
+    const grandTotal = this.calculateGrandTotal();
+    this.productService.createTransaction(grandTotal).subscribe({
+      next: (response) => {
+        this.openTransactionModel(response, currentForm);
       },
-      error => {
-        console.log(error);
-
+      error: (error) => {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Payment Gateway Error',
+          text: 'Could not initiate payment. Please try again.',
+          confirmButtonColor: '#cca038'
+        });
       }
-    )
+    });
   }
 
-  openTransactionModel(response: any, orderForm: NgForm) {
-    var options = {
+  openTransactionModel(response: any, form?: NgForm): void {
+    const currentForm = form || this.orderForm;
+    const options = {
       order_id: response.orderId,
       key: response.key,
       amount: response.amount,
       currency: response.currency,
       name: 'BuyFurn',
-      description: 'Payment of your shopping',
-      image: 'https://img.freepik.com/premium-photo/modern-living-living-room-interior-has-yellow-armchair-empty-dark-white-wall-backgroud-ai_1028299-275.jpg?w=740',
-      handler: (response: any) => {
-        if (response.razorpay_payment_id && response != null) {
-          this.processResponse(response, orderForm)
-        }
-        else {
-          Swal.fire("Payment Failed");
+      description: 'Furniture Purchase Checkout',
+      image: 'assets/images/ByFurn.jpg',
+      handler: (resp: any) => {
+        if (resp.razorpay_payment_id && resp != null) {
+          this.processResponse(resp, currentForm);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Payment Failed',
+            text: 'Your payment was not completed.',
+            confirmButtonColor: '#cca038'
+          });
         }
       },
       prefill: {
-        name: 'BuyFurn',
-        email: 'buyfurn@gmail.com',
-        contact: this.orderDetails.contactNumber,
-
+        name: this.orderDetails.fullName || 'BuyFurn Customer',
+        email: this.user.email || 'customer@buyfurn.com',
+        contact: this.orderDetails.contactNumber || ''
       },
       notes: {
-        address: 'Online Shopping'
+        address: this.orderDetails.address?.address || 'Online Furniture Order'
       },
       theme: {
-        color: '#3b5d50',
+        color: '#1e3a2b'
       }
     };
 
-    var razorPayObject = new Razorpay(options);
+    const razorPayObject = new Razorpay(options);
     razorPayObject.open();
-
   }
 
-  processResponse(resp: any, orderForm: NgForm) {
+  processResponse(resp: any, form?: NgForm): void {
+    const currentForm = form || this.orderForm;
     this.orderDetails.transactionId = resp.razorpay_payment_id;
-    this.placeOrder(orderForm);
-    // console.log(this.orderDetails);
-
+    this.placeOrder(currentForm);
   }
 }

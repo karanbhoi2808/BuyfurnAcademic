@@ -5,9 +5,11 @@ import { Product } from '../../Interface/product';
 
 import { Router } from '@angular/router';
 
+import { ProductCardComponent } from '../product-card/product-card.component';
+
 @Component({
   selector: 'app-latestproduct',
-  imports: [],
+  imports: [ProductCardComponent],
   templateUrl: './latestproduct.component.html',
   styleUrl: './latestproduct.component.css'
 })
@@ -20,6 +22,8 @@ export class LatestproductComponent implements OnInit {
   private router = inject(Router);
 
   ngOnInit(): void {
+    console.log("working");
+
     this.getLatestProduct()
   }
 

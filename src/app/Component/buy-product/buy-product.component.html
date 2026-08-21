@@ -1,103 +1,155 @@
-<div class="container">
-  <h3>Place Order</h3>
-  <hr>
-    <div class="row">
-      <!-- Left-->
-      <div class="col-md-4">
-        @if (user) {
-          <div class="user-info">
-            <!-- <form #orderForm="ngForm" (ngSubmit)="placeOrder(orderForm)"></form> -->
-            <form #orderForm="ngForm" (ngSubmit)="createTransactionAndPlaceOrder(orderForm)">
-              <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="text" id="email" name="email" class="form-control" [(ngModel)]="user.email"
-                  disabled>
-                </div>
-                <div class="mb-3">
-                  <label for="userName" class="form-label">Name:</label>
-                  <input type="text" id="userName" name="fullName" class="form-control" [(ngModel)]="user.name">
-                </div>
-                <div class="mb-3">
-                  <label for="userAddress" class="form-label">Address:</label>
-                  <input type="text" id="userAddress" name="address" class="form-control"
-                    [(ngModel)]="orderDetails.address.address">
-                  </div>
-                  <div class="mb-3">
-                    <label for="userPincode" class="form-label">Pincode:</label>
-                    <input type="text" id="userPincode" name="pincode" class="form-control mt-2"
-                      [(ngModel)]="orderDetails.address.pincode">
-                    </div>
-                    <div class="mb-3">
-                      <label for="userCity" class="form-label">City:</label>
-                      <input type="text" id="userCity" name="city" class="form-control mt-2"
-                        [(ngModel)]="orderDetails.address.city">
-                      </div>
-                      <div class="mb-3">
-                        <label for="userState" class="form-label">State:</label>
-                        <input type="text" id="userState" name="state" class="form-control mt-2"
-                          [(ngModel)]="orderDetails.address.state">
-                        </div>
-                        <div class="mb-3">
-                          <label for="userContact" class="form-label">Contact Number:</label>
-                          <input type="text" id="userContact" name="contactNumber" class="form-control"
-                            [(ngModel)]="orderDetails.contactNumber">
-                          </div>
-                          <button type="submit" class="btn btn-primary mb-3">Place Order</button>
-                        </form>
-                      </div>
-                    }
-                  </div>
-                  <!-- Right -->
-                  <div class="col-md-8">
-                    <div class="card border-light mb-3" style="max-width: 100%;">
-                      <div class="card-header">Order Summary</div>
-                      <div class="card-body">
-                        <table class="table table-sm">
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Amount</th>
-                              <th>Quantity</th>
-                              <th>Total</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            @for (product of products; track product) {
-                              <tr>
-                                <td>{{product.title}}</td>
-                                <td>{{product.price}}₹</td>
-                                <td>
-                                  <select class="form-select form-select-sm"
-                                    [(ngModel)]="productQuantities[product.id]">
-                                    @for (q of [1,2,3,4,5]; track q) {
-                                      <option [value]="q">{{q}}</option>
-                                    }
-                                  </select>
-                                </td>
-                                <td>
-                                  {{getCalculateTotal(product.price,product.id)}}₹
-                                </td>
-                              </tr>
-                            }
-                            <tr>
-                              <td>
+<div class="checkout-page-wrapper">
+  <div class="container py-4 py-md-5">
 
-                              </td>
-                              <td></td>
-                              <td class="grand-total" style="font-weight: bold;">
-                                Grand Total:
-                              </td>
-                              <td class="grand-total" style="font-weight: bold;">
-                                {{calculateGrandTotal()}}₹
-                              </td>
+    <!-- Page Header -->
+    <div class="checkout-header mb-4 mb-md-5">
+      <h1 class="checkout-title font-serif text-dark fw-bold mb-1">Place Your Order</h1>
+      <p class="checkout-subtitle text-muted mb-0">
+        Review your delivery details and items before proceeding to secure payment.
+      </p>
+    </div>
 
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
+    @if (products && products.length > 0) {
+    <div class="row g-4 g-xl-5">
+
+      <!-- Left Column: Shipping & Contact Form -->
+      <div class="col-12 col-lg-7">
+        <div class="checkout-card bg-white rounded-4 p-4 p-md-5 shadow-sm border-0">
+          <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom">
+            <div class="step-badge">1</div>
+            <h2 class="section-title font-serif mb-0">Shipping & Delivery Details</h2>
+          </div>
+
+          @if (user) {
+          <form #orderForm="ngForm" (ngSubmit)="createTransactionAndPlaceOrder()" novalidate>
+            <div class="row g-3">
+
+              <!-- Email (Read-Only) -->
+              <div class="col-12 col-md-6">
+                <label for="email" class="form-label-custom">Email Address</label>
+                <div class="input-icon-wrap position-relative">
+                  <input type="email" id="email" name="email" class="form-control-custom bg-light cursor-not-allowed"
+                    [(ngModel)]="user.email" disabled>
+                  <i class="bi bi-lock-fill input-icon text-muted"></i>
                 </div>
               </div>
 
-              <!-- <app-loading [isLoading]="isLoading"></app-loading> -->
+              <!-- Full Name -->
+              <div class="col-12 col-md-6">
+                <label for="userName" class="form-label-custom">Full Name <span class="text-danger">*</span></label>
+                <input type="text" id="userName" name="fullName" class="form-control-custom" placeholder="e.g. John Doe"
+                  [(ngModel)]="user.name" required #nameField="ngModel"
+                  [class.is-invalid]="nameField.invalid && nameField.touched">
+              </div>
+
+              <!-- Contact Number -->
+              <div class="col-12 col-md-6">
+                <label for="userContact" class="form-label-custom">Contact Number <span
+                    class="text-danger">*</span></label>
+                <div class="input-icon-wrap position-relative">
+                  <input type="tel" id="userContact" name="contactNumber" class="form-control-custom"
+                    placeholder="10-digit mobile number" [(ngModel)]="orderDetails.contactNumber" required
+                    #phoneField="ngModel" [class.is-invalid]="phoneField.invalid && phoneField.touched">
+                  <i class="bi bi-telephone input-icon text-muted"></i>
+                </div>
+              </div>
+
+              <!-- Pincode -->
+              <div class="col-12 col-md-6">
+                <label for="userPincode" class="form-label-custom">PIN / Postal Code <span
+                    class="text-danger">*</span></label>
+                <input type="text" id="userPincode" name="pincode" class="form-control-custom" placeholder="e.g. 400001"
+                  [(ngModel)]="orderDetails.address.pincode" required #pinField="ngModel"
+                  [class.is-invalid]="pinField.invalid && pinField.touched">
+              </div>
+
+              <!-- City -->
+              <div class="col-12 col-md-6">
+                <label for="userCity" class="form-label-custom">City <span class="text-danger">*</span></label>
+                <input type="text" id="userCity" name="city" class="form-control-custom" placeholder="e.g. Mumbai"
+                  [(ngModel)]="orderDetails.address.city" required #cityField="ngModel"
+                  [class.is-invalid]="cityField.invalid && cityField.touched">
+              </div>
+
+              <!-- State -->
+              <div class="col-12 col-md-6">
+                <label for="userState" class="form-label-custom">State <span class="text-danger">*</span></label>
+                <input type="text" id="userState" name="state" class="form-control-custom"
+                  placeholder="e.g. Maharashtra" [(ngModel)]="orderDetails.address.state" required #stateField="ngModel"
+                  [class.is-invalid]="stateField.invalid && stateField.touched">
+              </div>
+
+              <!-- Street Address -->
+              <div class="col-12">
+                <label for="userAddress" class="form-label-custom">Street Address & Landmark <span
+                    class="text-danger">*</span></label>
+                <textarea id="userAddress" name="address" rows="3" class="form-control-custom"
+                  placeholder="House/Flat No., Building Name, Street Area, Landmark"
+                  [(ngModel)]="orderDetails.address.address" required #addrField="ngModel"
+                  [class.is-invalid]="addrField.invalid && addrField.touched"></textarea>
+              </div>
+
+            </div>
+
+            <!-- Trust Guarantee Bar -->
+            <div
+              class="trust-guarantee-box mt-4 p-3 rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-truck text-dark fs-5"></i>
+                <span class="small fw-semibold text-dark">Free White-Glove Delivery (5-6 Days)</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check text-success fs-5"></i>
+                <span class="small fw-semibold text-dark">100% Quality & Transit Warranty</span>
+              </div>
+            </div>
+
+            <!-- Mobile Checkout Action (Shown on mobile screens only) -->
+            <div class="d-lg-none mt-4">
+              <button type="submit" class="btn btn-checkout-action w-100 py-3 rounded-3 fw-bold"
+                [disabled]="isSubmitting || orderForm.invalid">
+                <span>Pay ₹{{ calculateGrandTotal() }} & Place Order</span>
+              </button>
+            </div>
+          </form>
+          }
+        </div>
+      </div>
+
+      <!-- Right Column: Reusable Order Summary Component -->
+      <div class="col-12 col-lg-5">
+        <app-order-summary
+          [stepBadge]="2"
+          [title]="'Order Summary'"
+          [itemCount]="products.length"
+          [showItemsList]="true"
+          [items]="products"
+          [quantities]="productQuantities"
+          [subtotal]="calculateGrandTotal()"
+          [total]="calculateGrandTotal()"
+          [taxesText]="'Included'"
+          [buttonText]="'Proceed to Payment'"
+          [buttonIcon]="'bi-shield-lock'"
+          [isSubmitting]="isSubmitting"
+          [showPaymentIcons]="true"
+          (increaseQuantity)="increaseQty($event)"
+          (decreaseQuantity)="decreaseQty($event)"
+          (actionClick)="createTransactionAndPlaceOrder()">
+        </app-order-summary>
+      </div>
+
+    </div>
+    } @else {
+    <!-- Empty Checkout State -->
+    <div class="empty-checkout-card bg-white rounded-4 p-5 text-center shadow-sm border-0 my-4">
+      <i class="bi bi-bag-x display-3 text-muted mb-3 opacity-50"></i>
+      <h3 class="font-serif text-dark fw-bold mb-2">No Items to Checkout</h3>
+      <p class="text-secondary small mb-4">Your cart is empty or the item is no longer available.</p>
+      <a routerLink="/furniture" class="btn btn-checkout-action px-4 py-2 rounded-pill fw-semibold">
+        Explore Furniture Catalog
+      </a>
+    </div>
+    }
+
+  </div>
+</div>

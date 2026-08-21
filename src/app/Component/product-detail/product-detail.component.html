@@ -1,65 +1,152 @@
 @if (product) {
-  <div class="container product-container mt-5">
-    <div class="row">
-      <div class="col-md-6 position-relative">
-        @if (product.productImages && product.productImages.length) {
-          <div class="image-slider">
-            @for (image of product.productImages; track image; let i = $index) {
-              <div class="slide"
-                [class.active]="i === currentSlide">
-                <img [src]="image?.url" alt="{{ image.name }}">
-              </div>
+<div class="product-page-wrapper">
+  <div class="container py-4 py-md-5">
+    <!-- Main Product View -->
+    <div class="row g-4 g-lg-5 align-items-start">
+
+      <!-- Left Column: Gallery -->
+      <div class="col-12 col-lg-6">
+        <div class="gallery-container">
+          <!-- Main Hero Image Box -->
+          <div class="main-image-card position-relative">
+            @if (product.productImages && product.productImages.length) {
+            <img [src]="product.productImages[currentSlide]?.url || 'assets/images/couch.png'" [alt]="product.title"
+              class="main-product-img">
+            } @else {
+            <img src="assets/images/couch.png" [alt]="product.title" class="main-product-img">
             }
           </div>
-        }
-        <div class="slider-controls">
-          <button class="btn btn-link" (click)="prevSlide()">
-            <i class="bi bi-arrow-left-circle text-danger"></i>
-          </button>
-          <button class="btn btn-link" (click)="nextSlide()">
-            <i class="bi bi-arrow-right-circle text-danger"></i>
-          </button>
+
+          <!-- Thumbnail Carousel / Strip -->
+          @if (product.productImages && product.productImages.length > 1) {
+          <div class="thumbnail-strip mt-3 d-flex gap-2 gap-md-3">
+            @for (image of product.productImages; track image; let i = $index) {
+            <button type="button" class="thumb-box" [class.active]="i === currentSlide" (click)="selectSlide(i)"
+              aria-label="Select image thumbnail">
+              <img [src]="image?.url" [alt]="image?.name || product.title">
+            </button>
+            }
+          </div>
+          }
         </div>
       </div>
-      <div class="col-md-6 product-details order-md-2">
-        <h1 class="product-title">{{ product.title }}</h1>
-        <p class="product-price">₹{{ product.price }}</p>
-        <p class="product-description">{{ product.description }}</p>
-        <p class="card-text text-warning">
-          {{ product.stockStatus}}
-        </p>
-        <button type="button" class="btn btn-warning mt-3" (click)="addToCart(product.id)">Add to Cart</button>
-        <button type="button" class="btn btn-outline-warning mt-3 ms-3" (click)="buyNow(product.id)">Buy
-        Now</button>
-        <div class="product-extra mt-3">
-          <div class="accordion">
-            <input type="checkbox" id="product-details-toggle" class="toggle">
-            <label for="product-details-toggle" class="accordion-label">Product Details</label>
-            <div class="accordion-content">
-              <p><strong>Category:</strong> {{ product.category }}</p>
-              <p><strong>Color:</strong> {{ product.color }}</p>
-              <p><strong>Material:</strong> {{ product.material }}</p>
-              <p><strong>Seating Capacity:</strong> {{ product.seatingCapacity }}</p>
-              <p><strong>Weight:</strong> {{ product.weight }} KG</p>
-              <p><strong>Care and Maintenance:</strong><br> {{ product.careAndMaintenance }}</p>
-            </div>
+
+      <!-- Right Column: Product Info & Actions -->
+      <div class="col-12 col-lg-6">
+        <div class="product-info-panel">
+          <!-- Title -->
+          <h1 class="product-title font-serif">{{ product.title }}</h1>
+
+          <!-- Price -->
+          <div class="product-price">
+            ₹{{ product.price }}
           </div>
-          <div class="accordion">
-            <input type="checkbox" id="warranty-toggle" class="toggle">
-            <label for="warranty-toggle" class="accordion-label">Warranty Details</label>
-            <div class="accordion-content">
-              <p>{{ product.warranty }}</p>
-            </div>
+
+          <!-- Description -->
+          <p class="product-description">
+            {{ product.description }}
+          </p>
+
+          <!-- Stock Status -->
+          <div class="stock-status-wrapper mb-4">
+            <span class="status-dot" [class.out-of-stock]="product.stockStatus === 'Out of Stock'"></span>
+            <span class="status-text">
+              {{ product.stockStatus === 'In Stock' ? 'In Stock - Ready to ship' : (product.stockStatus || 'In Stock -
+              Ready to ship') }}
+            </span>
           </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons-group d-flex gap-3 mb-4">
+            <button type="button" class="btn btn-add-cart d-flex align-items-center justify-content-center gap-2"
+              (click)="addToCart(product.id)">
+              <i class="bi bi-cart3"></i>
+              <span>Add to Cart</span>
+            </button>
+
+            <button type="button" class="btn btn-buy-now d-flex align-items-center justify-content-center"
+              (click)="buyNow(product.id)">
+              <span>Buy Now</span>
+            </button>
+          </div>
+
+          <!-- Product Details Specs Card -->
+          <div class="specs-accordion-card">
+            <button type="button" class="specs-header-btn w-100 d-flex justify-content-between align-items-center"
+              (click)="toggleSpecs()" [attr.aria-expanded]="isSpecsOpen">
+              <span class="specs-header-title font-serif">Product Details</span>
+              <span class="specs-toggle-icon">{{ isSpecsOpen ? '−' : '+' }}</span>
+            </button>
+
+            @if (isSpecsOpen) {
+            <div class="specs-content">
+              <div class="spec-row" *ngIf="product.category">
+                <span class="spec-label">Category</span>
+                <span class="spec-value">{{ product.category }}</span>
+              </div>
+
+              <div class="spec-row" *ngIf="product.color">
+                <span class="spec-label">Color</span>
+                <span class="spec-value">{{ product.color }}</span>
+              </div>
+
+              <div class="spec-row" *ngIf="product.material">
+                <span class="spec-label">Material</span>
+                <span class="spec-value">{{ product.material }}</span>
+              </div>
+
+              <div class="spec-row" *ngIf="product.seatingCapacity">
+                <span class="spec-label">Seating Capacity</span>
+                <span class="spec-value">{{ product.seatingCapacity }}</span>
+              </div>
+
+              <div class="spec-row" *ngIf="product.weight">
+                <span class="spec-label">Weight</span>
+                <span class="spec-value">{{ product.weight }} KG</span>
+              </div>
+
+              <div class="spec-row" *ngIf="product.careAndMaintenance">
+                <span class="spec-label">Care</span>
+                <span class="spec-value">{{ product.careAndMaintenance }}</span>
+              </div>
+
+              <div class="spec-row" *ngIf="product.warranty">
+                <span class="spec-label">Warranty</span>
+                <span class="spec-value">{{ product.warranty }}</span>
+              </div>
+            </div>
+            }
+          </div>
+
         </div>
       </div>
+
     </div>
+
+    <!-- Similar Products Standalone Component -->
+    <!-- <app-similar-products 
+      [category]="product.category" 
+      [currentProductId]="product.id">
+    </app-similar-products> -->
+
   </div>
+</div>
 }
-@if (productNotAvailable) {
-  <div class="container d-flex justify-content-center align-items-center"
-    style="height: 50vh;">
-    <h1 class="text-muted">No Product related,Sorry!</h1>
+
+@if (productNotAvailable && !isLoading) {
+<div class="container d-flex flex-column justify-content-center align-items-center py-5" style="min-height: 50vh;">
+  <i class="bi bi-exclamation-circle text-muted display-3 mb-3"></i>
+  <h2 class="font-serif text-dark mb-2">Product Not Found</h2>
+  <p class="text-secondary small mb-4">The product you are looking for might have been removed or is temporarily
+    unavailable.</p>
+  <a routerLink="/furniture" class="btn btn-dark px-4 py-2 rounded-3">Browse Catalog</a>
+</div>
+}
+
+@if (isLoading) {
+<div class="loading-state-wrapper d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
+    <span class="visually-hidden">Loading...</span>
   </div>
+</div>
 }
-<!-- <app-loading [isLoading]="isLoading"></app-loading> -->

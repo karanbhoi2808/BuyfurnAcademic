@@ -39,7 +39,6 @@ export const routes: Routes = [
             { path: '', component: HomeComponent },
             { path: 'slider', component: SliderComponent },
             { path: 'contact', component: ContactUsComponent },
-            { path: 'about', component: AboutUsComponent },
             { path: 'furniture', component: FurnitureComponent },
             {
                 path: 'product', component: ProductDetailComponent,
@@ -70,7 +69,7 @@ export const routes: Routes = [
             {
                 path: 'orderplaced',
                 component: OrderConfirmationComponent,
-                canActivate: [authGuard, orderGuardGuard],
+                canActivate: [authGuard],
                 data: { roles: ['USER'] }
             },
             {

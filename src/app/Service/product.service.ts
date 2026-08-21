@@ -25,7 +25,7 @@ export class ProductService {
     return this.httpclient.post(`${this.baseUrlAdmin}/add-product`, formData);
   }
 
-  private products: Product[] | null = null; // Cached product data
+  // private products: Product[] | null = null; // Cached product data
   getAllProducts(
     pageNumber: number,
     searchKey: string,
@@ -34,38 +34,19 @@ export class ProductService {
     return this.httpclient
       .get(
         `${this.baseUrlLocal}/get-all-products?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`
-      )
-      .pipe(
-        map((data: any) => {
-          this.products = data; // Cache the data
-          return data;
-        }),
-        catchError((error) => {
-          console.error('Error fetching products', error);
-          return of([]); // Handle error and return an empty array
-        })
       );
   }
 
-  private latestProduct: Product[] | null = null; // Cached product data
+  // private latestProduct: Product[] | null = null; // Cached product data
 
   getLetestProducts(): Observable<any> {
-    return this.httpclient.get(`${this.baseUrlLocal}/latest`).pipe(
-      map((data: any) => {
-        this.latestProduct = data;
-        return data;
-      }),
-      catchError((error) => {
-        console.error('Error fetching products', error);
-        return of([]); // Handle error and return an empty array
-      })
-    );
+    return this.httpclient.get(`${this.baseUrlLocal}/latest`);
   }
 
-  clearCache() {
-    this.products = null; // Clear cached data
-    this.latestProduct = null;
-  }
+  // clearCache() {
+  //   this.products = null; // Clear cached data
+  //   this.latestProduct = null;
+  // }
 
   getProductById(id: any): Observable<any> {
     return this.httpclient.get(`${this.baseUrlLocal}/get-by-id/${id}`);

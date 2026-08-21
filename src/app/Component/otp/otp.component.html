@@ -1,32 +1,70 @@
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-lg-5">
-      <h3 class="text-center mb-3">OTP sent your email</h3>
+<div class="auth-page-wrapper py-5 d-flex align-items-center justify-content-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-5" style="max-width: 540px;">
 
-      <div class="card">
-        <div class="card-body">
-          <form (ngSubmit)="verifyOtp()" #otpForm="ngForm">
-            <div class="mb-3">
-              <label for="otp" class="form-label"></label>
-              <input type="text" id="otp" name="otp" class="form-control" required [(ngModel)]="otp"
-                placeholder="Enter 6-Digit OTP">
-              </div>
-              <button type="submit" class="btn w-100"> @if (loading) {
-                <span
-                  class="spinner-border spinner-border-sm custom-spinner" role="status"
-                aria-hidden="true"></span>
-              }
-              @if (!loading) {
-                <span class="text-dark">Verify otp</span>
-              }</button>
-            </form>
-            @if (verificationError) {
-              <p class="text-danger text-center mt-3">Invalid otp!. Please
-                try
-              again.</p>
-            }
-          </div>
+        <!-- Brand Logo Header -->
+        <div class="text-center mb-4">
+          <a routerLink="/" class="auth-brand-logo text-decoration-none d-inline-block">
+            <h1 class="brand-title font-serif fw-bold mb-0">
+              BuyFurn<span class="brand-dot">.</span>
+            </h1>
+          </a>
+          <p class="auth-subtitle text-muted small mt-1 mb-0">Verify Your Email Address</p>
         </div>
+
+        <!-- Auth Card -->
+        <div class="auth-card bg-white rounded-4 p-4 p-sm-5 shadow-sm border-0 position-relative overflow-hidden">
+          <div class="card-accent-bar"></div>
+
+          <h2 class="auth-heading font-serif text-dark fw-bold mb-1">Enter Verification Code</h2>
+          <p class="text-muted small mb-4">
+            We've sent a 6-digit verification code to <strong class="text-dark">{{ email || 'your email' }}</strong>.
+          </p>
+
+          <form (ngSubmit)="verifyOtp()" #otpForm="ngForm" novalidate>
+            <div class="mb-4">
+              <label for="otp" class="form-label-custom">Verification Code (OTP) <span
+                  class="text-danger">*</span></label>
+              <div class="input-icon-wrap position-relative">
+                <input type="text" id="otp" name="otp" class="form-control-custom text-center"
+                  placeholder="Enter 6-Digit OTP" [(ngModel)]="otp" required maxlength="6" #otpField="ngModel"
+                  [class.is-invalid]="otpField.invalid && otpField.touched">
+                <i class="bi bi-shield-check input-icon text-muted"></i>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-auth-action w-100 rounded-3 fw-bold"
+              [disabled]="otpForm.invalid || loading">
+              @if (loading) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <span>Verifying & Creating Account...</span>
+              } @else {
+              <span>Verify & Complete Registration</span>
+              }
+            </button>
+          </form>
+
+          @if (verificationError) {
+          <div class="alert alert-danger d-flex align-items-center gap-2 mt-3 mb-0 p-2-5 rounded-3 small">
+            <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+            <span>Invalid OTP code entered. Please check your inbox and try again.</span>
+          </div>
+          }
+
+        </div>
+
+        <!-- Back to Sign In Link -->
+        <div class="text-center mt-4">
+          <p class="text-muted small mb-0">
+            Already verified?
+            <a routerLink="/login" class="auth-switch-link fw-bold text-dark text-decoration-none ms-1">
+              Back to Sign In
+            </a>
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
+</div>

@@ -46,7 +46,7 @@ const routes = [
   },
   {
     name: 'product-detail',
-    path: '/product',
+    path: '/product?productId=5',
     access: 'public',
     role: null,
     screenshotFilename: 'product-detail.png',

@@ -1,53 +1,142 @@
-@if (isNoProducts) {
-  <div class="text-center mt-3 empty mb-3">
-    <div class="empty-cart-container">
-      <h3>Your cart is empty.</h3>
-      <p class="empty-cart-message">It looks like you haven't added any items to your cart yet. Start shopping and add
-      items to your cart to see them here.</p>
-      <a class="btn btn-primary mt-3" routerLink="/furniture">Go to Shop</a>
-    </div>
-  </div>
-}
+<div class="cart-page-wrapper py-4 py-md-5">
+  <div class="container">
 
-@if (!isNoProducts) {
-  <div class="container mt-4">
-    <div class="mb-3" align="right">
-      <button type="button" class="btn" style="background-color: #3b5d50; color: white;"
-      (click)="checkOut()">Checkout</button>
-    </div>
-    <div class="table-responsive"> <!-- Responsive table wrapper -->
-      <table class="table table-bordered">
-        <thead class="thead-light">
-          <tr>
-            <th class="text-center">Image</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th class="text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of products; track item) {
-            <tr>
-              <td class="text-center"> <!-- Center image -->
-                <img [src]="item.product.productImages[0]?.url"
-                  alt="{{ item.product.title }}">
-                </td>
-                <td>{{ item.product.title }}</td>
-                <td>{{ item.product.description }}</td>
-                <td>₹{{ item.product.price }}</td>
-                <td class="text-center">
-                  <button class=" btn btn-outline-danger btn-sm" (click)="removeProduct(item.cartId)"
-                    aria-label="Remove item" title="Remove item">
-                    <i class="bi bi-x-circle-fill"></i>
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    <!-- Page Header -->
+    <div class="cart-header mb-4 mb-md-5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <h1 class="cart-title font-serif text-dark fw-bold mb-1">Shopping Bag</h1>
+          <p class="cart-subtitle text-muted mb-0">
+            Review your selected furniture pieces before proceeding to checkout.
+          </p>
+        </div>
+        @if (!isNoProducts && products.length > 0) {
+        <span class="badge cart-count-pill">
+          {{ products.length }} {{ products.length === 1 ? 'Item' : 'Items' }}
+        </span>
+        }
       </div>
     </div>
-  }
 
-  <!-- <app-loading [isLoading]="isLoading"></app-loading> -->
+    @if (!isNoProducts && products.length > 0) {
+    <div class="row g-4 g-xl-5">
+
+      <!-- Left Column: Items List Card -->
+      <div class="col-12 col-lg-8">
+        <div class="cart-items-card bg-white rounded-4 p-4 p-md-4 shadow-sm border-0">
+
+          <!-- Table Header Grid (Desktop) -->
+          <div class="cart-table-header d-none d-md-grid pb-3 border-bottom text-muted small fw-bold text-uppercase">
+            <div class="col-header-details">Product Details</div>
+            <div class="col-header-category text-center">Category</div>
+            <div class="col-header-price text-end">Price</div>
+            <div class="col-header-action text-center">Action</div>
+          </div>
+
+          <!-- Cart Items List Grid -->
+          <div class="cart-items-list">
+            @for (item of products; track item.cartId) {
+            <div class="cart-item-row py-4 border-bottom">
+
+              <!-- Column 1: Product Details -->
+              <div class="col-item-details d-flex align-items-center gap-3">
+                <div class="cart-img-box flex-shrink-0" (click)="viewProduct(item.product?.id)" role="button">
+                  <img
+                    [src]="item.product?.productImages && item.product?.productImages[0] ? item.product?.productImages[0]?.url : 'assets/images/couch.png'"
+                    [alt]="item.product?.title" class="cart-item-img">
+                </div>
+                <div class="cart-item-info min-w-0">
+                  <h3 class="cart-item-title font-serif mb-1" (click)="viewProduct(item.product?.id)" role="button">
+                    {{ item.product?.title }}
+                  </h3>
+                  <p class="cart-item-desc text-muted small mb-0">
+                    {{ item.product?.description }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Column 2: Category -->
+              <div class="col-item-category text-center">
+                <span class="badge category-badge">
+                  {{ item.product?.category || 'Furniture' }}
+                </span>
+              </div>
+
+              <!-- Column 3: Price -->
+              <div class="col-item-price text-md-end">
+                <span class="d-md-none text-muted small fw-semibold">Price:</span>
+                <span class="cart-item-price fw-bold text-dark">
+                  ₹{{ item.product?.price }}
+                </span>
+              </div>
+
+              <!-- Column 4: Action -->
+              <div class="col-item-action text-md-center">
+                <button type="button" class="btn-remove-item mx-auto" (click)="removeProduct(item.cartId)" title="Remove piece"
+                  aria-label="Remove item">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+
+            </div>
+            }
+          </div>
+
+          <!-- Footer Link -->
+          <div class="pt-4 d-flex align-items-center justify-content-between">
+            <a routerLink="/furniture"
+              class="continue-shopping-link d-inline-flex align-items-center gap-2 fw-semibold">
+              <i class="bi bi-arrow-left"></i>
+              <span>Continue Shopping</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Reusable Order Summary Component -->
+      <div class="col-12 col-lg-4">
+        <app-order-summary 
+          [subtotal]="calculateSubtotal()" 
+          [total]="calculateSubtotal()"
+          [taxesText]="'Calculated at Checkout'" 
+          [buttonText]="'Proceed to Checkout'" 
+          [buttonIcon]="'bi-shield-lock'"
+          (actionClick)="checkOut()">
+        </app-order-summary>
+      </div>
+
+    </div>
+    }
+
+    <!-- Empty Cart State -->
+    @if (isNoProducts && !isLoading) {
+    <div class="empty-cart-card bg-white rounded-4 p-5 text-center shadow-sm border-0 my-4 mx-auto"
+      style="max-width: 600px;">
+      <div class="empty-cart-icon-wrap mx-auto mb-3">
+        <i class="bi bi-bag-heart display-4 text-muted opacity-50"></i>
+      </div>
+      <h2 class="font-serif text-dark fw-bold mb-2">Your Shopping Bag is Empty</h2>
+      <p class="text-secondary small mb-4 max-w-md mx-auto">
+        It looks like you haven't added any items to your cart yet. Explore our handcrafted collection to find something
+        you'll love.
+      </p>
+      <a routerLink="/furniture"
+        class="btn btn-explore-action px-4 py-2-5 rounded-pill fw-bold d-inline-flex align-items-center gap-2">
+        <span>Explore Furniture Catalog</span>
+        <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading) {
+    <div class="loading-state d-flex justify-content-center align-items-center py-5" style="min-height: 50vh;">
+      <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading your bag...</span>
+      </div>
+    </div>
+    }
+
+  </div>
+</div>

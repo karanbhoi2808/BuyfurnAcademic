@@ -1,73 +1,69 @@
-
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../Service/user.service';
 import { User } from '../../Interface/user';
-import { response } from 'express';
-import { error, log } from 'console';
 import { EmailService } from '../../Service/email.service';
 
 @Component({
-    selector: 'app-register',
-    imports: [FormsModule, RouterLink],
-    templateUrl: './register.component.html',
-    styleUrl: './register.component.css'
+  selector: 'app-register',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  private userSerive = inject(UserService);
-  private route = inject(Router);
+  private userService = inject(UserService);
+  private router = inject(Router);
   private emailService = inject(EmailService);
-
-  // routerLink="/otp"
 
   EmailRequest: any = {
     to: '',
     subject: '',
     text: ''
-  }
+  };
 
   user: User = {
     name: '',
     email: '',
     pasword: '',
-  }
+  };
 
-  loding: boolean = false;
-  registrationError: any;
-  emailIdExits: any;
-  generateOtp() {
-    this.loding = true;
-    this.userSerive.generateOtp(this.user.email).subscribe(response => {
-      this.loding = false;
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem("email", this.user.email.trim())
-        localStorage.setItem("name", this.user.name)
-        localStorage.setItem("pasword", this.user.pasword)
-        this.EmailRequest.to = this.user.email.trim();
-        this.EmailRequest.subject = "OTP for varify your email";
-        this.EmailRequest.text = response;
+  loading: boolean = false;
+  registrationError: boolean = false;
+  emailIdExits: boolean = false;
 
-        this.emailService.sendMail(this.EmailRequest).subscribe(mailResponse => {
+  generateOtp(): void {
+    if (!this.user.name || !this.user.email || !this.user.pasword) return;
 
-        });
+    this.loading = true;
+    this.registrationError = false;
+    this.emailIdExits = false;
 
-        this.route.navigate(['/verify-otp']);
+    this.userService.generateOtp(this.user.email.trim()).subscribe({
+      next: (response) => {
+        this.loading = false;
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('email', this.user.email.trim());
+          localStorage.setItem('name', this.user.name);
+          localStorage.setItem('pasword', this.user.pasword);
 
-      }
+          this.EmailRequest.to = this.user.email.trim();
+          this.EmailRequest.subject = 'OTP to verify your email - BuyFurn';
+          this.EmailRequest.text = response;
 
-    },
-      error => {
-        if (error.status == 302) {
-          this.emailIdExits = true;
-          this.loding = false;
+          this.emailService.sendMail(this.EmailRequest).subscribe();
+          this.router.navigate(['/verify-otp']);
         }
-        else {
-          this.loding = false;
-
+      },
+      error: (error) => {
+        this.loading = false;
+        if (error.status === 302) {
+          this.emailIdExits = true;
+        } else {
           this.registrationError = true;
         }
       }
-    );
+    });
   }
 }

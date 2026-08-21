@@ -1,26 +1,19 @@
-<div class="product-section py-5">
+<div class="product-section py-2">
   <div class="container">
-    <!-- Products Container -->
-    <div class="row" id="product-list">
-      @for (product of products; track product) {
-        <div class="col-12 col-md-4 col-lg-3 mb-5">
-          <a class="product-item card h-100 d-flex flex-column align-items-center"
-            (click)="productDetailPage(product.id)">
-            <img [src]="product.productImages[0]?.url"
-              alt="{{ product.title}}">
-              <h3 id="product-title" class="pt-3">{{ product.title }}</h3>
-              <strong id="product-price">₹{{ product.price.toFixed(2) }}</strong>
-              <p class="card-text text-warning">
-                {{ product.stockStatus}}
-              </p>
-            </a>
-          </div>
-        }
-      </div>
+    <div class="row g-4" id="product-list">
+      @for (product of products; track product.id) {
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <app-product-card [product]="product"></app-product-card>
+        </div>
+      }
     </div>
   </div>
+
   @if (isEmpty) {
-    <div class="container d-flex justify-content-center align-items-center" style="height: 50vh;">
-      <h1 class="text-muted">No Products,Sorry!</h1>
+    <div class="container d-flex flex-column justify-content-center align-items-center py-5" style="min-height: 40vh;">
+      <i class="bi bi-box-seam display-1 text-muted mb-3 opacity-50"></i>
+      <h3 class="text-muted fw-semibold">No products available at the moment.</h3>
+      <p class="text-secondary small">Please check back soon for our fresh arrivals.</p>
     </div>
   }
+</div>

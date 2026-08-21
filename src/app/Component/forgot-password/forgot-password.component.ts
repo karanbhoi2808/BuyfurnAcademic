@@ -1,94 +1,95 @@
-
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../Service/user.service';
-import { Router } from '@angular/router';
-import { response } from 'express';
-import { error } from 'console';
-import Swal from 'sweetalert2';
 import { UserAuthService } from '../../Service/user-auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
-    selector: 'app-forgot-password',
-    imports: [FormsModule],
-    templateUrl: './forgot-password.component.html',
-    styleUrl: './forgot-password.component.css'
+  selector: 'app-forgot-password',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './forgot-password.component.html',
+  styleUrl: './forgot-password.component.css'
 })
-export class ForgotPasswordComponent {
+export class ForgotPasswordComponent implements OnInit {
   private userservice = inject(UserService);
   private router = inject(Router);
   private userAuthService = inject(UserAuthService);
 
-
-  verificationError: any;
+  verificationError: boolean = false;
   loading: boolean = false;
-  displayPassword: boolean = false
+  displayPassword: boolean = false;
 
-  ngOnInit(): void {
-    if (typeof localStorage !== 'undefined') {
-      this.email = this.userAuthService.getUserEmail()
-    }
-  }
-  email: any;
-  otp: any;
+  email: string = '';
+  otp: string = '';
+  newPassword: string = '';
 
   user: any = {
     email: '',
     pasword: ''
+  };
+
+  ngOnInit(): void {
+    if (typeof localStorage !== 'undefined') {
+      this.email = this.userAuthService.getUserEmail() || '';
+    }
   }
 
-  verifyOtp() {
-    // console.log(this.email);
+  verifyOtp(): void {
+    if (!this.otp || !this.otp.trim()) return;
 
-    this.loading = true
-    this.userservice.verifyOtp(this.email, this.otp).subscribe(response => {
-      if (response == true) {
-        this.loading = false
-        this.verificationError = false
+    this.loading = true;
+    this.verificationError = false;
 
-        this.displayPassword = true
-
-      }
-      else {
+    this.userservice.verifyOtp(this.email, this.otp.trim()).subscribe({
+      next: (response) => {
+        this.loading = false;
+        if (response === true) {
+          this.verificationError = false;
+          this.displayPassword = true;
+        } else {
+          this.verificationError = true;
+        }
+      },
+      error: (error) => {
+        this.loading = false;
         this.verificationError = true;
-        this.loading = false
+        console.error('OTP verification error:', error);
       }
-
-    },
-      error => {
-        this.loading = false
-        console.log(error);
-      }
-    )
+    });
   }
-  newPassword: string = ""
 
-  updatePassword() {
+  updatePassword(): void {
+    if (!this.newPassword || !this.newPassword.trim()) return;
+
     this.user.email = this.email;
     this.user.pasword = this.newPassword;
+    this.loading = true;
 
-    this.userservice.updatePassword(this.user).subscribe(
-      response => {
+    this.userservice.updatePassword(this.user).subscribe({
+      next: () => {
+        this.loading = false;
         Swal.fire({
           icon: 'success',
-          title: 'Password Changed',
-          text: 'Your password has been successfully updated.',
-          confirmButtonText: 'OK'
+          title: 'Password Updated!',
+          text: 'Your password has been successfully reset. Please login with your new password.',
+          confirmButtonColor: '#1e3a2b',
+          confirmButtonText: 'Proceed to Login'
         }).then(() => {
           this.router.navigate(['/login']);
         });
       },
-      error => {
+      error: (error) => {
+        this.loading = false;
+        console.error(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'An error occurred while updating your password. Please try again',
-          confirmButtonText: 'OK'
-        }).then(() => {
-          this.router.navigate(['/login']);
+          text: 'An error occurred while updating your password. Please try again.',
+          confirmButtonColor: '#1e3a2b'
         });
-        console.log(error);
       }
-    );
+    });
   }
 }

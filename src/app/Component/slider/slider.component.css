@@ -1,118 +1,109 @@
 #heroCarousel {
-    background-color: #3b5d50;
-    color: white;
+  background: linear-gradient(135deg, #1e3a2b 0%, #2b4c3f 50%, #152d21 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 2.5rem 0 3.5rem;
+}
+
+#heroCarousel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 204, 0, 0.12) 0%, rgba(255, 204, 0, 0) 70%);
+  pointer-events: none;
+}
+
+.badge-chip {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.35rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.hero-title {
+  line-height: 1.15;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+}
+
+.hero-subtitle {
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.btn-gold {
+  background-color: var(--bf-accent-gold, #ffcc00);
+  color: #1e3a2b;
+  border: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+}
+
+.btn-gold:hover {
+  background-color: var(--bf-accent-gold-hover, #e6b800);
+  color: #152d21;
+  box-shadow: 0 8px 25px rgba(255, 204, 0, 0.45);
+}
+
+.hero-img {
+  max-height: 420px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
+}
+
+.custom-indicators {
+  margin-bottom: 0.75rem;
+}
+
+.custom-indicators button {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  border: none !important;
+  margin: 0 5px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-indicators button.active {
+  width: 32px !important;
+  border-radius: 10px !important;
+  background-color: var(--bf-accent-gold, #ffcc00) !important;
+}
+
+@media (max-width: 991.98px) {
+  #heroCarousel {
+    padding: 2rem 0;
+    text-align: center;
+  }
+
+  .hero-content {
+    pe-lg-4: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-cta-group {
+    justify-content: center;
+  }
+
+  .hero-img {
+    max-height: 280px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-img {
+    max-height: 220px;
+  }
+
+  .hero-cta-group .btn {
     width: 100%;
-    height: auto;
-    /* Make the height dynamic */
-    display: flex;
-    align-items: center;
-}
-
-.carousel-inner {
-    height: auto;
-}
-
-.carousel-item {
-    height: auto;
-}
-
-img {
-    max-height: 400px;
-    /* Max height to ensure it doesn't exceed a specific size */
-    width: auto;
-    /* Maintain aspect ratio */
-}
-
-.custom-btn {
-    background-color: #ffcc00;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 30px !important;
-    transition: all 0.3s ease;
-}
-
-.custom-btn:hover {
-    background-color: #e6b800;
-    color: #ffffff;
-    box-shadow: 0 4px 8px #3b5d50;
-    /* transform: translateY(-2px); */
-}
-
-.custom-btn:active {
-    background-color: #cc9900;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transform: translateY(0);
-}
-
-.carousel-control-next,
-.carousel-control-prev {
-    width: 10% !important;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 1200px) {
-    img {
-        max-height: 300px;
-        /* Adjust max height for smaller screens */
-    }
-
-    .custom-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 992px) {
-    img {
-        max-height: 250px;
-        /* Adjust max height for smaller screens */
-    }
-
-    .custom-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-    }
-
-    .carousel-control-next,
-    .carousel-control-prev {
-        width: 15% !important;
-    }
-}
-
-@media (max-width: 768px) {
-    img {
-        max-height: 200px;
-        /* Adjust max height for smaller screens */
-    }
-
-    .custom-btn {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.75rem;
-    }
-
-    .carousel-control-next,
-    .carousel-control-prev {
-        width: 20% !important;
-    }
-
-    .intro-excerpt {
-        text-align: center;
-    }
-
-    .hero-img-wrap {
-        text-align: center;
-    }
-}
-
-@media (max-width: 576px) {
-    img {
-        max-height: 150px;
-        /* Adjust max height for smaller screens */
-    }
-
-    .custom-btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.7rem;
-    }
+  }
 }

@@ -1,0 +1,135 @@
+/* About Us Page Styling */
+.about-page-wrapper {
+  background-color: var(--bf-bg-canvas, #faf8f5);
+  min-height: 85vh;
+}
+
+.about-hero-title {
+  font-size: 2.75rem;
+  color: #1c2520;
+  line-height: 1.25;
+}
+
+.about-hero-subtitle {
+  font-size: 1.05rem;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.category-badge {
+  background-color: #f0fdf4;
+  color: #166534;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid #bbf7d0;
+}
+
+/* Pillar Cards */
+.pillar-card {
+  background-color: #ffffff;
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  transition: box-shadow 0.3s ease;
+}
+
+.pillar-card:hover {
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(30, 58, 43, 0.08);
+}
+
+.pillar-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background-color: #f0fdf4;
+  color: #1e3a2b;
+  font-size: 1.6rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.pillar-card:hover .pillar-icon-wrap {
+  background-color: #1e3a2b;
+  color: #ffffff;
+}
+
+.pillar-title {
+  font-size: 1.35rem;
+}
+
+.pillar-text {
+  line-height: 1.6;
+}
+
+/* Stats Ribbon */
+.stats-ribbon {
+  background-color: #ffffff;
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.stat-number {
+  font-size: 2.25rem;
+  color: #cca038;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+@media (min-width: 768px) {
+  .border-end-md {
+    border-right: 1px solid #e2e8f0;
+  }
+}
+
+/* CTA Banner */
+.cta-banner {
+  background: linear-gradient(135deg, #1e3a2b 0%, #14281e 100%);
+  border-radius: 22px !important;
+  box-shadow: 0 10px 30px rgba(30, 58, 43, 0.25);
+}
+
+.cta-title {
+  font-size: 2rem;
+}
+
+.cta-subtitle {
+  font-size: 1rem;
+}
+
+.btn-explore-cta {
+  background-color: #cca038;
+  color: #1c2520;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(204, 160, 56, 0.3);
+}
+
+.btn-explore-cta:hover {
+  background-color: #b88e2c;
+  box-shadow: 0 8px 22px rgba(204, 160, 56, 0.4);
+  color: #1c2520;
+}
+
+@media (max-width: 575.98px) {
+  .about-hero-title {
+    font-size: 2rem;
+  }
+
+  .cta-title {
+    font-size: 1.6rem;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+  }
+}

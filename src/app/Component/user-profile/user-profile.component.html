@@ -1,37 +1,96 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12 text-center">
-      <h2>User Profile</h2>
-    </div>
-  </div>
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <!-- <div class="card">
-        <div class="card-body text-center">
+<div class="profile-page-wrapper py-4 py-md-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 col-xl-7">
+        
+        <!-- Profile Card (No Breadcrumbs) -->
+        <div class="profile-card bg-white rounded-4 p-4 p-md-5 shadow-sm border-0 position-relative overflow-hidden">
+          
+          <!-- Decorative Top Accent Bar -->
+          <div class="card-accent-bar"></div>
 
-          <h2 class="card-title">{{ user.name }}</h2>
-          <p class="card-text">{{ user.email }}</p>
-        </div>
-      </div> -->
-      <div class="card mt-3">
-        <div class="card-body">
-          <h3 class="card-title">Personal Information</h3>
-          <p><strong>Full Name:</strong> {{user.name}}</p>
-          <p><strong>Email:</strong> {{ user.email }}</p>
-          <p><strong>Phone No:</strong> {{ user.contactNumber }}</p>
-          <p><strong>Address:</strong> {{ user.address.address }}</p>
-          <p><strong>Pincode:</strong> {{ user.address.pincode }}</p>
-          <p><strong>State:</strong> {{ user.address.state }}</p>
+          <!-- User Header / Avatar Block -->
+          <div class="text-center mb-4 pb-3 border-bottom">
+            <div class="avatar-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+              @if (hasProfile && user.userImage) {
+                <img [src]="user.userImage" [alt]="user.name" class="avatar-img rounded-circle">
+              } @else {
+                <span class="avatar-initials font-serif">{{ getInitials() }}</span>
+              }
+            </div>
+            <h1 class="user-fullname font-serif text-dark fw-bold mb-1">{{ user.name || 'Valued Customer' }}</h1>
+            <p class="user-email text-muted small mb-2">{{ user.email }}</p>
+            <span class="badge verified-member-badge">
+              <i class="bi bi-patch-check-fill me-1"></i> Verified Account
+            </span>
+          </div>
+
+          <!-- Personal Information Section -->
+          <div class="info-section mb-4 pb-3 border-bottom">
+            <h2 class="section-heading font-serif text-dark fw-bold mb-3">Personal Details</h2>
+            
+            <div class="row g-3">
+              <div class="col-12 col-sm-6">
+                <div class="info-tile p-3 rounded-3 bg-light">
+                  <span class="info-label text-muted small text-uppercase d-block mb-1">Full Name</span>
+                  <span class="info-value fw-semibold text-dark">{{ user.name || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="info-tile p-3 rounded-3 bg-light">
+                  <span class="info-label text-muted small text-uppercase d-block mb-1">Email Address</span>
+                  <span class="info-value fw-semibold text-dark text-break">{{ user.email || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="info-tile p-3 rounded-3 bg-light">
+                  <span class="info-label text-muted small text-uppercase d-block mb-1">Contact Phone</span>
+                  <span class="info-value fw-semibold text-dark">{{ user.contactNumber || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="info-tile p-3 rounded-3 bg-light">
+                  <span class="info-label text-muted small text-uppercase d-block mb-1">PIN / Postal Code</span>
+                  <span class="info-value fw-semibold text-dark">{{ user.address?.pincode || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="info-tile p-3 rounded-3 bg-light">
+                  <span class="info-label text-muted small text-uppercase d-block mb-1">Shipping Address & State</span>
+                  <span class="info-value fw-semibold text-dark">
+                    {{ user.address?.address ? user.address?.address + (user.address?.city ? ', ' + user.address?.city : '') + (user.address?.state ? ', ' + user.address?.state : '') : 'No address saved yet' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Actions Bar -->
+          <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-center pt-2">
+            <div class="d-flex flex-wrap gap-2 w-100 w-sm-auto">
+              <a routerLink="/updateuser" class="btn btn-edit-profile px-4 py-2-5 rounded-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0">
+                <i class="bi bi-pencil-square"></i>
+                <span>Edit Profile</span>
+              </a>
+              <button type="button" class="btn btn-logout px-4 py-2-5 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-sm-grow-0" (click)="logout()">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+              </button>
+            </div>
+
+            <button type="button" class="btn btn-delete-account text-danger p-0 border-0 fw-semibold small mt-3 mt-sm-0" (click)="deleteMyAccount()">
+              <i class="bi bi-trash3 me-1"></i>
+              <span>Delete Account</span>
+            </button>
+          </div>
 
         </div>
-      </div>
-      <div class="mt-3 mb-3">
-        <button class="btn btn-outline-secondary" routerLink="/updateuser">Edit</button>
-        <button type="button" class="btn btn-outline-primary ms-3" (click)="logout()">Logout</button>
-        <button class="btn btn-outline-danger ms-3" (click)="deleteMyAccount()">Delete My Account</button>
+
       </div>
     </div>
   </div>
 </div>
-
-<!-- <app-loading [isLoading]="isLoading"></app-loading> -->

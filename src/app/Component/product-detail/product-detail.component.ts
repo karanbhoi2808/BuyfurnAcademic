@@ -1,137 +1,189 @@
-
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../Service/product.service';
-import e, { response } from 'express';
-import { error } from 'console';
 import { UserAuthService } from '../../Service/user-auth.service';
+import { SimilarProductsComponent } from '../similar-products/similar-products.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.css'
 })
-export class ProductDetailComponent {
+export class ProductDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
   private router = inject(Router);
   private authService = inject(UserAuthService);
 
-
-  product: any;
+  product: any = null;
   productId: string | null = null;
   currentSlide: number = 0;
   quantity: number = 1;
   isLoading = true;
-  productNotAvailable: boolean = false
+  productNotAvailable: boolean = false;
+  isFavorite: boolean = false;
+  isSpecsOpen: boolean = true;
 
   ngOnInit(): void {
-    this.route.data.subscribe((response: any) => {
-      if (response && response.productDetails) {
-        this.product = response.productDetails
+    this.route.queryParams.subscribe(params => {
+      const id = params['productId'];
+      if (id) {
+        this.productId = id;
+        this.loadProduct(id);
+      } else {
+        // Fallback to route data if available
+        this.route.data.subscribe((response: any) => {
+          if (response && response.productDetails) {
+            this.setProduct(response.productDetails);
+          } else {
+            this.productNotAvailable = true;
+            this.isLoading = false;
+          }
+        });
       }
-      else {
-        this.productNotAvailable = true
-        this.productService.clearCache()
+    });
+  }
+
+  loadProduct(id: string): void {
+    this.isLoading = true;
+    this.productNotAvailable = false;
+    this.currentSlide = 0;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    this.productService.getProductById(id).subscribe({
+      next: (data) => {
+        if (data) {
+          this.setProduct(data);
+        } else {
+          this.productNotAvailable = true;
+          this.isLoading = false;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.productNotAvailable = true;
+        this.isLoading = false;
       }
-    }
-    )
+    });
+  }
+
+  setProduct(prod: any): void {
+    this.product = prod;
+    this.isLoading = false;
+    this.productNotAvailable = false;
+    this.currentSlide = 0;
+  }
+
+  selectSlide(index: number): void {
+    this.currentSlide = index;
   }
 
   nextSlide(): void {
-    this.currentSlide = (this.currentSlide + 1) % this.product.productImages.length;
+    if (this.product?.productImages?.length) {
+      this.currentSlide = (this.currentSlide + 1) % this.product.productImages.length;
+    }
   }
 
   prevSlide(): void {
-    this.currentSlide = (this.currentSlide - 1 + this.product.productImages.length) % this.product.productImages.length;
+    if (this.product?.productImages?.length) {
+      this.currentSlide = (this.currentSlide - 1 + this.product.productImages.length) % this.product.productImages.length;
+    }
   }
 
-  addToCart(cartId: any) {
-    const roles = this.authService.getRoles()
-    // console.log(roles);
+  toggleFavorite(): void {
+    this.isFavorite = !this.isFavorite;
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true
+    });
+    Toast.fire({
+      icon: 'success',
+      title: this.isFavorite ? 'Added to wishlist' : 'Removed from wishlist'
+    });
+  }
+
+  toggleSpecs(): void {
+    this.isSpecsOpen = !this.isSpecsOpen;
+  }
+
+  viewProduct(id: any): void {
+    this.router.navigate(['/product'], {
+      queryParams: { productId: id }
+    });
+  }
+
+  addToCart(cartId: any): void {
+    const roles = this.authService.getRoles();
     if (roles.includes('ADMIN')) {
-      this.router.navigate(['/forbidden'])
-      return
+      this.router.navigate(['/forbidden']);
+      return;
     }
 
-    // this.productService.addToCart(cartId, this.quantity).subscribe(
-    //   (response) => {
-    //     Swal.fire("Product added to your cart!")
-    //   },
-    //   (error) => {
-
-    //     console.log(error);
-    //     if (error.status == 500) {
-    //       window.location.reload()
-    //       this.productService.clearCache()
-    //     }
-    //   }
-    // )
-
-    // Check the stock status of the product before adding it to the cart
-    if (this.product.stockStatus === "In Stock") {
-      // If the product is in stock, proceed with adding it to the cart
-      this.productService.addToCart(cartId, this.quantity).subscribe(
-        (response) => {
-          Swal.fire("Product added to your cart!");
+    if (this.product.stockStatus === 'In Stock') {
+      this.productService.addToCart(cartId, this.quantity).subscribe({
+        next: () => {
+          Swal.fire({
+            title: 'Added to Cart!',
+            text: `${this.product.title} has been added to your cart.`,
+            icon: 'success',
+            confirmButtonColor: '#cca038'
+          });
         },
-        (error) => {
-          console.log(error);
+        error: (error) => {
+          console.error(error);
           if (error.status === 500) {
             window.location.reload();
-            this.productService.clearCache();
           }
         }
-      );
-    } else if (this.product.stockStatus === "Out of Stock" || this.product.stockStatus === "In Stock soon") {
-      // If the product is out of stock or soon in stock, show a warning message
+      });
+    } else if (this.product.stockStatus === 'Out of Stock' || this.product.stockStatus === 'In Stock soon') {
       Swal.fire({
-        title: "Out of Stock",
-        text: "This product is not in stock at the moment.",
-        icon: "warning",
-        confirmButtonText: "OK"
+        title: 'Out of Stock',
+        text: 'This product is currently not in stock.',
+        icon: 'warning',
+        confirmButtonColor: '#cca038',
+        confirmButtonText: 'OK'
       });
     } else {
-      // If the stock status is unknown or something else, show an error message
       Swal.fire({
-        title: "Try again later",
-        icon: "error",
-        confirmButtonText: "OK"
+        title: 'Try again later',
+        icon: 'error',
+        confirmButtonColor: '#cca038',
+        confirmButtonText: 'OK'
       });
     }
-
   }
 
-  buyNow(productId: any) {
-    // console.log(this.product.id);
-
-    if (this.product.stockStatus === "In Stock") {
+  buyNow(productId: any): void {
+    if (this.product.stockStatus === 'In Stock') {
       this.router.navigate(['/buyproduct'], {
         queryParams: {
           isSingleProductCheckout: true,
           id: productId
         }
-      })
-    }
-    else if (this.product.stockStatus == "Out of Stock" || this.product.stockStatus == "In Stock soon") {
-      Swal.fire({
-        title: "Out of Stock",
-        text: "This product is not in stock at the moment.",
-        icon: "warning",
-        confirmButtonText: "OK"
       });
-    }
-    else {
+    } else if (this.product.stockStatus === 'Out of Stock' || this.product.stockStatus === 'In Stock soon') {
       Swal.fire({
-        title: "Try again later",
-        icon: "error",
-        confirmButtonText: "OK"
+        title: 'Out of Stock',
+        text: 'This product is currently not in stock.',
+        icon: 'warning',
+        confirmButtonColor: '#cca038',
+        confirmButtonText: 'OK'
       });
-
+    } else {
+      Swal.fire({
+        title: 'Try again later',
+        icon: 'error',
+        confirmButtonColor: '#cca038',
+        confirmButtonText: 'OK'
+      });
     }
   }
 }
-

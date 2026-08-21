@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class NetworkStatusService {
-  private onlineStatus = new BehaviorSubject<boolean>(this.isBrowser ? navigator.onLine : true);
+  private onlineStatus = new BehaviorSubject<boolean>(true);
 
   constructor() {
     if (this.isBrowser) {

@@ -1,44 +1,119 @@
-<div class="container mt-4">
+<div class="confirmation-page-wrapper py-5">
+  <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-success mb-3">
-                <div class="card-header bg-success text-white">Order Confirmation</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center">Thank You for Your Order!</h5>
-                    <p class="card-text text-center">
-                        Your order has been successfully placed. We are preparing your order and will notify you once
-                        they are on their way.
-                    </p>
-                    <div class="text-center">
-                        <p><strong>Estimated Delivery in</strong> 5-6 Working Days</p>
-                    </div>
+      <div class="col-12 col-md-10 col-lg-7 col-xl-6">
 
-                </div>
+        <!-- Confirmation Card -->
+        <div
+          class="confirmation-card bg-white rounded-4 p-4 p-md-5 text-center shadow-sm border-0 position-relative overflow-hidden">
+
+          <!-- Decorative Top Accent Bar -->
+          <div class="card-accent-bar"></div>
+
+          <!-- Animated Success Icon Ring -->
+          <div class="success-icon-wrap mx-auto mb-3">
+            <div class="success-icon-inner d-flex align-items-center justify-content-center">
+              <i class="bi bi-check-lg"></i>
             </div>
+          </div>
+
+          <!-- Order Status Badge -->
+          <div class="mb-3">
+            <span class="badge status-pill">Order Confirmed</span>
+          </div>
+
+          <!-- Main Heading & Message -->
+          <h1 class="confirmation-title font-serif text-dark fw-bold mb-2">
+            Thank You for Your Order!
+          </h1>
+          <p class="confirmation-subtitle text-muted mb-4">
+            Your furniture order has been received and is being prepared with white-glove care. A confirmation email has
+            been dispatched to your inbox.
+          </p>
+
+          <!-- Order Quick Summary Box -->
+          <div class="order-summary-box rounded-3 p-3 p-md-4 mb-4 text-start">
+            <div class="row g-3">
+
+              <div class="col-6">
+                <span class="summary-label d-block text-muted small">Order Number</span>
+                <span class="summary-val font-monospace fw-bold text-dark">{{ orderNumber }}</span>
+              </div>
+
+              <div class="col-6 text-end">
+                <span class="summary-label d-block text-muted small">Order Date</span>
+                <span class="summary-val fw-semibold text-dark">{{ orderDate | date:'mediumDate' }}</span>
+              </div>
+
+              <div class="col-12">
+                <hr class="border-secondary opacity-15 my-1">
+              </div>
+
+              <div class="col-6">
+                <span class="summary-label d-block text-muted small">Estimated Delivery</span>
+                <span class="summary-val fw-bold text-dark d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-truck text-success"></i> 5-6 Business Days
+                </span>
+              </div>
+
+              <div class="col-6 text-end">
+                <span class="summary-label d-block text-muted small">Payment Status</span>
+                <span class="payment-paid-badge">
+                  <i class="bi bi-shield-check me-1"></i> Paid & Verified
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Progress Stepper Mini Bar -->
+          <!-- <div class="timeline-stepper mb-4 px-2">
+            <div class="d-flex justify-content-between position-relative">
+              <div class="timeline-line"></div>
+              
+              <div class="step-point text-center active">
+                <div class="step-dot"><i class="bi bi-check"></i></div>
+                <span class="step-label">Placed</span>
+              </div>
+              <div class="step-point text-center in-progress">
+                <div class="step-dot"><i class="bi bi-gear-fill"></i></div>
+                <span class="step-label">Processing</span>
+              </div>
+              <div class="step-point text-center">
+                <div class="step-dot"><i class="bi bi-box-seam"></i></div>
+                <span class="step-label">Dispatched</span>
+              </div>
+              <div class="step-point text-center">
+                <div class="step-dot"><i class="bi bi-house-door"></i></div>
+                <span class="step-label">Delivered</span>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- Action Buttons -->
+          <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center pt-2 mb-4">
+            <a routerLink="/myorders"
+              class="btn btn-primary-action px-4 py-2-5 rounded-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2">
+              <i class="bi bi-receipt"></i>
+              <span>View My Orders</span>
+            </a>
+            <a routerLink="/furniture"
+              class="btn btn-secondary-action px-4 py-2-5 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center">
+              <span>Continue Shopping</span>
+            </a>
+          </div>
+
+          <!-- Support Note Footer -->
+          <div class="support-footer-note text-center pt-3 border-top">
+            <p class="text-muted small mb-0">
+              Have questions about your delivery? <a routerLink="/contact"
+                class="text-dark fw-bold text-decoration-underline ms-1">Contact Support</a>
+            </p>
+          </div>
+
         </div>
+
+      </div>
     </div>
+  </div>
 </div>
-
-<!-- Custom CSS to enhance the card appearance -->
-<style>
-    .card {
-        border-radius: 10px;
-    }
-
-    .card-header {
-        font-size: 1.25rem;
-    }
-
-    .card-title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .card-text {
-        font-size: 1rem;
-    }
-
-    .btn-success {
-        font-size: 1rem;
-    }
-</style>
