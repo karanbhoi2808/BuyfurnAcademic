@@ -1,39 +1,13 @@
 <nav class="custom-navbar navbar navbar-expand-lg sticky-top">
   <div class="container">
     <!-- Brand Logo -->
-    <a class="navbar-brand text-light fs-3 fw-bold d-flex align-items-center" routerLink="/">
+    <a class="navbar-brand text-light fs-3 fw-bold d-flex align-items-center mb-0" routerLink="/">
       BuyFurn<span class="brand-dot">.</span>
     </a>
 
-    <!-- Mobile Toggler -->
-    <button
-      class="navbar-toggler custom-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarsFurni"
-      aria-controls="navbarsFurni"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Nav Items & Actions -->
-    <div class="collapse navbar-collapse" id="navbarsFurni">
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 custom-nav-links">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/furniture" routerLinkActive="active">Furniture</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact Us</a>
-        </li>
-      </ul>
-
-      <!-- Action Buttons -->
-      <div class="nav-actions d-flex align-items-center gap-3">
+    <!-- Right Controls (Account & Cart Icons + Mobile Toggler) -->
+    <div class="d-flex align-items-center gap-2 gap-sm-3 order-lg-3">
+      <div class="nav-actions d-flex align-items-center gap-2 gap-sm-3">
         <button
           class="nav-icon-btn"
           (click)="navigateToProfileOrLogin()"
@@ -51,6 +25,34 @@
           <i class="bi bi-cart3 h5 mb-0"></i>
         </button>
       </div>
+
+      <!-- Mobile Hamburger Toggler -->
+      <button
+        class="navbar-toggler custom-toggler d-lg-none"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarsFurni"
+        aria-controls="navbarsFurni"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
+    <!-- Collapsible Navigation Links -->
+    <div class="collapse navbar-collapse order-lg-2" id="navbarsFurni">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 custom-nav-links">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/furniture" routerLinkActive="active">Furniture</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact Us</a>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>
