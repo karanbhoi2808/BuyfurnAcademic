@@ -1,7 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { Product } from '../Interface/product';
+import { Product, ProductFilterParams, ProductPageResponse } from '../Interface/product';
 import { OrderDetails } from '../Interface/orderdetails';
 import { environment } from '../../environments/environment';
 
@@ -25,16 +25,65 @@ export class ProductService {
     return this.httpclient.post(`${this.baseUrlAdmin}/add-product`, formData);
   }
 
-  // private products: Product[] | null = null; // Cached product data
+  // Refactored getAllProducts supporting comprehensive filter params
   getAllProducts(
-    pageNumber: number,
-    searchKey: string,
-    category: string
-  ): Observable<any> {
-    return this.httpclient
-      .get(
-        `${this.baseUrlLocal}/get-all-products?pageNumber=${pageNumber}&searchKey=${searchKey}&searchCategory=${category}`
-      );
+    paramsOrPageNumber?: ProductFilterParams | number,
+    searchKey?: string,
+    category?: string,
+    pageSize?: number
+  ): Observable<ProductPageResponse> {
+    let params: ProductFilterParams = {};
+
+    if (typeof paramsOrPageNumber === 'object' && paramsOrPageNumber !== null) {
+      params = { ...paramsOrPageNumber };
+    } else {
+      params = {
+        pageNumber: typeof paramsOrPageNumber === 'number' ? paramsOrPageNumber : 0,
+        searchKey: searchKey || '',
+        searchCategory: category || '',
+        pageSize: pageSize ?? 12
+      };
+    }
+
+    let httpParams = new HttpParams();
+
+    if (params.pageNumber !== undefined && params.pageNumber !== null) {
+      httpParams = httpParams.set('pageNumber', params.pageNumber.toString());
+    }
+    if (params.pageSize !== undefined && params.pageSize !== null) {
+      httpParams = httpParams.set('pageSize', params.pageSize.toString());
+    }
+    if (params.searchKey !== undefined && params.searchKey !== null) {
+      httpParams = httpParams.set('searchKey', params.searchKey);
+    }
+    if (params.searchCategory !== undefined && params.searchCategory !== null) {
+      if (Array.isArray(params.searchCategory)) {
+        if (params.searchCategory.length > 0) {
+          httpParams = httpParams.set('searchCategory', params.searchCategory.join(','));
+        }
+      } else if (params.searchCategory !== '') {
+        httpParams = httpParams.set('searchCategory', params.searchCategory);
+      }
+    }
+    if (params.minPrice !== undefined && params.minPrice !== null) {
+      httpParams = httpParams.set('minPrice', params.minPrice.toString());
+    }
+    if (params.maxPrice !== undefined && params.maxPrice !== null) {
+      httpParams = httpParams.set('maxPrice', params.maxPrice.toString());
+    }
+    if (params.stockStatus !== undefined && params.stockStatus !== null && params.stockStatus !== '') {
+      httpParams = httpParams.set('stockStatus', params.stockStatus);
+    }
+    if (params.sortBy !== undefined && params.sortBy !== null && params.sortBy !== '') {
+      httpParams = httpParams.set('sortBy', params.sortBy);
+    }
+    if (params.sortDir !== undefined && params.sortDir !== null && params.sortDir !== '') {
+      httpParams = httpParams.set('sortDir', params.sortDir);
+    }
+
+    return this.httpclient.get<ProductPageResponse>(`${this.baseUrlLocal}/get-all-products`, {
+      params: httpParams,
+    });
   }
 
   // private latestProduct: Product[] | null = null; // Cached product data

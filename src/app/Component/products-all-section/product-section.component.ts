@@ -3,17 +3,19 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../Service/product.service';
-
+import { Product, ProductFilterParams, ProductPageResponse } from '../../Interface/product';
 import { ProductCardComponent } from '../product-card/product-card.component';
 
 export interface CategoryFilter {
   name: string;
-  count: number;
+  count?: number;
 }
 
 export interface SortOption {
   value: string;
   label: string;
+  sortBy: string;
+  sortDir: 'asc' | 'desc';
 }
 
 @Component({
@@ -28,10 +30,14 @@ export class ProductSectionComponent {
 
   noFilteredItems: boolean = false;
   pageNumber: number = 0;
+  pageSize: number = 12;
+  totalPages: number = 1;
+  totalElements: number = 0;
   showLoadButton: boolean = false;
-  products: any[] = [];
+  isLoading: boolean = false;
+  products: Product[] = [];
   readonly filterText = input<string>('');
-  selectedCategory: string = 'All';
+  selectedCategories: string[] = [];
 
   // Filters State
   inStockOnly: boolean = false;
@@ -43,26 +49,27 @@ export class ProductSectionComponent {
   isMobileFilterOpen: boolean = false;
 
   sortOptions: SortOption[] = [
-    { value: 'recommended', label: 'Recommended' },
-    { value: 'priceLowHigh', label: 'Price: Low to High' },
-    { value: 'priceHighLow', label: 'Price: High to Low' },
-    { value: 'nameAsc', label: 'Name: A to Z' }
+    { value: 'recommended', label: 'Recommended', sortBy: 'createdDate', sortDir: 'desc' },
+    { value: 'priceLowHigh', label: 'Price: Low to High', sortBy: 'price', sortDir: 'asc' },
+    { value: 'priceHighLow', label: 'Price: High to Low', sortBy: 'price', sortDir: 'desc' },
+    { value: 'nameAsc', label: 'Name: A to Z', sortBy: 'name', sortDir: 'asc' }
   ];
 
   categoryList: CategoryFilter[] = [
-    { name: 'All Furniture', count: 124 },
-    { name: 'Living Room', count: 45 },
-    { name: 'Dining', count: 32 },
-    { name: 'Bedroom', count: 28 },
-    { name: 'Home Office', count: 19 }
+    { name: 'All Furniture' },
+    { name: 'Living Room' },
+    { name: 'Bedroom' },
+    { name: 'Dining Room' },
+    { name: 'Office Furniture' },
+    { name: 'Outdoor Furniture' },
+    { name: 'Storage Solutions' }
   ];
 
   constructor() {
     effect(() => {
-      const text = this.filterText();
-      this.pageNumber = 0;
-      this.products = [];
-      this.getAllProducts();
+      // Whenever search text changes, reload from page 0
+      const _ = this.filterText();
+      this.resetAndFetch();
     });
   }
 
@@ -82,6 +89,7 @@ export class ProductSectionComponent {
   selectSortOption(value: string) {
     this.sortBy = value;
     this.isSortDropdownOpen = false;
+    this.resetAndFetch();
   }
 
   getSortLabel(): string {
@@ -89,30 +97,51 @@ export class ProductSectionComponent {
     return opt ? opt.label : 'Recommended';
   }
 
-  selectCategory(categoryName: string) {
-    this.selectedCategory = categoryName;
-    this.pageNumber = 0;
-    this.products = [];
-    this.getAllProducts();
+  isCategorySelected(categoryName: string): boolean {
+    if (categoryName === 'All' || categoryName === 'All Furniture') {
+      return this.selectedCategories.length === 0;
+    }
+    return this.selectedCategories.includes(categoryName);
+  }
+
+  toggleCategory(categoryName: string) {
+    if (categoryName === 'All' || categoryName === 'All Furniture') {
+      this.selectedCategories = [];
+    } else {
+      if (this.selectedCategories.includes(categoryName)) {
+        this.selectedCategories = this.selectedCategories.filter(c => c !== categoryName);
+      } else {
+        this.selectedCategories = [...this.selectedCategories, categoryName];
+      }
+    }
+    this.resetAndFetch();
   }
 
   toggleInStock() {
     this.inStockOnly = !this.inStockOnly;
+    this.resetAndFetch();
+  }
+
+  onPriceChange() {
+    this.resetAndFetch();
   }
 
   clearAllFilters() {
-    this.selectedCategory = 'All';
+    this.selectedCategories = [];
     this.inStockOnly = false;
     this.minPrice = 0;
     this.maxPrice = 100000;
     this.sortBy = 'recommended';
-    this.pageNumber = 0;
-    this.products = [];
-    this.getAllProducts();
+    this.resetAndFetch();
   }
 
   hasActiveFilters(): boolean {
-    return this.selectedCategory !== 'All' || this.inStockOnly || this.minPrice > 0 || this.maxPrice < 100000;
+    return (
+      this.selectedCategories.length > 0 ||
+      this.inStockOnly ||
+      this.minPrice > 0 ||
+      this.maxPrice < 100000
+    );
   }
 
   toggleWishlist(productId: number, event: Event) {
@@ -132,52 +161,92 @@ export class ProductSectionComponent {
     this.isMobileFilterOpen = !this.isMobileFilterOpen;
   }
 
-  getAllProducts() {
-    const apiCategory = (this.selectedCategory === 'All' || this.selectedCategory === 'All Furniture') ? '' : this.selectedCategory;
-
-    this.productService.getAllProducts(this.pageNumber, this.filterText(), apiCategory).subscribe(
-      (response) => {
-        if (response && response.length > 0) {
-          this.products = [...this.products, ...response];
-          this.showLoadButton = response.length === 12;
-          this.noFilteredItems = false;
-        } else {
-          this.showLoadButton = false;
-          this.noFilteredItems = this.pageNumber === 0;
-        }
-      },
-      (error) => {
-        console.error('Error fetching products', error);
-      }
-    );
-  }
-
-  getProcessedProducts(): any[] {
-    let result = [...this.products];
-
-    // Filter by Stock Status
-    if (this.inStockOnly) {
-      result = result.filter(p => p.stockStatus === 'In Stock' || p.stockStatus === 'IN_STOCK' || !p.stockStatus);
-    }
-
-    // Filter by Price Range
-    result = result.filter(p => p.price >= this.minPrice && p.price <= this.maxPrice);
-
-    // Apply Sorting
-    if (this.sortBy === 'priceLowHigh') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (this.sortBy === 'priceHighLow') {
-      result.sort((a, b) => b.price - a.price);
-    } else if (this.sortBy === 'nameAsc') {
-      result.sort((a, b) => a.title.localeCompare(b.title));
-    }
-
-    return result;
-  }
-
-  loadMoreProducts() {
-    this.pageNumber++;
+  resetAndFetch() {
+    this.pageNumber = 0;
+    this.products = [];
     this.getAllProducts();
+  }
+
+  getAllProducts() {
+    const activeSort = this.sortOptions.find(o => o.value === this.sortBy) || this.sortOptions[0];
+    const categoryParam =
+      this.selectedCategories.length > 0
+        ? (this.selectedCategories.length === 1 ? this.selectedCategories[0] : this.selectedCategories.join(','))
+        : '';
+
+    const filterParams: ProductFilterParams = {
+      pageNumber: this.pageNumber,
+      pageSize: 5,
+      searchKey: this.filterText() || '',
+      searchCategory: categoryParam,
+      minPrice: this.minPrice > 0 ? this.minPrice : undefined,
+      maxPrice: this.maxPrice < 100000 ? this.maxPrice : undefined,
+      stockStatus: this.inStockOnly ? 'in_stock' : undefined,
+      sortBy: activeSort.sortBy,
+      sortDir: activeSort.sortDir
+    };
+
+    this.isLoading = true;
+
+    this.productService.getAllProducts(filterParams).subscribe({
+      next: (response: ProductPageResponse) => {
+        this.isLoading = false;
+        let incomingProducts: Product[] = [];
+
+        if (response) {
+          if (Array.isArray(response)) {
+            incomingProducts = response;
+            this.totalElements = response.length;
+            this.totalPages = 1;
+          } else {
+            incomingProducts = response.products || [];
+            this.totalElements = response.totalElements ?? incomingProducts.length;
+            this.totalPages = response.totalPages ?? 1;
+          }
+        }
+
+        this.products = incomingProducts;
+        this.noFilteredItems = this.products.length === 0;
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error fetching products', error);
+        this.products = [];
+        this.noFilteredItems = true;
+      }
+    });
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const total = this.totalPages || 1;
+    const current = this.pageNumber;
+    let start = Math.max(0, current - 2);
+    let end = Math.min(total - 1, current + 2);
+
+    if (end - start < 4) {
+      if (start === 0) {
+        end = Math.min(total - 1, start + 4);
+      } else if (end === total - 1) {
+        start = Math.max(0, end - 4);
+      }
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number) {
+    if (page < 0 || (this.totalPages && page >= this.totalPages) || page === this.pageNumber) {
+      return;
+    }
+    this.pageNumber = page;
+    this.getAllProducts();
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   productDetailPage(id: any) {

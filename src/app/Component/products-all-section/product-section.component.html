@@ -16,10 +16,10 @@
           @for (cat of categoryList; track cat.name) {
           <div class="form-check custom-checkbox mb-2">
             <input class="form-check-input" type="checkbox" [id]="'cat-' + cat.name"
-              [checked]="selectedCategory === cat.name || (selectedCategory === 'All' && cat.name === 'All Furniture')"
-              (change)="selectCategory(cat.name)">
+              [checked]="isCategorySelected(cat.name)"
+              (change)="toggleCategory(cat.name)">
             <label class="form-check-label text-dark fw-medium" [for]="'cat-' + cat.name">
-              {{ cat.name }} <span class="text-muted opacity-75">({{ cat.count }})</span>
+              {{ cat.name }}
             </label>
           </div>
           }
@@ -35,7 +35,14 @@
             <span>to</span>
             <span>₹{{ maxPrice >= 100000 ? '1,00,000+' : maxPrice }}</span>
           </div>
-          <input type="range" class="form-range custom-range" min="0" max="100000" step="1000" [(ngModel)]="maxPrice">
+          <input 
+            type="range" 
+            class="form-range custom-range" 
+            min="0" 
+            max="100000" 
+            step="1000" 
+            [(ngModel)]="maxPrice"
+            (change)="onPriceChange()">
         </div>
 
         <hr class="border-secondary opacity-15 my-3">
@@ -59,11 +66,11 @@
         <div class="active-filters-wrap d-flex align-items-center flex-wrap gap-2">
           <span class="text-muted small fw-semibold me-1">Active Filters:</span>
 
-          @if (selectedCategory && selectedCategory !== 'All' && selectedCategory !== 'All Furniture') {
+          @for (cat of selectedCategories; track cat) {
           <span
             class="badge active-pill bg-light text-dark border px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
-            {{ selectedCategory }}
-            <i class="bi bi-x ms-1 cursor-pointer" (click)="selectCategory('All')"></i>
+            {{ cat }}
+            <i class="bi bi-x ms-1 cursor-pointer" (click)="toggleCategory(cat)"></i>
           </span>
           }
 
@@ -89,41 +96,35 @@
         <div class="sort-by-wrap d-flex align-items-center gap-2">
           <span class="text-muted small fw-semibold mb-0 whitespace-nowrap">Sort by:</span>
           <div class="custom-dropdown-container position-relative">
-            <button 
-              type="button" 
+            <button type="button"
               class="custom-dropdown-btn d-flex align-items-center justify-content-between gap-2 shadow-sm"
-              (click)="toggleSortDropdown($event)"
-              [class.active]="isSortDropdownOpen"
+              (click)="toggleSortDropdown($event)" [class.active]="isSortDropdownOpen"
               [attr.aria-expanded]="isSortDropdownOpen">
               <span class="sort-current-text">{{ getSortLabel() }}</span>
               <i class="bi bi-chevron-down dropdown-arrow" [class.rotated]="isSortDropdownOpen"></i>
             </button>
 
             @if (isSortDropdownOpen) {
-              <div class="custom-dropdown-menu shadow">
-                @for (opt of sortOptions; track opt.value) {
-                  <div 
-                    class="custom-dropdown-item d-flex align-items-center justify-content-between"
-                    [class.selected]="sortBy === opt.value"
-                    (click)="selectSortOption(opt.value)">
-                    <span>{{ opt.label }}</span>
-                    @if (sortBy === opt.value) {
-                      <i class="bi bi-check2 checkmark-icon"></i>
-                    }
-                  </div>
+            <div class="custom-dropdown-menu shadow">
+              @for (opt of sortOptions; track opt.value) {
+              <div class="custom-dropdown-item d-flex align-items-center justify-content-between"
+                [class.selected]="sortBy === opt.value" (click)="selectSortOption(opt.value)">
+                <span>{{ opt.label }}</span>
+                @if (sortBy === opt.value) {
+                <i class="bi bi-check2 checkmark-icon"></i>
                 }
               </div>
+              }
+            </div>
             }
           </div>
         </div>
       </div>
 
-      <!-- Product Cards Grid (3 Columns on Desktop) -->
-      @let displayedProducts = getProcessedProducts();
-
-      @if (displayedProducts.length > 0) {
+      <!-- Product Cards Grid -->
+      @if (products.length > 0) {
       <div class="row g-4 mb-5" id="product-list">
-        @for (product of displayedProducts; track product.id) {
+        @for (product of products; track product.id) {
         <div class="col-12 col-sm-6 col-md-4">
           <app-product-card [product]="product"></app-product-card>
         </div>
@@ -131,34 +132,54 @@
       </div>
 
       <!-- Pagination Controls -->
-      <div class="d-flex justify-content-center mt-5 mb-3">
-        <nav aria-label="Catalog pagination">
-          <ul class="pagination custom-pagination gap-1">
-            <li class="page-item" [class.disabled]="pageNumber === 0">
-              <button class="page-link" (click)="pageNumber > 0 ? pageNumber = pageNumber - 1 : null"
-                aria-label="Previous">
-                <i class="bi bi-chevron-left"></i>
-              </button>
-            </li>
-            <li class="page-item active"><button class="page-link">1</button></li>
-            <li class="page-item"><button class="page-link">2</button></li>
-            <li class="page-item"><button class="page-link">3</button></li>
-            <li class="page-item disabled"><button class="page-link">...</button></li>
-            <li class="page-item"><button class="page-link">12</button></li>
-            <li class="page-item">
-              <button class="page-link" (click)="loadMoreProducts()" aria-label="Next">
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      } @else {
+      @if (totalPages > 1) {
+      <nav aria-label="Product catalog navigation" class="d-flex justify-content-center mt-5 mb-3">
+        <ul class="pagination custom-pagination gap-1 align-items-center mb-0 list-unstyled">
+          <!-- Previous Page Button -->
+          <li class="page-item" [class.disabled]="pageNumber === 0">
+            <button
+              class="page-link"
+              type="button"
+              (click)="goToPage(pageNumber - 1)"
+              [disabled]="pageNumber === 0"
+              aria-label="Previous page">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+          </li>
+
+          <!-- Numbered Page Buttons -->
+          @for (p of getPageNumbers(); track p) {
+          <li class="page-item" [class.active]="pageNumber === p">
+            <button
+              class="page-link"
+              type="button"
+              (click)="goToPage(p)"
+              [attr.aria-current]="pageNumber === p ? 'page' : null">
+              {{ p + 1 }}
+            </button>
+          </li>
+          }
+
+          <!-- Next Page Button -->
+          <li class="page-item" [class.disabled]="pageNumber >= totalPages - 1">
+            <button
+              class="page-link"
+              type="button"
+              (click)="goToPage(pageNumber + 1)"
+              [disabled]="pageNumber >= totalPages - 1"
+              aria-label="Next page">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      }
+      } @else if (!isLoading) {
       <!-- Empty Results Message -->
       <div class="card border-0 rounded-4 p-5 text-center bg-white shadow-sm my-4">
         <i class="bi bi-search display-3 text-muted mb-3 opacity-50"></i>
         <h4 class="text-dark fw-bold mb-2">No matching furniture found</h4>
-        <p class="text-secondary small mb-4">Try clearing your filters or adjusting your price search criteria.</p>
+        <p class="text-secondary small mb-4">Try clearing your filters or adjusting your search criteria.</p>
         <div>
           <button class="btn btn-outline-dark rounded-pill px-4 fw-semibold" (click)="clearAllFilters()">
             Clear All Filters

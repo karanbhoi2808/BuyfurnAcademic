@@ -32,17 +32,17 @@ export class SimilarProductsComponent implements OnInit, OnChanges {
   }
 
   loadSimilarProducts(): void {
-    debugger
     this.isLoadingSimilar = true;
     const cat = this.category || '';
 
-    this.productService.getAllProducts(0, '', cat).subscribe({
+    this.productService.getAllProducts({ pageNumber: 0, pageSize: 6, searchCategory: cat }).subscribe({
       next: (data: any) => {
         this.isLoadingSimilar = false;
-        debugger
         let list: Product[] = [];
         if (Array.isArray(data)) {
           list = data;
+        } else if (data && Array.isArray(data.products)) {
+          list = data.products;
         } else if (data && Array.isArray(data.content)) {
           list = data.content;
         }
@@ -51,7 +51,8 @@ export class SimilarProductsComponent implements OnInit, OnChanges {
         this.similarProducts = list.filter((p: any) => p.id !== Number(this.currentProductId)).slice(0, 3);
       },
       error: (error) => {
-        console.log(error);
+        this.isLoadingSimilar = false;
+        console.error('Error loading similar products:', error);
       }
     });
   }
