@@ -1,19 +1,59 @@
-<div class="hero">
-    <div class="container">
-        <div class="d-flex flex-column flex-md-row justify-content-between ">
-            <div class="intro-excerpt align-items-center">
-                <h2>Furniture</h2>
-            </div>
-            <div class="search mt-3 mt-md-0">
-                <div class="filter-section input-group" style="max-width: 400px;">
-                    <input type="text" class="form-control" placeholder="Search Product" [(ngModel)]="filterText">
-                    <button class="btn" (click)="onSearch()">
-                        <i class="bi bi-search" style="color: #3b5d50;"></i>
-                    </button>
-                </div>
-            </div>
+<div class="search-header-section py-2 py-md-3 bg-white border-bottom shadow-sm">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-7 text-center">
+        <!-- Main Centered Search Input -->
+        <div class="search-input-wrapper position-relative mx-auto" style="max-width: 580px;">
+          <i class="bi bi-search search-icon position-absolute top-50 translate-middle-y text-muted fs-5 ms-3"></i>
+          <input
+            type="text"
+            class="form-control catalog-search-input rounded-pill py-2 ps-5 pe-5 border-2 shadow-sm"
+            placeholder="Search sofas, dining tables, chairs, beds..."
+            [(ngModel)]="filterText"
+            (keyup.enter)="onSearch()"
+          >
+          @if (filterText) {
+            <button
+              class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3 text-muted text-decoration-none p-0"
+              (click)="clearSearch()"
+              title="Clear search"
+            >
+              <i class="bi bi-x-circle-fill fs-6"></i>
+            </button>
+          }
         </div>
+
+        <!-- Recent Searches Chips (Saved in LocalStorage) -->
+        @if (recentSearches.length > 0) {
+          <div class="quick-tags d-flex align-items-center justify-content-center gap-2 mt-2 flex-wrap text-muted small">
+            <span class="recent-label me-1 d-inline-flex align-items-center gap-1">
+              <i class="bi bi-clock-history"></i> Recent:
+            </span>
+            @for (term of recentSearches; track term) {
+              <div
+                class="tag-chip d-inline-flex align-items-center gap-1"
+                (click)="quickSearch(term)"
+                role="button"
+                tabindex="0"
+              >
+                <span class="chip-text">{{ term }}</span>
+                <button
+                  type="button"
+                  class="btn-remove-chip"
+                  (click)="removeRecentSearch(term, $event)"
+                  title="Remove from recent"
+                  aria-label="Remove search term">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
+  </div>
 </div>
 
-<app-product-section [filterText]="search"></app-product-section>
+<main class="py-4 bg-canvas">
+  <app-product-section [filterText]="search"></app-product-section>
+</main>

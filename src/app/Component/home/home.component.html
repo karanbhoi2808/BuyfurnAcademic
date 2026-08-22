@@ -1,28 +1,227 @@
+<!-- Hero Slider -->
 <app-slider></app-slider>
 
-
-<!-- Product Section -->
-<div class="product-section py-5">
-    <div class="container">
-        <!-- Introductory Section -->
-        <div class="row mb-2">
-            <div class="col-md-12">
-                <div class="intro-section text-left">
-                    <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-                </div>
-            </div>
+<!-- Why Choose Us / Value Proposition Section -->
+<section class="features-section py-5 bg-white">
+  <div class="container py-3">
+    <div class="row g-4">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="feature-card d-flex align-items-center p-3 rounded-4 bg-light h-100">
+          <div class="feature-icon-box me-3 flex-shrink-0 d-flex align-items-center justify-content-center">
+            <img src="assets/images/truck.svg" alt="Fast Shipping" width="28" height="28">
+          </div>
+          <div>
+            <h6 class="fw-bold mb-1 text-dark">Fast & Free Shipping</h6>
+            <p class="text-muted small mb-0">On all orders across India</p>
+          </div>
         </div>
+      </div>
 
-        <!-- calling product componet -->
-        <app-latestproduct></app-latestproduct>
-        <!-- View More Button -->
-        <div class="row">
-            <div class="col-12 text-end">
-                <a class="btn btn-outline-primary" routerLink="/furniture">View More <i
-                        class=" bi bi-arrow-right"></i></a>
-            </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="feature-card d-flex align-items-center p-3 rounded-4 bg-light h-100">
+          <div class="feature-icon-box me-3 flex-shrink-0 d-flex align-items-center justify-content-center">
+            <img src="assets/images/return.svg" alt="Easy Returns" width="28" height="28">
+          </div>
+          <div>
+            <h6 class="fw-bold mb-1 text-dark">Hassle-Free Returns</h6>
+            <p class="text-muted small mb-0">30-day money back guarantee</p>
+          </div>
         </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="feature-card d-flex align-items-center p-3 rounded-4 bg-light h-100">
+          <div class="feature-icon-box me-3 flex-shrink-0 d-flex align-items-center justify-content-center">
+            <img src="assets/images/support.svg" alt="24/7 Support" width="28" height="28">
+          </div>
+          <div>
+            <h6 class="fw-bold mb-1 text-dark">Dedicated Support</h6>
+            <p class="text-muted small mb-0">24/7 expert customer service</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="feature-card d-flex align-items-center p-3 rounded-4 bg-light h-100">
+          <div class="feature-icon-box me-3 flex-shrink-0 d-flex align-items-center justify-content-center">
+            <i class="bi bi-shield-check fs-4 text-success"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold mb-1 text-dark">Premium Quality</h6>
+            <p class="text-muted small mb-0">Sustainable solid teak wood</p>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 
-<!-- product section end -->
+<!-- Crafted with Excellent Material / Main Product Section -->
+<section class="product-section py-5">
+  <div class="container">
+    <div class="row align-items-end mb-4 g-3">
+      <div class="col-md-8">
+        <span class="badge bg-success bg-opacity-10 text-success fw-semibold px-3 py-2 rounded-pill mb-2">
+          Curated Showcase
+        </span>
+        <h2 class="section-title display-6 font-serif text-dark fw-bold mb-2">
+          Crafted with excellent material.
+        </h2>
+        <p class="text-secondary mb-0">
+          Explore our most sought-after furniture pieces, blending ergonomic form and timeless aesthetic.
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <a routerLink="/furniture" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold border-2">
+          View All Collection <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Latest Product Grid -->
+    <app-latestproduct></app-latestproduct>
+  </div>
+</section>
+
+<!-- Modern Interior Showcase Section -->
+<section class="interior-section py-5 bg-white">
+  <div class="container py-3 py-lg-4">
+    <div class="row align-items-center g-5">
+      <!-- Grid Images Collage -->
+      <div class="col-lg-6">
+        <div class="interior-grid position-relative">
+          <div class="row g-3">
+            <div class="col-7">
+              <img src="assets/images/img-grid-1.jpg" alt="Interior Design 1"
+                class="img-fluid rounded-4 shadow-sm w-100 object-fit-cover" style="height: 320px;">
+            </div>
+            <div class="col-5">
+              <img src="assets/images/img-grid-2.jpg" alt="Interior Design 2"
+                class="img-fluid rounded-4 shadow-sm w-100 object-fit-cover mb-3" style="height: 150px;">
+              <img src="assets/images/img-grid-3.jpg" alt="Interior Design 3"
+                class="img-fluid rounded-4 shadow-sm w-100 object-fit-cover" style="height: 150px;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Copy -->
+      <div class="col-lg-6">
+        <div class="ps-lg-3">
+          <span class="badge bg-warning bg-opacity-20 text-dark fw-semibold px-3 py-2 rounded-pill mb-3">
+            Interior Architecture
+          </span>
+          <h2 class="display-6 font-serif fw-bold text-dark mb-3">
+            We help you create modern, sustainable interior spaces.
+          </h2>
+          <p class="text-secondary leading-relaxed mb-4">
+            Our pieces are designed by master craftsmen using eco-friendly timber and premium fabrics to ensure lifelong
+            comfort and elevated living.
+          </p>
+
+          <ul class="list-unstyled row g-3 mb-4">
+            <li class="col-6 d-flex align-items-center gap-2 text-dark font-semibold">
+              <i class="bi bi-check-circle-fill text-success fs-5"></i> Ergonomic Comfort
+            </li>
+            <li class="col-6 d-flex align-items-center gap-2 text-dark font-semibold">
+              <i class="bi bi-check-circle-fill text-success fs-5"></i> Handcrafted Finishes
+            </li>
+            <li class="col-6 d-flex align-items-center gap-2 text-dark font-semibold">
+              <i class="bi bi-check-circle-fill text-success fs-5"></i> Sustainable Materials
+            </li>
+            <li class="col-6 d-flex align-items-center gap-2 text-dark font-semibold">
+              <i class="bi bi-check-circle-fill text-success fs-5"></i> 10-Year Frame Warranty
+            </li>
+          </ul>
+
+          <a routerLink="/furniture" class="btn btn-dark rounded-pill px-4 py-3 fw-semibold">
+            Discover Our Collection
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Customer Testimonials Section -->
+<!-- <section class="testimonials-section py-5">
+  <div class="container py-3">
+    <div class="text-center max-w-2xl mx-auto mb-5">
+      <div class="d-inline-flex align-items-center gap-1 text-warning mb-2">
+        <i class="bi bi-star-fill"></i>
+        <i class="bi bi-star-fill"></i>
+        <i class="bi bi-star-fill"></i>
+        <i class="bi bi-star-fill"></i>
+        <i class="bi bi-star-fill"></i>
+        <span class="text-dark fw-bold ms-2">4.9 / 5.0 Rating</span>
+      </div>
+      <h2 class="display-6 font-serif fw-bold text-dark mb-2">Loved by thousands of homes.</h2>
+      <p class="text-secondary">Read what our verified homeowners have to say about BuyFurn.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="testimonial-card card h-100 border-0 rounded-4 p-4 shadow-sm bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="assets/images/person-1.jpg" alt="Reviewer" class="rounded-circle object-fit-cover" width="50" height="50">
+            <div>
+              <h6 class="fw-bold mb-0 text-dark">Ananya Sharma</h6>
+              <span class="text-muted small">Mumbai, MH</span>
+            </div>
+          </div>
+          <p class="text-secondary small italic mb-0">
+            "The solid wood dining table exceeded my expectations! Delivery was seamless and the craftsmanship is truly exceptional."
+          </p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="testimonial-card card h-100 border-0 rounded-4 p-4 shadow-sm bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="assets/images/person_2.jpg" alt="Reviewer" class="rounded-circle object-fit-cover" width="50" height="50">
+            <div>
+              <h6 class="fw-bold mb-0 text-dark">Rohan Mehta</h6>
+              <span class="text-muted small">Bengaluru, KA</span>
+            </div>
+          </div>
+          <p class="text-secondary small italic mb-0">
+            "Extremely comfortable lounge sofa. The fabric feels luxurious and ordering online via BuyFurn was completely hassle-free."
+          </p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="testimonial-card card h-100 border-0 rounded-4 p-4 shadow-sm bg-white">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="assets/images/person_3.jpg" alt="Reviewer" class="rounded-circle object-fit-cover" width="50" height="50">
+            <div>
+              <h6 class="fw-bold mb-0 text-dark">Priya Patel</h6>
+              <span class="text-muted small">Ahmedabad, GJ</span>
+            </div>
+          </div>
+          <p class="text-secondary small italic mb-0">
+            "The ergonomic office chair completely solved my back discomfort during long working hours. Highly recommended!"
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- Newsletter Subscription Banner -->
+<!-- <section class="newsletter-section py-5 text-white" style="background: linear-gradient(135deg, #1e3a2b 0%, #2b4c3f 100%);">
+  <div class="container py-4 text-center">
+    <div class="max-w-xl mx-auto">
+      <i class="bi bi-envelope-heart display-4 text-warning mb-3 d-inline-block"></i>
+      <h2 class="display-6 font-serif fw-bold mb-2">Join the BuyFurn Family</h2>
+      <p class="text-light opacity-87 mb-4">Subscribe to receive exclusive collection drops, interior design tips, and 10% off your first order.</p>
+
+      <form class="d-flex flex-column flex-sm-row justify-content-center gap-2 max-w-md mx-auto" (submit)="$event.preventDefault()">
+        <input type="email" class="form-control form-control-lg rounded-pill px-4" placeholder="Enter your email address..." required>
+        <button type="submit" class="btn btn-warning btn-lg rounded-pill px-4 fw-bold text-dark flex-shrink-0">
+          Subscribe
+        </button>
+      </form>
+    </div>
+  </div>
+</section> -->

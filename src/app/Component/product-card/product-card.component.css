@@ -1,0 +1,103 @@
+.product-card {
+  background-color: #ffffff;
+  border-radius: 16px !important;
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  cursor: pointer;
+}
+
+.card-img-wrapper {
+  height: 240px;
+  background-color: #f8fafc;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.3s ease;
+}
+
+.stock-badge {
+  top: 12px;
+  left: 12px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+  letter-spacing: 0.2px;
+}
+
+.product-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-subtitle {
+  color: #64748b;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-price {
+  /* font-family: "Playfair Display", Georgia, serif; */
+  font-weight: 600;
+  font-size: 1.30rem !important;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+}
+
+.btn-mint-action {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #dcfce7;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px !important;
+  transition: all 0.25s ease;
+}
+
+.btn-mint-action:hover {
+  background-color: #dcfce7;
+  color: #14532d;
+  /* transform: scale(1.08); */
+  /* box-shadow: 0 4px 12px rgba(22, 101, 52, 0.15); */
+}
+
+@media (max-width: 575.98px) {
+  .card-img-wrapper {
+    height: 200px;
+  }
+
+  .product-title {
+    font-size: 1.05rem;
+  }
+
+  .product-price {
+    font-size: 1.2rem !important;
+  }
+
+  .btn-mint-action {
+    width: 38px;
+    height: 38px;
+  }
+}

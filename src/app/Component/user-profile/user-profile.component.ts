@@ -1,13 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { UserService } from '../../Service/user.service';
-
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UserAuthService } from '../../Service/user-auth.service';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
@@ -16,10 +16,8 @@ export class UserProfileComponent implements OnInit {
   private userAuthService = inject(UserAuthService);
   private router = inject(Router);
 
-
+  isLoading: boolean = true;
   hasProfile: boolean = false;
-  decodeString: any;
-  firstPosition: string | null = null;
   user: any = {
     name: '',
     email: '',
@@ -27,66 +25,81 @@ export class UserProfileComponent implements OnInit {
     address: {
       address: '',
       pincode: '',
+      city: '',
       state: ''
-    },
+    }
   };
 
   ngOnInit(): void {
     this.loadUserData();
   }
-  loadUserData() {
-    this.userService.login().subscribe(
-      response => {
-        this.user = response || {};  // Ensure user is not null
-        this.user.address = this.user.address || { address: '', pincode: '', state: '' };  // Ensure address is not null
-        this.hasProfile = this.user.userImage && this.user.userImage !== "null";
-        localStorage.setItem("username", this.user.email);
+
+  loadUserData(): void {
+    this.isLoading = true;
+    this.userService.login().subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.user = response || {};
+        this.user.address = this.user.address || { address: '', pincode: '', city: '', state: '' };
+        this.hasProfile = Boolean(this.user.userImage && this.user.userImage !== 'null');
+        if (this.user.email) {
+          localStorage.setItem('username', this.user.email);
+        }
       },
-      error => {
-        console.log(error);
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error loading user profile:', error);
       }
-    );
+    });
   }
 
-  logout() {
-    this.userAuthService.clearLocalStorage()
+  getInitials(): string {
+    if (!this.user?.name) return 'U';
+    const parts = this.user.name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return this.user.name.substring(0, 2).toUpperCase();
+  }
+
+  logout(): void {
+    this.userAuthService.clearLocalStorage();
     this.router.navigate(['/']);
   }
 
-  deleteMyAccount() {
-
+  deleteMyAccount(): void {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
+      title: 'Delete Account?',
+      text: "This action cannot be undone. All your details and order history will be removed.",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, delete my account',
+      cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.userService.delteMyAccont().subscribe(
-          response => {
+        this.userService.delteMyAccont().subscribe({
+          next: () => {
             Swal.fire({
-              title: "Deleted!",
-              text: "Your account has been deleted.",
-              icon: "success"
+              title: 'Account Deleted',
+              text: 'Your account has been deleted.',
+              icon: 'success',
+              confirmButtonColor: '#1e3a2b'
             }).then(() => {
               this.logout();
-              this.router.navigate(['/']);
             });
-            // window.location.reload()
           },
-          error => {
-            // console.error(error);
+          error: (err) => {
+            console.error(err);
             Swal.fire({
-              title: "Error!",
-              text: "There was an issue deleting your account. Please try again!",
-              icon: "error"
+              title: 'Error!',
+              text: 'There was an issue deleting your account. Please try again.',
+              icon: 'error',
+              confirmButtonColor: '#1e3a2b'
             });
-
           }
-        );
+        });
       }
     });
   }

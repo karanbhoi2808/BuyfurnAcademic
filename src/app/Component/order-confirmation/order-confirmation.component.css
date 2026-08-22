@@ -1,0 +1,161 @@
+/* Order Confirmation Page */
+.confirmation-page-wrapper {
+  background-color: var(--bf-bg-canvas, #faf8f5);
+  min-height: 80vh;
+}
+
+.confirmation-card {
+  background-color: #ffffff;
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Decorative Accent Bar */
+.card-accent-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #1e3a2b, #cca038, #1e3a2b);
+}
+
+/* Animated / Elevated Success Ring */
+.success-icon-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background-color: #f0fdf4;
+  border: 3px solid #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.08);
+  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-icon-inner {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #1e3a2b;
+  color: #ffffff;
+  font-size: 1.6rem;
+}
+
+/* Status Pill */
+.status-pill {
+  background-color: #f0fdf4;
+  color: #166534;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid #bbf7d0;
+}
+
+.confirmation-title {
+  font-size: 2rem;
+  color: #1c2520;
+}
+
+.confirmation-subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Summary Box */
+.order-summary-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.summary-val {
+  font-size: 0.95rem;
+}
+
+.payment-paid-badge {
+  background-color: #f0fdf4;
+  color: #166534;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #dcfce7;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* CTA Buttons */
+.btn-primary-action {
+  background-color: #cca038;
+  color: #1c2520;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(204, 160, 56, 0.2);
+}
+
+.btn-primary-action:hover {
+  background-color: #b88e2c;
+  box-shadow: 0 8px 20px rgba(204, 160, 56, 0.3);
+  color: #1c2520;
+}
+
+.btn-secondary-action {
+  background-color: #ffffff;
+  color: #1c2520;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border: 1.5px solid #d1d5db;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-secondary-action:hover {
+  background-color: #f8fafc;
+  border-color: #9ca3af;
+  color: #1c2520;
+}
+
+.support-footer-note {
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 575.98px) {
+  .confirmation-title {
+    font-size: 1.6rem;
+  }
+
+  .confirmation-card {
+    padding: 1.5rem !important;
+  }
+}

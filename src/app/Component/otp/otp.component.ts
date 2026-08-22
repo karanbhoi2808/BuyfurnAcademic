@@ -1,74 +1,88 @@
-
 import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule, NgModel } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../Service/user.service';
-import { response } from 'express';
-import { error } from 'console';
-import { User } from '../../Interface/user';
-import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
-    selector: 'app-otp',
-    imports: [FormsModule],
-    templateUrl: './otp.component.html',
-    styleUrl: './otp.component.css'
+  selector: 'app-otp',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './otp.component.html',
+  styleUrl: './otp.component.css'
 })
 export class OtpComponent implements OnInit {
   private userservice = inject(UserService);
   private router = inject(Router);
 
-  verificationError: any;
+  verificationError: boolean = false;
   loading: boolean = false;
 
-  ngOnInit(): void {
-    if (typeof localStorage !== 'undefined') {
-      this.email = localStorage.getItem("email");
-    }
-  }
-  email: any;
-  otp: any;
+  email: string = '';
+  otp: string = '';
 
   user: any = {
     name: '',
     email: '',
     pasword: ''
+  };
+
+  ngOnInit(): void {
+    if (typeof localStorage !== 'undefined') {
+      this.email = localStorage.getItem('email') || '';
+    }
   }
 
-  verifyOtp() {
-    this.loading = true
-    this.userservice.verifyOtp(this.email, this.otp).subscribe(response => {
-      if (response == true) {
-        this.loading = false
-        if (typeof localStorage !== 'undefined') {
-          this.user.email = localStorage.getItem("email")
-          this.user.name = localStorage.getItem("name")
-          this.user.pasword = localStorage.getItem("pasword")
-          this.userservice.register(this.user).subscribe(response => {
-            if (response) {
-              localStorage.clear()
-              this.router.navigate(['/login']);
-            }
+  verifyOtp(): void {
+    if (!this.otp || !this.otp.trim()) return;
 
-          }, error => {
-            console.log(error);
-            this.loading = false
+    this.loading = true;
+    this.verificationError = false;
 
-          })
+    this.userservice.verifyOtp(this.email, this.otp.trim()).subscribe({
+      next: (response) => {
+        if (response === true) {
+          if (typeof localStorage !== 'undefined') {
+            this.user.email = localStorage.getItem('email');
+            this.user.name = localStorage.getItem('name');
+            this.user.pasword = localStorage.getItem('pasword');
 
+            this.userservice.register(this.user).subscribe({
+              next: () => {
+                this.loading = false;
+                localStorage.clear();
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Account Created!',
+                  text: 'Your email has been verified and your account is ready. Please sign in.',
+                  confirmButtonColor: '#1e3a2b',
+                  confirmButtonText: 'Proceed to Login'
+                }).then(() => {
+                  this.router.navigate(['/login']);
+                });
+              },
+              error: (err) => {
+                this.loading = false;
+                console.error(err);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Registration Error',
+                  text: 'Could not complete registration. Please try again.',
+                  confirmButtonColor: '#1e3a2b'
+                });
+              }
+            });
+          }
+        } else {
+          this.verificationError = true;
+          this.loading = false;
         }
-      }
-      else {
+      },
+      error: (error) => {
+        this.loading = false;
         this.verificationError = true;
-        this.loading = false
-
+        console.error(error);
       }
-
-    },
-      error => {
-        this.loading = false
-        console.log(error);
-      }
-    )
+    });
   }
-
 }

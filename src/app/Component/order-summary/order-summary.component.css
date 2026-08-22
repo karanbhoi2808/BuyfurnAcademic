@@ -1,0 +1,144 @@
+/* Reusable Order Summary Card */
+.order-summary-card {
+  background-color: #ffffff;
+  border-radius: 18px !important;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  position: sticky;
+  top: 90px;
+}
+
+/* Step Badge */
+.step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #1e3a2b;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-title {
+  font-size: 1.25rem;
+}
+
+/* Items List in Checkout */
+.item-img-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.item-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #1c2520;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Stepper Controls */
+.quantity-stepper {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.step-btn {
+  background: transparent;
+  border: none;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #1e293b;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
+  padding: 0;
+}
+
+.step-btn:hover:not(:disabled) {
+  background-color: #e2e8f0;
+}
+
+.step-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.step-val {
+  font-size: 0.85rem;
+  color: #1e293b;
+}
+
+.item-total-price {
+  font-size: 0.95rem;
+}
+
+/* Breakdown & Totals */
+.total-label {
+  font-size: 1.1rem;
+}
+
+.total-val {
+  font-size: 1.55rem;
+  color: #cca038;
+}
+
+/* Primary CTA Button */
+.btn-checkout-action {
+  background-color: #cca038;
+  color: #1c2520;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(204, 160, 56, 0.2);
+}
+
+.btn-checkout-action:hover:not(:disabled) {
+  background-color: #b88e2c;
+  box-shadow: 0 8px 20px rgba(204, 160, 56, 0.3);
+  color: #1c2520;
+}
+
+.btn-checkout-action:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Trust Badges */
+.summary-trust-badges {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 991.98px) {
+  .order-summary-card {
+    position: static;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .total-val {
+    font-size: 1.35rem;
+  }
+}

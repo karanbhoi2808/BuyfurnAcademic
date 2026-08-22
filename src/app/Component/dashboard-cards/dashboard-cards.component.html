@@ -1,31 +1,81 @@
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <h2>Your Account</h2>
-        </div>
+<div class="dashboard-page-wrapper py-4 py-md-5">
+  <div class="container">
+    
+    <!-- Page Header (No Breadcrumb) -->
+    <div class="dashboard-header mb-4 mb-md-5">
+      <h1 class="dashboard-title font-serif text-dark fw-bold mb-1">My Account</h1>
+      <p class="dashboard-subtitle text-muted mb-0">
+        Manage your profile, track active furniture deliveries, and access support.
+      </p>
     </div>
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <a routerLink="/userprofile" class="text-decoration-none text-dark">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-person-lines-fill fs-1"></i>
-                        <h2 class="card-title">Your Profile</h2>
-                        <p class="card-text">Manage your profile information</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4 mb-4">
-            <a routerLink="/myorders" class="text-decoration-none text-dark">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-bag-fill fs-1"></i>
-                        <h2 class="card-title">Your Orders</h2>
-                        <p class="card-text">View and track your orders</p>
-                    </div>
-                </div>
-            </a>
-        </div>
+
+    <!-- Quick Action Cards Grid -->
+    <div class="row g-4">
+      
+      <!-- Card 1: Your Profile -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <a routerLink="/userprofile" class="dashboard-nav-card-link text-decoration-none">
+          <div class="dashboard-card h-100 bg-white rounded-4 p-4 shadow-sm border-0 d-flex flex-column justify-content-between">
+            <div>
+              <div class="card-icon-wrap mb-3 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-person-lines-fill"></i>
+              </div>
+              <h2 class="card-item-title font-serif text-dark mb-2">Personal Profile</h2>
+              <p class="card-item-desc text-muted small mb-3">
+                View and update your personal details, email, contact phone, and primary shipping address.
+              </p>
+            </div>
+            <div class="card-action-link d-inline-flex align-items-center gap-2 fw-semibold">
+              <span>Manage Profile</span>
+              <i class="bi bi-arrow-right"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 2: Your Orders -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <a routerLink="/myorders" class="dashboard-nav-card-link text-decoration-none">
+          <div class="dashboard-card h-100 bg-white rounded-4 p-4 shadow-sm border-0 d-flex flex-column justify-content-between">
+            <div>
+              <div class="card-icon-wrap mb-3 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-bag-check-fill"></i>
+              </div>
+              <h2 class="card-item-title font-serif text-dark mb-2">Your Orders</h2>
+              <p class="card-item-desc text-muted small mb-3">
+                Track your recent furniture orders, check delivery progress, and review purchase history.
+              </p>
+            </div>
+            <div class="card-action-link d-inline-flex align-items-center gap-2 fw-semibold">
+              <span>View Order History</span>
+              <i class="bi bi-arrow-right"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 3: Help & Support -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <a routerLink="/contact" class="dashboard-nav-card-link text-decoration-none">
+          <div class="dashboard-card h-100 bg-white rounded-4 p-4 shadow-sm border-0 d-flex flex-column justify-content-between">
+            <div>
+              <div class="card-icon-wrap mb-3 d-inline-flex align-items-center justify-content-center">
+                <i class="bi bi-headset"></i>
+              </div>
+              <h2 class="card-item-title font-serif text-dark mb-2">Help & Concierge</h2>
+              <p class="card-item-desc text-muted small mb-3">
+                Have questions about assembly, materials, or delivery? Reach out to our customer care team.
+              </p>
+            </div>
+            <div class="card-action-link d-inline-flex align-items-center gap-2 fw-semibold">
+              <span>Contact Support</span>
+              <i class="bi bi-arrow-right"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
     </div>
+
+  </div>
 </div>

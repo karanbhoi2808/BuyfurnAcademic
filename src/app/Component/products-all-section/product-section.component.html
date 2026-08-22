@@ -1,50 +1,192 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-lg-12 d-flex justify-content-end">
-      <div class="input-group mb-3" style="max-width: 200px;">
-        <span class="input-group-text bg-light">
-          <i class="bi bi-filter"></i>
-        </span>
-        <select class="form-control" id="category" name="category" (change)="filterProductByCategory($event)">
-          <option value="" disabled selected>Category</option>
-          @for (category of categories; track category) {
-            <option [value]="category">{{ category }}</option>
-          }
-        </select>
-      </div>
-    </div>
+<div class="container py-3">
+  <!-- Mobile Filter Toggle Bar -->
+  <div class="d-lg-none mb-3 text-end">
+    <button class="btn btn-outline-dark rounded-pill px-4 fw-semibold" type="button" (click)="toggleMobileFilter()">
+      <i class="bi bi-funnel me-2"></i> {{ isMobileFilterOpen ? 'Hide Filters' : 'Filters & Sort' }}
+    </button>
   </div>
-</div>
 
-
-<div class="product-section py-5">
-  <div class="container">
-    <!-- Products Container -->
-    <div class="row" id="product-list">
-      @for (product of products; track product) {
-        <div class="col-12 col-md-4 col-lg-3 mb-5">
-          <a class="product-item card h-100 d-flex flex-column align-items-center"
-            (click)="productDetailPage(product.id)">
-            <img [src]="product.productImages[0]?.url"
-              alt="{{ product.title}}">
-              <h3 id="product-title" class="pt-3">{{ product.title }}</h3>
-              <strong id="product-price">₹{{ product.price.toFixed(2) }}</strong>
-              <p class="card-text text-warning">
-                {{ product.stockStatus}}
-              </p>
-            </a>
+  <div class="row g-4">
+    <!-- Left Sidebar Filters Column -->
+    <aside class="col-lg-3" [class.d-none]="!isMobileFilterOpen" [class.d-lg-block]="true">
+      <div class="filter-sidebar card border-0 rounded-4 p-4 shadow-sm bg-white">
+        <!-- Categories Section -->
+        <h5 class="filter-title font-serif text-dark fw-bold mb-3">Categories</h5>
+        <div class="category-list mb-4">
+          @for (cat of categoryList; track cat.name) {
+          <div class="form-check custom-checkbox mb-2">
+            <input class="form-check-input" type="checkbox" [id]="'cat-' + cat.name"
+              [checked]="isCategorySelected(cat.name)"
+              (change)="toggleCategory(cat.name)">
+            <label class="form-check-label text-dark fw-medium" [for]="'cat-' + cat.name">
+              {{ cat.name }}
+            </label>
           </div>
+          }
+        </div>
+
+        <hr class="border-secondary opacity-15 my-3">
+
+        <!-- Price Range Section -->
+        <h5 class="filter-title font-serif text-dark fw-bold mb-3">Price Range</h5>
+        <div class="price-filter mb-4">
+          <div class="d-flex align-items-center justify-content-between text-muted small mb-2">
+            <span>₹{{ minPrice }}</span>
+            <span>to</span>
+            <span>₹{{ maxPrice >= 100000 ? '1,00,000+' : maxPrice }}</span>
+          </div>
+          <input 
+            type="range" 
+            class="form-range custom-range" 
+            min="0" 
+            max="100000" 
+            step="1000" 
+            [(ngModel)]="maxPrice"
+            (change)="onPriceChange()">
+        </div>
+
+        <hr class="border-secondary opacity-15 my-3">
+
+        <!-- Stock Availability Section -->
+        <div class="form-check custom-checkbox">
+          <input class="form-check-input" type="checkbox" id="inStockCheck" [checked]="inStockOnly"
+            (change)="toggleInStock()">
+          <label class="form-check-label text-dark fw-semibold" for="inStockCheck">
+            In Stock Only
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Catalog Main Column -->
+    <main class="col-lg-9">
+      <!-- Top Active Filters & Sorting Control Bar -->
+      <div class="catalog-top-bar d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+        <!-- Active Filters Pills -->
+        <div class="active-filters-wrap d-flex align-items-center flex-wrap gap-2">
+          <span class="text-muted small fw-semibold me-1">Active Filters:</span>
+
+          @for (cat of selectedCategories; track cat) {
+          <span
+            class="badge active-pill bg-light text-dark border px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
+            {{ cat }}
+            <i class="bi bi-x ms-1 cursor-pointer" (click)="toggleCategory(cat)"></i>
+          </span>
+          }
+
+          @if (inStockOnly) {
+          <span
+            class="badge active-pill bg-light text-dark border px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
+            In Stock
+            <i class="bi bi-x ms-1 cursor-pointer" (click)="toggleInStock()"></i>
+          </span>
+          }
+
+          @if (hasActiveFilters()) {
+          <button class="btn btn-link btn-sm text-decoration-none text-dark fw-semibold p-0 ms-2"
+            (click)="clearAllFilters()">
+            Clear All
+          </button>
+          } @else {
+          <span class="text-secondary small italic">None applied</span>
+          }
+        </div>
+
+        <!-- Custom Sort By Dropdown -->
+        <div class="sort-by-wrap d-flex align-items-center gap-2">
+          <span class="text-muted small fw-semibold mb-0 whitespace-nowrap">Sort by:</span>
+          <div class="custom-dropdown-container position-relative">
+            <button type="button"
+              class="custom-dropdown-btn d-flex align-items-center justify-content-between gap-2 shadow-sm"
+              (click)="toggleSortDropdown($event)" [class.active]="isSortDropdownOpen"
+              [attr.aria-expanded]="isSortDropdownOpen">
+              <span class="sort-current-text">{{ getSortLabel() }}</span>
+              <i class="bi bi-chevron-down dropdown-arrow" [class.rotated]="isSortDropdownOpen"></i>
+            </button>
+
+            @if (isSortDropdownOpen) {
+            <div class="custom-dropdown-menu shadow">
+              @for (opt of sortOptions; track opt.value) {
+              <div class="custom-dropdown-item d-flex align-items-center justify-content-between"
+                [class.selected]="sortBy === opt.value" (click)="selectSortOption(opt.value)">
+                <span>{{ opt.label }}</span>
+                @if (sortBy === opt.value) {
+                <i class="bi bi-check2 checkmark-icon"></i>
+                }
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Cards Grid -->
+      @if (products.length > 0) {
+      <div class="row g-4 mb-5" id="product-list">
+        @for (product of products; track product.id) {
+        <div class="col-12 col-sm-6 col-md-4">
+          <app-product-card [product]="product"></app-product-card>
+        </div>
         }
       </div>
-    </div>
-    @if (showLoadButton) {
-      <div class="text-center">
-        <button type="button" class="btn btn-outline-primary" (click)="loadMoreProducts()">Load more</button>
+
+      <!-- Pagination Controls -->
+      @if (totalPages > 1) {
+      <nav aria-label="Product catalog navigation" class="d-flex justify-content-center mt-5 mb-3">
+        <ul class="pagination custom-pagination gap-1 align-items-center mb-0 list-unstyled">
+          <!-- Previous Page Button -->
+          <li class="page-item" [class.disabled]="pageNumber === 0">
+            <button
+              class="page-link"
+              type="button"
+              (click)="goToPage(pageNumber - 1)"
+              [disabled]="pageNumber === 0"
+              aria-label="Previous page">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+          </li>
+
+          <!-- Numbered Page Buttons -->
+          @for (p of getPageNumbers(); track p) {
+          <li class="page-item" [class.active]="pageNumber === p">
+            <button
+              class="page-link"
+              type="button"
+              (click)="goToPage(p)"
+              [attr.aria-current]="pageNumber === p ? 'page' : null">
+              {{ p + 1 }}
+            </button>
+          </li>
+          }
+
+          <!-- Next Page Button -->
+          <li class="page-item" [class.disabled]="pageNumber >= totalPages - 1">
+            <button
+              class="page-link"
+              type="button"
+              (click)="goToPage(pageNumber + 1)"
+              [disabled]="pageNumber >= totalPages - 1"
+              aria-label="Next page">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      }
+      } @else if (!isLoading) {
+      <!-- Empty Results Message -->
+      <div class="card border-0 rounded-4 p-5 text-center bg-white shadow-sm my-4">
+        <i class="bi bi-search display-3 text-muted mb-3 opacity-50"></i>
+        <h4 class="text-dark fw-bold mb-2">No matching furniture found</h4>
+        <p class="text-secondary small mb-4">Try clearing your filters or adjusting your search criteria.</p>
+        <div>
+          <button class="btn btn-outline-dark rounded-pill px-4 fw-semibold" (click)="clearAllFilters()">
+            Clear All Filters
+          </button>
+        </div>
       </div>
-    }
+      }
+    </main>
   </div>
-  @if (noFilteredItems) {
-    <div class="container d-flex justify-content-center align-items-center" style="height: 50vh;">
-      <h1 class="text-muted">No Products related,Sorry!</h1>
-    </div>
-  }
+</div>
