@@ -176,7 +176,7 @@ export class ProductSectionComponent {
 
     const filterParams: ProductFilterParams = {
       pageNumber: this.pageNumber,
-      pageSize: 5,
+      pageSize: this.pageSize,
       searchKey: this.filterText() || '',
       searchCategory: categoryParam,
       minPrice: this.minPrice > 0 ? this.minPrice : undefined,
