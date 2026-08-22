@@ -69,7 +69,7 @@ export const routes: Routes = [
             {
                 path: 'orderplaced',
                 component: OrderConfirmationComponent,
-                canActivate: [authGuard],
+                canActivate: [authGuard, orderGuardGuard],
                 data: { roles: ['USER'] }
             },
             {
