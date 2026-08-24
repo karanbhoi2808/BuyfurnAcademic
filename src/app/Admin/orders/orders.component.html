@@ -1,73 +1,366 @@
-<div>
+<div class="admin-orders-container">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <h1 class="page-title mb-1">Customer Orders</h1>
+        <p class="page-subtitle mb-0">Manage purchases, customer shipping details, and delivery fulfillment.</p>
+      </div>
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="filter-buttons btn-group btn-group-toggle">
-      <button class="btn btn-secondary active pe-3" (click)="getOrderDetails('all')">All</button>
-      <button class="btn btn-secondary pe-3" (click)="getOrderDetails('Placed')">Placed</button>
-      <button class="btn btn-secondary" (click)="getOrderDetails('Delivered')">Delivered</button>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-action" (click)="getOrderDetails(selectedStatusTab)"
+          title="Refresh orders">
+          <i class="bi bi-arrow-clockwise" [class.spin-animation]="isLoading"></i>
+          <span class="d-none d-sm-inline ms-1">Refresh</span>
+        </button>
+
+        <a routerLink="/admin/visualizationorders" class="btn btn-outline-forest btn-action">
+          <i class="bi bi-bar-chart-line-fill me-1 text-forest"></i>
+          <span>Order Analytics</span>
+        </a>
+      </div>
     </div>
-    <a class="btn btn-outline-success" routerLink="/admin/visualizationorders">Visualize</a>
+
+    <!-- Quick Stats Metric Cards -->
+    <div class="row g-3 mt-1">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-slate-light text-slate">
+            <i class="bi bi-bag-check-fill"></i>
+          </div>
+          <div>
+            <span class="stat-label">Total Orders</span>
+            <h4 class="stat-val">{{ totalOrderCount }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-amber-light text-amber">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <div>
+            <span class="stat-label">Placed Orders</span>
+            <h4 class="stat-val">{{ placedOrderCount }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-emerald-light text-emerald">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+          <div>
+            <span class="stat-label">Delivered</span>
+            <h4 class="stat-val">{{ deliveredOrderCount }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-gold-light text-gold-dark">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+          <div>
+            <span class="stat-label">Total Revenue</span>
+            <h4 class="stat-val">₹{{ totalRevenue | number:'1.0-0' }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  @if (this.orderDetails.length!=0) {
-    <div class="table-responsive">
-      <table class="table table-bordered table-responsive">
-        <thead>
-          <tr>
-            <th>Action</th>
-            <th>OrderId</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Shipping Address</th>
-            <th>Product Name</th>
-            <th>Price</th>
-            <th>Order Status</th>
-            <th>Date-Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (order of orderDetails; track order) {
-            <tr>
-              <th>
-                @if (!orderIsDelivered(order.orderId)) {
-                  <button class="btn btn-outline-success" (click)="markAsDeliverd(order.orderId)"
-                    >
-                    Mark as Delivered
-                  </button>
-                }
-              </th>
-              <td>{{order.orderId}}</td>
-              <td>{{order.contact}}</td>
-              <td>{{order.user.email}}</td>
-              <td width="25%">
-                {{order.address.address}},
-                {{order.address.city}},
-                {{order.address.state}} -
-                {{order.address.pincode}}
-              </td>
-              <td>{{order.product.title}}</td>
-              <td>₹{{order.product.price}}</td>
-              <td>{{order.orderStatus}}</td>
-              <td>{{ order.createdDate | date: 'dd/MM/yyyy, h:mm a':'IST' }}</td>
-            </tr>
+  <!-- Filter & Search Toolbar -->
+  <div class="filter-card mb-4">
+    <div class="row g-3 align-items-center">
+      <!-- Search Input -->
+      <div class="col-12 col-md-6 col-lg-6">
+        <div class="search-input-box">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="form-control search-field"
+            placeholder="Search by Order ID, customer email, phone or product title..." [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()" />
+          @if (searchQuery) {
+          <button type="button" class="btn-clear-search" (click)="clearSearch()" title="Clear search">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
           }
-        </tbody>
-      </table>
-    </div>
-  }
-</div>
-@if (isOrderIsEmpty) {
-  <div class="container text-center my-5">
-    <div>
-      <img src="../../../assets/images/no_data.jpg" alt="No orders" class="img-fluid">
-    </div>
-  </div>
-}
+        </div>
+      </div>
 
-@if (isLoading) {
-  <div class="text-center my-5">
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
+      <!-- Status Filter Tabs -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="status-tab-group">
+          <button type="button" class="status-tab-btn" [class.active]="selectedStatusTab === 'all'"
+            (click)="onStatusTabChange('all')">
+            All <span class="badge tab-badge">{{ totalOrderCount }}</span>
+          </button>
+          <button type="button" class="status-tab-btn" [class.active]="selectedStatusTab === 'Placed'"
+            (click)="onStatusTabChange('Placed')">
+            Placed <span class="badge tab-badge bg-amber-light text-amber">{{ placedOrderCount }}</span>
+          </button>
+          <button type="button" class="status-tab-btn" [class.active]="selectedStatusTab === 'Delivered'"
+            (click)="onStatusTabChange('Delivered')">
+            Delivered <span class="badge tab-badge bg-emerald-light text-emerald">{{ deliveredOrderCount }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="col-12 col-lg-2">
+        <div class="custom-dropdown-container">
+          <button type="button" class="custom-dropdown-btn" (click)="toggleSortDropdown($event)"
+            [class.active]="isSortDropdownOpen" [attr.aria-expanded]="isSortDropdownOpen">
+            <div class="d-flex align-items-center gap-2 text-truncate">
+              <i class="bi bi-arrow-down-up text-muted"></i>
+              <span class="sort-current-text">{{ getSortLabel() }}</span>
+            </div>
+            <i class="bi bi-chevron-down dropdown-arrow" [class.rotated]="isSortDropdownOpen"></i>
+          </button>
+
+          @if (isSortDropdownOpen) {
+          <div class="custom-dropdown-menu shadow-lg">
+            @for (opt of sortOptions; track opt.value) {
+            <div class="custom-dropdown-item" [class.selected]="sortBy === opt.value"
+              (click)="selectSortOption(opt.value)">
+              <span>{{ opt.label }}</span>
+              @if (sortBy === opt.value) {
+              <i class="bi bi-check2 checkmark-icon"></i>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Common Grid Component for Orders -->
+  <app-common-grid [columns]="columns" [data]="orders" [isLoading]="isLoading" [totalElements]="totalOrderCount"
+    [currentPage]="currentPage" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [totalPages]="totalPages"
+    [itemLabel]="'orders'" [emptyTitle]="'No Orders Found'"
+    [emptyMessage]="searchQuery ? 'No orders matched your search query. Try clearing the search or changing status filter.' : 'There are currently no orders registered under the ' + selectedStatusTab + ' category.'"
+    [emptyIcon]="'bi-inbox'" [showEmptyAction]="!!searchQuery || selectedStatusTab !== 'all'"
+    [emptyActionLabel]="'View All Orders'" [currentSortBy]="currentSortBy" [currentSortDir]="currentSortDir"
+    [rowClickable]="true" (rowClick)="openOrderDetails($event)" (pageChange)="goToPage($event)"
+    (pageSizeChange)="onPageSizeChange($event)" (sortChange)="onGridSort($event)"
+    (emptyAction)="clearSearch(); onStatusTabChange('all')" [cellTemplates]="{
+      orderId: orderIdTpl,
+      customer: customerTpl,
+      product: productTpl,
+      address: addressTpl,
+      amount: amountTpl,
+      status: statusTpl,
+      actions: actionsTpl
+    }">
+  </app-common-grid>
+
+  <!-- Cell Templates for Common Grid -->
+  <ng-template #orderIdTpl let-row="row">
+    <div class="d-flex flex-column">
+      <span class="order-id-badge">#{{ row.orderId }}</span>
+      <span class="order-date-text text-muted mt-1">
+        <i class="bi bi-calendar3 me-1"></i>
+        {{ row.createdDate | date: 'dd MMM yyyy, h:mm a':'IST' }}
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #customerTpl let-row="row">
+    <div class="customer-info-box">
+      <div class="customer-email text-truncate" [title]="row.user?.name || row.user?.email || 'Guest User'">
+        <i class="bi bi-person-circle text-forest"></i>
+        <span class="text-truncate">{{ row.user?.name || row.user?.email || 'Guest User' }}</span>
+      </div>
+      @if (row.contact) {
+      <div class="customer-phone">
+        <i class="bi bi-telephone-fill"></i>
+        <span>{{ row.contact }}</span>
+      </div>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #productTpl let-row="row">
+    <div class="d-flex align-items-center gap-2">
+      <div class="product-mini-thumb">
+        @if (row.product?.productImages && row.product?.productImages?.length && row.product?.productImages?.[0]?.url) {
+        <img [src]="row.product?.productImages?.[0]?.url" [alt]="row.product?.title" class="thumb-img" />
+        } @else {
+        <div class="thumb-placeholder"><i class="bi bi-image text-muted"></i></div>
+        }
+      </div>
+      <div class="product-mini-meta">
+        <div class="product-mini-title text-truncate" [title]="row.product?.title || 'Furniture Item'">
+          {{ row.product?.title || 'Furniture Item' }}
+        </div>
+        @if (row.product?.category) {
+        <span class="badge badge-category-mini">{{ row.product?.category }}</span>
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #addressTpl let-row="row">
+    <div class="address-snippet text-truncate-2"
+      [title]="(row.address?.address || '') + ', ' + (row.address?.city || '') + ', ' + (row.address?.state || '') + ' - ' + (row.address?.pincode || '')">
+      <i class="bi bi-geo-alt-fill me-1 text-muted"></i>
+      {{ row.address?.address }}, {{ row.address?.city }}, {{ row.address?.state }} - {{ row.address?.pincode }}
+    </div>
+  </ng-template>
+
+  <ng-template #amountTpl let-row="row">
+    <div class="price-val fw-bold text-forest">
+      ₹{{ row.product?.price | number:'1.2-2' }}
+    </div>
+  </ng-template>
+
+  <ng-template #statusTpl let-row="row">
+    @if (isOrderDelivered(row)) {
+    <span class="badge-status-pill status-delivered">
+      <i class="bi bi-check-circle-fill me-1"></i> Delivered
+    </span>
+    } @else {
+    <span class="badge-status-pill status-placed">
+      <i class="bi bi-clock-history me-1"></i> Placed
+    </span>
+    }
+  </ng-template>
+
+  <ng-template #actionsTpl let-row="row">
+    <div class="action-btn-group d-flex align-items-center justify-content-end gap-2"
+      (click)="$event.stopPropagation()">
+      @if (!isOrderDelivered(row)) {
+      <button type="button" class="btn btn-sm btn-mark-delivered" (click)="markAsDelivered(row, $event)"
+        [disabled]="isDeliveringId === row.orderId" title="Mark as Delivered">
+        @if (isDeliveringId === row.orderId) {
+        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+        } @else {
+        <i class="bi bi-truck me-1"></i> Mark Delivered
+        }
+      </button>
+      }
+      <button type="button" class="btn-icon-action" (click)="openOrderDetails(row)" title="View Order Details">
+        <i class="bi bi-eye"></i>
+      </button>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Quick Order Details Modal -->
+@if (selectedOrder) {
+<div class="modal-backdrop-custom" (click)="closeOrderDetails()">
+  <div class="order-modal-card shadow-2xl" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="order-modal-header d-flex align-items-center justify-content-between p-3 px-4 border-bottom">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge badge-order-modal">Order #{{ selectedOrder.orderId }}</span>
+        @if (isOrderDelivered(selectedOrder)) {
+        <span class="badge-status-pill status-delivered small">
+          <i class="bi bi-check-circle-fill me-1"></i> Delivered
+        </span>
+        } @else {
+        <span class="badge-status-pill status-placed small">
+          <i class="bi bi-clock-history me-1"></i> Placed
+        </span>
+        }
+      </div>
+      <button type="button" class="btn-close-modal" (click)="closeOrderDetails()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="order-modal-body p-4">
+      <!-- Section 1: Customer & Date Summary -->
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6">
+          <div class="info-block p-3 rounded-3 bg-light border">
+            <div class="info-label text-muted small mb-1"><i class="bi bi-person-fill me-1 text-forest"></i>Customer
+              Contact</div>
+            <div class="info-val fw-semibold text-truncate">{{ selectedOrder.user?.name || selectedOrder.user?.email ||
+              'N/A' }}</div>
+            <div class="info-sub text-muted small mt-1 d-flex align-items-center gap-1">
+              <i class="bi bi-telephone-fill text-muted"></i>
+              <span>{{ selectedOrder.contact || 'No phone provided' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6">
+          <div class="info-block p-3 rounded-3 bg-light border">
+            <div class="info-label text-muted small mb-1"><i class="bi bi-calendar-event me-1 text-forest"></i>Placement
+              Timestamp</div>
+            <div class="info-val fw-semibold">{{ selectedOrder.createdDate | date: 'dd MMMM yyyy, h:mm a':'IST' }}</div>
+            <div class="info-sub text-muted small mt-1">Status: {{ selectedOrder.orderStatus }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Product Purchased -->
+      <div class="product-purchase-box p-3 rounded-3 border mb-4">
+        <div class="section-title-mini text-muted small fw-bold text-uppercase mb-2">Item Purchased</div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="product-large-thumb">
+            @if (selectedOrder.product?.productImages && selectedOrder.product?.productImages?.length &&
+            selectedOrder.product?.productImages?.[0]?.url) {
+            <img [src]="selectedOrder.product?.productImages?.[0]?.url" [alt]="selectedOrder.product?.title"
+              class="thumb-img-lg" />
+            } @else {
+            <div class="thumb-placeholder-lg"><i class="bi bi-image text-muted fs-3"></i></div>
+            }
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="product-modal-title mb-1">{{ selectedOrder.product?.title || 'Product Title' }}</h5>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              @if (selectedOrder.product?.category) {
+              <span class="badge badge-category-mini">{{ selectedOrder.product?.category }}</span>
+              }
+              @if (selectedOrder.product?.id) {
+              <span class="text-muted small">Item ID: #{{ selectedOrder.product?.id }}</span>
+              }
+            </div>
+            <div class="product-modal-price text-forest fw-bold fs-5">
+              ₹{{ selectedOrder.product?.price | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Delivery Destination -->
+      <div class="shipping-dest-box p-3 rounded-3 bg-light border mb-4">
+        <div class="section-title-mini text-muted small fw-bold text-uppercase mb-1">
+          <i class="bi bi-geo-alt-fill text-danger me-1"></i> Delivery Address
+        </div>
+        <p class="mb-0 text-dark">
+          {{ selectedOrder.address?.address }}<br />
+          <strong>{{ selectedOrder.address?.city }}</strong>, {{ selectedOrder.address?.state }} – <strong>{{
+            selectedOrder.address?.pincode }}</strong>
+        </p>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeOrderDetails()">
+          Close
+        </button>
+
+        @if (!isOrderDelivered(selectedOrder)) {
+        <button type="button" class="btn btn-forest" (click)="markAsDelivered(selectedOrder)"
+          [disabled]="isDeliveringId === selectedOrder.orderId">
+          <i class="bi bi-truck me-1"></i> Mark as Delivered
+        </button>
+        } @else {
+        <span class="badge-status-pill status-delivered">
+          <i class="bi bi-check-circle-fill me-1"></i> Delivery Fulfilled
+        </span>
+        }
+      </div>
+    </div>
+  </div>
+</div>
 }

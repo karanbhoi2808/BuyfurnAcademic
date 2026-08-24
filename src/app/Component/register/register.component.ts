@@ -34,21 +34,22 @@ export class RegisterComponent {
   emailIdExits: boolean = false;
 
   generateOtp(): void {
-    if (!this.user.name || !this.user.email || !this.user.pasword) return;
+    const { name, email, pasword } = this.user;
+    if (!name || !email || !pasword) return;
 
     this.loading = true;
     this.registrationError = false;
     this.emailIdExits = false;
 
-    this.userService.generateOtp(this.user.email.trim()).subscribe({
+    this.userService.generateOtp(email.trim()).subscribe({
       next: (response) => {
         this.loading = false;
         if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('email', this.user.email.trim());
-          localStorage.setItem('name', this.user.name);
-          localStorage.setItem('pasword', this.user.pasword);
+          localStorage.setItem('email', email.trim());
+          localStorage.setItem('name', name);
+          localStorage.setItem('pasword', pasword);
 
-          this.EmailRequest.to = this.user.email.trim();
+          this.EmailRequest.to = email.trim();
           this.EmailRequest.subject = 'OTP to verify your email - BuyFurn';
           this.EmailRequest.text = response;
 

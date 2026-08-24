@@ -22,6 +22,7 @@ export interface Product {
   weight: number;
   careAndMaintenance: string;
   stockStatus: string;
+  createdDate?: string | Date;
 }
 
 export interface ProductFilterParams {

@@ -1,70 +1,483 @@
-<!-- Add this in your Angular component's HTML file -->
-<div class="container py-4">
-  <!-- Search Bar -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <form (submit)="onSearch($event)" class="d-flex">
-        <input type="text" class="form-control me-2" placeholder="Search products..." [(ngModel)]="searchKey"
-          name="searchKey" (ngModelChange)="onSearchChange($event)" />
-          <button type="submit" class="btn btn-primary">Search</button>
-        </form>
+<div class="admin-product-container">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <h1 class="page-title mb-1">Product Inventory</h1>
+        <p class="page-subtitle mb-0">Manage catalogue items, stock availability, pricing, and category classifications.
+        </p>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-action" (click)="getAllProducts()"
+          title="Refresh product list">
+          <i class="bi bi-arrow-clockwise" [class.spin-animation]="isLoading"></i>
+          <span class="d-none d-sm-inline ms-1">Refresh</span>
+        </button>
+
+        <a routerLink="/admin/addproduct" class="btn btn-forest btn-action">
+          <i class="bi bi-plus-circle-fill me-1"></i>
+          <span>Add Product</span>
+        </a>
       </div>
     </div>
 
-    <button type="button" class="btn btn-primary mb-4" routerLink="/admin/addproduct">Add Product</button>
-
-
-    @if (!isNoProductAvailabel) {
-      <div class="product-section py-5">
-        <div class="container">
-          <div class="row" id="product-list">
-            @for (product of products; track product) {
-              <div class="col-12 col-md-4 col-lg-3 mb-5">
-                <div class="product-card card h-100 d-flex flex-column align-items-center">
-                  <img [src]="product.productImages[0]?.url"
-                    class="card-img-top" alt="{{ product.title }}" class="pt-3">
-                    <div class="card-body">
-                      <h5 class="card-title" id="product-title">{{ product.title }}</h5>
-                      <p class="card-text">
-                        <strong id="product-price">₹{{ product.price.toFixed(2) }}</strong>
-                      </p>
-                      <p class="card-text text-warning">
-                        {{ product.stockStatus }}
-                      </p>
-                      <div class="d-flex justify-content-between">
-                        <button class="btn btn-outline-primary me-2"
-                        (click)="productDetailPage(product.id)">View</button>
-                        <button class="btn btn-outline-secondary me-2"
-                        [routerLink]="['/admin/editproduct', product.id]">Edit</button>
-                        <button class="btn btn-outline-danger"
-                        (click)="deleteProduct(product.id)">Delete</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
+    <!-- Quick Stats Metric Cards -->
+    <!-- <div class="row g-3 mt-1">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-forest-light text-forest">
+            <i class="bi bi-box-seam-fill"></i>
           </div>
-          @if (showLoadButton) {
-            <div class="text-center">
-              <button type="button" class="btn btn-outline-primary" (click)="loadMoreProducts()">Load more</button>
-            </div>
+          <div>
+            <span class="stat-label">Total Products</span>
+            <h4 class="stat-val">{{ totalElements }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-amber-light text-amber">
+            <i class="bi bi-grid-fill"></i>
+          </div>
+          <div>
+            <span class="stat-label">Categories</span>
+            <h4 class="stat-val">{{ categories.length }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-emerald-light text-emerald">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+          <div>
+            <span class="stat-label">Stock Status</span>
+            <h4 class="stat-val">{{ formatStockLabel(selectedStockStatus) }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-gold-light text-gold-dark">
+            <i class="bi bi-tags-fill"></i>
+          </div>
+          <div>
+            <span class="stat-label">Active Filters</span>
+            <h4 class="stat-val">{{ activeFilterCount() }}</h4>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- Filter & Search Toolbar -->
+  <div class="filter-card mb-4">
+    <!-- Top Filter Controls -->
+    <div class="row g-3 align-items-center">
+      <!-- Search Input -->
+      <div class="col-12 col-md-6 col-lg-7">
+        <div class="search-input-box">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="form-control search-field" placeholder="Search products by title or category..."
+            [ngModel]="searchKey" (ngModelChange)="onSearchInput($event)" />
+          @if (searchKey) {
+          <button type="button" class="btn-clear-search" (click)="clearSearch()" title="Clear search">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
           }
         </div>
-      }
+      </div>
+
+      <!-- Sort & Filter Actions -->
+      <div class="col-12 col-md-6 col-lg-5 d-flex align-items-center justify-content-md-end gap-2">
+        <div class="custom-dropdown-container flex-grow-1">
+          <button type="button" class="custom-dropdown-btn" (click)="toggleSortDropdown($event)"
+            [class.active]="isSortDropdownOpen" [attr.aria-expanded]="isSortDropdownOpen">
+            <div class="d-flex align-items-center gap-2 text-truncate">
+              <i class="bi bi-arrow-down-up text-muted"></i>
+              <span class="sort-current-text">{{ getCurrentSortLabel() }}</span>
+            </div>
+            <i class="bi bi-chevron-down dropdown-arrow" [class.rotated]="isSortDropdownOpen"></i>
+          </button>
+
+          @if (isSortDropdownOpen) {
+          <div class="custom-dropdown-menu shadow-lg">
+            @for (opt of sortOptions; track opt.value) {
+            <div class="custom-dropdown-item" [class.selected]="currentSortKey === opt.value"
+              (click)="selectSortOption(opt.value)">
+              <span>{{ opt.label }}</span>
+              @if (currentSortKey === opt.value) {
+              <i class="bi bi-check2 checkmark-icon"></i>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <button type="button" class="btn btn-filter-toggle flex-shrink-0"
+          [class.active]="isFilterPanelOpen || hasActiveFilters()" (click)="toggleFilterPanel()"
+          title="Toggle Advanced Filters">
+          <i class="bi bi-funnel-fill me-1"></i>
+          <span class="d-none d-sm-inline">Filters</span>
+          @if (activeFilterCount() > 0) {
+          <span class="badge rounded-pill bg-forest text-white ms-1">{{ activeFilterCount() }}</span>
+          }
+        </button>
+      </div>
     </div>
 
-    @if (isNoProductAvailabel) {
-      <div class="container text-center my-5">
-        <div>
-          <img src="../../../assets/images/no_data.jpg" alt="No orders" class="img-fluid no-data">
+    <!-- Category Pills Row -->
+    <div class="category-filter-row mt-3 pt-3 border-top">
+      <div class="category-pills-scroll">
+        <button type="button" class="category-chip" [class.active]="selectedCategories.length === 0"
+          (click)="toggleCategory('')">
+          <i class="bi bi-grid-fill me-1"></i> All Categories
+        </button>
+        @for (cat of categories; track cat) {
+        <button type="button" class="category-chip" [class.active]="isCategorySelected(cat)"
+          (click)="toggleCategory(cat)">
+          @if (isCategorySelected(cat)) {
+          <i class="bi bi-check2 me-1"></i>
+          }
+          {{ cat }}
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Collapsible Advanced Filters Drawer -->
+    @if (isFilterPanelOpen) {
+    <div class="advanced-filter-drawer mt-3 pt-3 border-top">
+      <div class="row g-3 align-items-end">
+        <!-- Stock Status Filter -->
+        <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+          <label class="form-label text-muted small fw-semibold">Stock Availability</label>
+          <div class="custom-dropdown-container">
+            <button type="button" class="custom-dropdown-btn custom-dropdown-btn-sm"
+              (click)="toggleStockDropdown($event)" [class.active]="isStockDropdownOpen"
+              [attr.aria-expanded]="isStockDropdownOpen">
+              <span class="sort-current-text">{{ getSelectedStockLabel() }}</span>
+              <i class="bi bi-chevron-down dropdown-arrow" [class.rotated]="isStockDropdownOpen"></i>
+            </button>
+
+            @if (isStockDropdownOpen) {
+            <div class="custom-dropdown-menu shadow-lg">
+              @for (opt of stockFilterOptions; track opt.value) {
+              <div class="custom-dropdown-item" [class.selected]="selectedStockStatus === opt.value"
+                (click)="selectStockOption(opt.value)">
+                <span>{{ opt.label }}</span>
+                @if (selectedStockStatus === opt.value) {
+                <i class="bi bi-check2 checkmark-icon"></i>
+                }
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Price Range Min -->
+        <div class="col-6 col-sm-3 col-md-2 col-lg-2">
+          <label class="form-label text-muted small fw-semibold">Min Price (₹)</label>
+          <input type="number" class="form-control custom-input" placeholder="0" [(ngModel)]="minPrice" min="0" />
+        </div>
+
+        <!-- Price Range Max -->
+        <div class="col-6 col-sm-3 col-md-2 col-lg-2">
+          <label class="form-label text-muted small fw-semibold">Max Price (₹)</label>
+          <input type="number" class="form-control custom-input" placeholder="Any" [(ngModel)]="maxPrice" min="0" />
+        </div>
+
+        <!-- Apply Price Filter Button -->
+        <div class="col-12 col-sm-6 col-md-2 col-lg-2 d-flex">
+          <button type="button" class="btn btn-outline-forest btn-sm w-100 py-2" (click)="applyPriceFilter()">
+            <i class="bi bi-funnel me-1"></i> Apply Price
+          </button>
+        </div>
+
+        <!-- Clear All Quick Action -->
+        <div class="col-12 col-sm-6 col-md-2 col-lg-2 d-flex">
+          @if (hasActiveFilters()) {
+          <button type="button" class="btn btn-outline-danger btn-sm w-100 py-2" (click)="clearAllFilters()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset All
+          </button>
+          }
         </div>
       </div>
+    </div>
     }
-    @if (isLoading) {
-      <div class="text-center my-5 z-3">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
+
+    <!-- Active Filters Summary Chips -->
+    @if (hasActiveFilters()) {
+    <div class="active-filters-bar mt-3 pt-2 d-flex flex-wrap align-items-center gap-2">
+      <span class="small text-muted fw-semibold me-1"><i class="bi bi-funnel me-1"></i>Applied:</span>
+
+      @if (searchKey) {
+      <span class="filter-tag">
+        <i class="bi bi-search me-1"></i>"{{ searchKey }}"
+        <button type="button" (click)="clearSearch()"><i class="bi bi-x"></i></button>
+      </span>
+      }
+
+      @for (cat of selectedCategories; track cat) {
+      <span class="filter-tag">
+        <i class="bi bi-tag-fill me-1"></i>{{ cat }}
+        <button type="button" (click)="removeCategory(cat)"><i class="bi bi-x"></i></button>
+      </span>
+      }
+
+      @if (selectedStockStatus !== 'ALL') {
+      <span class="filter-tag">
+        <i class="bi bi-box me-1"></i>{{ formatStockLabel(selectedStockStatus) }}
+        <button type="button" (click)="onStockStatusChange('ALL')"><i class="bi bi-x"></i></button>
+      </span>
+      }
+
+      @if (minPrice !== null || maxPrice !== null) {
+      <span class="filter-tag">
+        <i class="bi bi-cash-stack me-1"></i>
+        ₹{{ minPrice || 0 }} - ₹{{ maxPrice || 'Any' }}
+        <button type="button" (click)="resetPriceFilter()"><i class="bi bi-x"></i></button>
+      </span>
+      }
+
+      @if (currentSortKey !== 'latest') {
+      <span class="filter-tag">
+        <i class="bi bi-arrow-down-up me-1"></i>Sort: {{ sortBy }} ({{ sortDir }})
+        <button type="button" (click)="onSortChange('latest')"><i class="bi bi-x"></i></button>
+      </span>
+      }
+
+      <button type="button" class="btn-clear-all ms-auto" (click)="clearAllFilters()">
+        <i class="bi bi-trash3 me-1"></i>Clear all filters
+      </button>
+    </div>
+    }
+  </div>
+
+  <!-- Reusable Common Grid Component -->
+  <app-common-grid [columns]="columns" [data]="products" [isLoading]="isLoading" [totalElements]="totalElements"
+    [currentPage]="currentPage" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [totalPages]="totalPages"
+    [itemLabel]="'products'" [currentSortBy]="sortBy" [currentSortDir]="sortDir" [emptyTitle]="'No Products Found'"
+    [emptyMessage]="'We could not find any products matching your search keywords or filter criteria.'"
+    [emptyIcon]="'bi-box-seam'" [showEmptyAction]="hasActiveFilters()" [emptyActionLabel]="'Reset All Filters'"
+    [rowClickable]="true" (rowClick)="openQuickView($event)" (sortChange)="onGridSort($event)"
+    (pageChange)="goToPage($event)" (pageSizeChange)="onPageSizeChange($event)" (emptyAction)="clearAllFilters()"
+    [cellTemplates]="{
+      productInfo: productInfoTpl,
+      category: categoryTpl,
+      price: priceTpl,
+      stockStatus: stockStatusTpl,
+      actions: actionsTpl
+    }">
+  </app-common-grid>
+
+  <!-- Cell Templates for Common Grid -->
+  <ng-template #productInfoTpl let-row="row">
+    <div class="d-flex align-items-center gap-3">
+      <div class="product-thumb-wrapper" (click)="openQuickView(row)">
+        @if (row.productImages && row.productImages.length > 0 && row.productImages[0]?.url) {
+        <img [src]="row.productImages[0].url" [alt]="row.title" class="product-thumb-img" loading="lazy" />
+        } @else {
+        <div class="no-thumb-placeholder">
+          <i class="bi bi-image text-muted"></i>
+        </div>
+        }
+      </div>
+      <div class="product-meta">
+        <div class="product-title-table text-truncate" (click)="openQuickView(row)" [title]="row.title">
+          {{ row.title }}
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
+          <span class="product-id-badge">ID: #{{ row.id }}</span>
+          @if (row.createdDate) {
+          <span class="product-date-text text-muted">
+            <i class="bi bi-calendar3 me-1"></i>{{ row.createdDate | date: 'dd MMM yyyy, h:mm a':'IST' }}
+          </span>
+          }
         </div>
       </div>
-    }
+    </div>
+  </ng-template>
+
+  <ng-template #categoryTpl let-row="row">
+    <span class="badge badge-category-mini">
+      {{ row.category || 'General' }}
+    </span>
+  </ng-template>
+
+  <ng-template #priceTpl let-row="row">
+    <div class="price-val fw-bold text-forest">
+      ₹{{ row.price | number:'1.2-2' }}
+    </div>
+  </ng-template>
+
+  <ng-template #stockStatusTpl let-row="row">
+    <span class="badge-status-pill" [ngClass]="getStockBadgeClass(row.stockStatus)">
+      <i class="bi me-1" [class.bi-check-circle-fill]="getStockBadgeClass(row.stockStatus) === 'badge-stock-in'"
+        [class.bi-clock-history]="getStockBadgeClass(row.stockStatus) === 'badge-stock-soon'"
+        [class.bi-x-circle-fill]="getStockBadgeClass(row.stockStatus) === 'badge-stock-out'"
+        [class.bi-question-circle]="getStockBadgeClass(row.stockStatus) === 'badge-stock-unknown'"></i>
+      {{ formatStockLabel(row.stockStatus) }}
+    </span>
+  </ng-template>
+
+  <ng-template #actionsTpl let-row="row">
+    <div class="action-btn-group d-flex align-items-center justify-content-end gap-2"
+      (click)="$event.stopPropagation()">
+      <button type="button" class="btn-icon-action" (click)="openQuickView(row)" title="Quick Preview">
+        <i class="bi bi-eye"></i>
+      </button>
+      <button type="button" class="btn-icon-action" (click)="productDetailPage(row.id)" title="Full Live Product Page">
+        <i class="bi bi-box-arrow-up-right"></i>
+      </button>
+      <button type="button" class="btn-icon-action" [routerLink]="['/admin/editproduct', row.id]" title="Edit Product">
+        <i class="bi bi-pencil-square"></i>
+      </button>
+      <button type="button" class="btn-icon-action text-danger" (click)="deleteProduct(row)" title="Delete Product">
+        <i class="bi bi-trash3"></i>
+      </button>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Quick View Modal -->
+@if (selectedProduct) {
+<div class="modal-backdrop-custom" (click)="closeQuickView()">
+  <div class="order-modal-card shadow-2xl" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="order-modal-header d-flex align-items-center justify-content-between p-3 px-4 border-bottom">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge badge-order-modal">Product #{{ selectedProduct.id }}</span>
+        @if (selectedProduct.category) {
+        <span class="badge badge-category-mini">{{ selectedProduct.category }}</span>
+        }
+        <span class="badge-status-pill small" [ngClass]="getStockBadgeClass(selectedProduct.stockStatus)">
+          {{ formatStockLabel(selectedProduct.stockStatus) }}
+        </span>
+      </div>
+      <button type="button" class="btn-close-modal" (click)="closeQuickView()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="order-modal-body p-4">
+      <div class="row g-4 mb-4">
+        <!-- Images Section -->
+        <div class="col-12 col-md-5">
+          <div class="product-large-thumb mb-3 w-100" style="height: 220px;">
+            @if (selectedProduct.productImages && selectedProduct.productImages.length > 0) {
+            <img [src]="selectedProduct.productImages[activeImageIndex]?.url || selectedProduct.productImages[0]?.url"
+              [alt]="selectedProduct.title" class="thumb-img-lg" />
+            } @else {
+            <div class="thumb-placeholder-lg"><i class="bi bi-image text-muted fs-1"></i></div>
+            }
+          </div>
+
+          <!-- Thumbnail Strip -->
+          @if (selectedProduct.productImages && selectedProduct.productImages.length > 1) {
+          <div class="d-flex gap-2 modal-thumbs-strip">
+            @for (img of selectedProduct.productImages; track img.id; let idx = $index) {
+            <div class="product-mini-thumb" [class.active-thumb]="activeImageIndex === idx"
+              (click)="activeImageIndex = idx" style="cursor: pointer;">
+              <img [src]="img.url" [alt]="img.name" class="thumb-img" />
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="col-12 col-md-7">
+          <h4 class="product-modal-title mb-2">{{ selectedProduct.title }}</h4>
+
+          <div class="product-modal-price text-forest fw-bold fs-4 mb-2">
+            ₹{{ selectedProduct.price | number:'1.2-2' }}
+          </div>
+
+          @if (selectedProduct.createdDate) {
+          <div class="product-date-text text-muted mb-3">
+            <i class="bi bi-calendar3 me-1"></i>Listed on {{ selectedProduct.createdDate | date: 'dd MMMM yyyy, h:mm
+            a':'IST' }}
+          </div>
+          }
+
+          <p class="modal-desc text-muted small mb-4">
+            {{ selectedProduct.description || 'No description available for this product.' }}
+          </p>
+
+          <!-- Specifications Grid -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <div class="p-2 rounded bg-light border">
+                <span class="text-muted small d-block">Color</span>
+                <span class="fw-semibold small">{{ selectedProduct.color || 'N/A' }}</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-light border">
+                <span class="text-muted small d-block">Material</span>
+                <span class="fw-semibold small">{{ selectedProduct.material || 'N/A' }}</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-light border">
+                <span class="text-muted small d-block">Seating Capacity</span>
+                <span class="fw-semibold small">{{ selectedProduct.seatingCapacity || 'N/A' }}</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-light border">
+                <span class="text-muted small d-block">Weight</span>
+                <span class="fw-semibold small">{{ selectedProduct.weight ? selectedProduct.weight + ' kg' : 'N/A'
+                  }}</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-light border">
+                <span class="text-muted small d-block">Warranty</span>
+                <span class="fw-semibold small">{{ selectedProduct.warranty || 'N/A' }}</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-light border">
+                <span class="text-muted small d-block">Care</span>
+                <span class="fw-semibold small text-truncate d-block">{{ selectedProduct.careAndMaintenance ||
+                  'Standard' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeQuickView()">
+          Close
+        </button>
+
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-outline-danger"
+            (click)="deleteProduct(selectedProduct); closeQuickView()">
+            <i class="bi bi-trash3 me-1"></i> Delete
+          </button>
+          <button type="button" class="btn btn-outline-forest"
+            (click)="productDetailPage(selectedProduct.id); closeQuickView()">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Live Page
+          </button>
+          <button type="button" class="btn btn-forest" [routerLink]="['/admin/editproduct', selectedProduct.id]"
+            (click)="closeQuickView()">
+            <i class="bi bi-pencil-square me-1"></i> Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

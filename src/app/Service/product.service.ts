@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Product, ProductFilterParams, ProductPageResponse } from '../Interface/product';
-import { OrderDetails } from '../Interface/orderdetails';
+import { OrderDetails, OrderAnalyticsResponse, OrderFilterParams, OrderPageResponse } from '../Interface/orderdetails';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -146,8 +146,42 @@ export class ProductService {
     );
   }
 
-  getAllOrderDetails(status: any) {
-    return this.httpclient.get(`${this.baseUrlAdmin}/allOrders/${status}`);
+  getAllOrderDetails(
+    paramsOrStatus?: OrderFilterParams | string,
+    pageNumber: number = 0,
+    pageSize: number = 10
+  ): Observable<OrderPageResponse | any> {
+    if (typeof paramsOrStatus === 'object' && paramsOrStatus !== null) {
+      let httpParams = new HttpParams();
+      if (paramsOrStatus.pageNumber !== undefined && paramsOrStatus.pageNumber !== null) {
+        httpParams = httpParams.set('pageNumber', paramsOrStatus.pageNumber.toString());
+      }
+      if (paramsOrStatus.pageSize !== undefined && paramsOrStatus.pageSize !== null) {
+        httpParams = httpParams.set('pageSize', paramsOrStatus.pageSize.toString());
+      }
+      if (paramsOrStatus.status !== undefined && paramsOrStatus.status !== null && paramsOrStatus.status.trim() !== '') {
+        httpParams = httpParams.set('status', paramsOrStatus.status.trim());
+      }
+      if (paramsOrStatus.searchKey !== undefined && paramsOrStatus.searchKey !== null && paramsOrStatus.searchKey.trim() !== '') {
+        httpParams = httpParams.set('searchKey', paramsOrStatus.searchKey.trim());
+      }
+      if (paramsOrStatus.sortBy !== undefined && paramsOrStatus.sortBy !== null && paramsOrStatus.sortBy.trim() !== '') {
+        httpParams = httpParams.set('sortBy', paramsOrStatus.sortBy.trim());
+      }
+      if (paramsOrStatus.sortDir !== undefined && paramsOrStatus.sortDir !== null && paramsOrStatus.sortDir.trim() !== '') {
+        httpParams = httpParams.set('sortDir', paramsOrStatus.sortDir.trim());
+      }
+
+      return this.httpclient.get<OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, { params: httpParams });
+    }
+
+    const status = typeof paramsOrStatus === 'string' ? paramsOrStatus : 'all';
+    let httpParams = new HttpParams()
+      .set('status', status)
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    return this.httpclient.get<OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, { params: httpParams });
   }
 
   markOrderAsDelivered(id: any) {
@@ -165,5 +199,12 @@ export class ProductService {
     return this.httpclient.get(
       `${this.baseUrlLocal}/user/createTransaction/${amount}`
     );
+  }
+
+  getOrderAnalytics(status: string = 'all'): Observable<OrderAnalyticsResponse> {
+    const params = new HttpParams().set('status', status);
+    return this.httpclient.get<OrderAnalyticsResponse>(`${this.baseUrlAdmin}/orders/analytics`, {
+      params
+    });
   }
 }

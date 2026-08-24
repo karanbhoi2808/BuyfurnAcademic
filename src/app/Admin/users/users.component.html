@@ -1,4 +1,323 @@
-<div class="container chart-container">
-    <h2 class="text-center">User Role Distribution</h2>
-    <canvas id="userChart"></canvas> <!-- Chart.js canvas -->
+<div class="admin-users-container">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <h1 class="page-title mb-1">User Accounts & Directory</h1>
+        <p class="page-subtitle mb-0">Directory of registered customers, staff members, and system administrators.</p>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-action" (click)="getAllUsers()"
+          title="Refresh user list">
+          <i class="bi bi-arrow-clockwise" [class.spin-animation]="isLoading"></i>
+          <span class="d-none d-sm-inline ms-1">Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats Metric Cards -->
+    <div class="row g-3 mt-1">
+      <div class="col-6 col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon bg-forest-light text-forest">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <span class="stat-label">Total Users</span>
+            <h4 class="stat-val">{{ totalUsers }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon bg-gold-light text-gold-dark">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <div>
+            <span class="stat-label">Administrators</span>
+            <h4 class="stat-val">{{ adminCount }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon bg-emerald-light text-emerald">
+            <i class="bi bi-person-check-fill"></i>
+          </div>
+          <div>
+            <span class="stat-label">Customers / Users</span>
+            <h4 class="stat-val">{{ customerCount }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Toolbar -->
+  <div class="filter-card mb-4">
+    <div class="row g-3 align-items-center">
+      <!-- Search Bar -->
+      <div class="col-12 col-md-6 col-lg-5">
+        <div class="search-input-box">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="form-control search-field" placeholder="Search by name or email..."
+            [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" />
+          @if (searchTerm) {
+          <button type="button" class="btn-clear-search" (click)="clearSearch()" title="Clear search">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Role Filter Tabs -->
+      <div class="col-12 col-md-6 col-lg-5">
+        <div class="status-tab-group">
+          <button type="button" class="status-tab-btn" [class.active]="selectedRoleFilter === 'ALL'"
+            (click)="filterByRole('ALL')">
+            All <span class="badge tab-badge">{{ totalUsers }}</span>
+          </button>
+          <button type="button" class="status-tab-btn" [class.active]="selectedRoleFilter === 'ADMIN'"
+            (click)="filterByRole('ADMIN')">
+            Admins <span class="badge tab-badge bg-gold-light text-gold-dark">{{ adminCount }}</span>
+          </button>
+          <button type="button" class="status-tab-btn" [class.active]="selectedRoleFilter === 'USER'"
+            (click)="filterByRole('USER')">
+            Customers <span class="badge tab-badge bg-emerald-light text-emerald">{{ customerCount }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="col-12 col-lg-2">
+        <div class="custom-dropdown-container">
+          <button type="button" class="custom-dropdown-btn" (click)="toggleSortDropdown($event)"
+            [class.active]="isSortDropdownOpen" [attr.aria-expanded]="isSortDropdownOpen">
+            <div class="d-flex align-items-center gap-2 text-truncate">
+              <i class="bi bi-arrow-down-up text-muted"></i>
+              <span class="sort-current-text">{{ getSortLabel() }}</span>
+            </div>
+            <i class="bi bi-chevron-down dropdown-arrow" [class.rotated]="isSortDropdownOpen"></i>
+          </button>
+
+          @if (isSortDropdownOpen) {
+          <div class="custom-dropdown-menu shadow-lg">
+            @for (opt of sortOptions; track opt.value) {
+            <div class="custom-dropdown-item" [class.selected]="sortBy === opt.value"
+              (click)="selectSortOption(opt.value)">
+              <span>{{ opt.label }}</span>
+              @if (sortBy === opt.value) {
+              <i class="bi bi-check2 checkmark-icon"></i>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reusable Common Grid Component -->
+  <app-common-grid [columns]="columns" [data]="users" [isLoading]="isLoading" [totalElements]="totalUsers"
+    [currentPage]="currentPage" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" [totalPages]="totalPages"
+    [itemLabel]="'users'" [emptyTitle]="'No Users Found'"
+    [emptyMessage]="searchTerm ? 'No account matches your search query. Try clearing the search or changing role filter.' : 'No user accounts found under the current role filter.'"
+    [emptyIcon]="'bi-people'" [showEmptyAction]="!!searchTerm || selectedRoleFilter !== 'ALL'"
+    [emptyActionLabel]="'Reset Filters'" [rowClickable]="true" (rowClick)="selectUser($event)"
+    (pageChange)="goToPage($event)" (pageSizeChange)="onPageSizeChange($event)"
+    (emptyAction)="clearSearch(); filterByRole('ALL')" [cellTemplates]="{
+      user: userTpl,
+      contact: contactTpl,
+      address: addressTpl,
+      roles: rolesTpl,
+      status: statusTpl,
+      actions: actionsTpl
+    }">
+  </app-common-grid>
+
+  <!-- Cell Templates for Common Grid -->
+  <ng-template #userTpl let-row="row">
+    <div class="d-flex align-items-center gap-3">
+      <div class="user-avatar shadow-sm" [style.background-color]="getAvatarColor(row.name)">
+        {{ getUserInitials(row.name) }}
+      </div>
+      <div>
+        <div class="user-name fw-bold text-dark">{{ row.name }}</div>
+        <span class="user-id-badge text-muted small">ID: #{{ row.id }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #contactTpl let-row="row">
+    <div class="d-flex flex-column gap-1">
+      <div class="d-flex align-items-center gap-1">
+        <span class="user-email text-muted">{{ row.email }}</span>
+        <button type="button" class="btn btn-sm btn-icon-subtle text-muted" title="Copy Email"
+          (click)="copyToClipboard(row.email, $event)">
+          <i class="bi" [class.bi-copy]="copiedEmail !== row.email"
+            [class.bi-check-circle-fill]="copiedEmail === row.email"
+            [class.text-success]="copiedEmail === row.email"></i>
+        </button>
+      </div>
+      @if (row.contactNumber || row.contact) {
+      <div class="text-muted small d-flex align-items-center gap-1">
+        <i class="bi bi-telephone-fill text-muted" style="font-size: 0.75rem;"></i>
+        <span>{{ row.contactNumber || row.contact }}</span>
+      </div>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #addressTpl let-row="row">
+    @if (row.address?.city || row.address?.state) {
+    <div class="address-snippet text-truncate-2"
+      [title]="(row.address?.address ? row.address?.address + ', ' : '') + (row.address?.city || '') + ', ' + (row.address?.state || '')">
+      <i class="bi bi-geo-alt-fill me-1 text-muted"></i>
+      {{ row.address?.city }}{{ row.address?.city && row.address?.state ? ', ' : '' }}{{ row.address?.state }}
+    </div>
+    } @else {
+    <span class="text-muted small">Not provided</span>
+    }
+  </ng-template>
+
+  <ng-template #rolesTpl let-row="row">
+    <div class="d-flex flex-wrap gap-1">
+      @for (role of row.roles; track role) {
+      @if (role.toUpperCase().includes('ADMIN')) {
+      <span class="badge badge-admin">
+        <i class="bi bi-shield-fill-check me-1"></i> ADMIN
+      </span>
+      } @else {
+      <span class="badge badge-user">
+        <i class="bi bi-person-fill me-1"></i> USER
+      </span>
+      }
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #statusTpl let-row="row">
+    <span class="badge-status-pill status-delivered">
+      <i class="bi bi-check-circle-fill me-1"></i> Active
+    </span>
+  </ng-template>
+
+  <ng-template #actionsTpl let-row="row">
+    <div class="action-btn-group d-flex align-items-center justify-content-end gap-2"
+      (click)="$event.stopPropagation()">
+      <a [href]="'mailto:' + row.email" class="btn-icon-action" title="Send Email">
+        <i class="bi bi-envelope-fill"></i>
+      </a>
+      <button type="button" class="btn-icon-action" title="View Profile Details" (click)="selectUser(row)">
+        <i class="bi bi-eye"></i>
+      </button>
+    </div>
+  </ng-template>
 </div>
+
+<!-- User Detail Modal -->
+@if (selectedUser) {
+<div class="modal-backdrop-custom" (click)="closeModal()">
+  <div class="order-modal-card shadow-2xl" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="order-modal-header d-flex align-items-center justify-content-between p-3 px-4 border-bottom">
+      <div class="d-flex align-items-center gap-3">
+        <div class="user-avatar shadow-sm" [style.background-color]="getAvatarColor(selectedUser.name)">
+          {{ getUserInitials(selectedUser.name) }}
+        </div>
+        <div>
+          <h5 class="user-modal-title mb-0">{{ selectedUser.name }}</h5>
+          <span class="text-muted small">Account ID: #{{ selectedUser.id }}</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close-modal" (click)="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="order-modal-body p-4">
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6">
+          <div class="info-block p-3 rounded-3 bg-light border">
+            <div class="info-label text-muted small mb-1">
+              <i class="bi bi-envelope-fill me-1 text-forest"></i>Email Address
+            </div>
+            <div class="info-val fw-semibold text-truncate">{{ selectedUser.email }}</div>
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-2 py-1 px-2"
+              (click)="copyToClipboard(selectedUser.email)">
+              <i class="bi bi-copy me-1"></i> Copy Email
+            </button>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6">
+          <div class="info-block p-3 rounded-3 bg-light border">
+            <div class="info-label text-muted small mb-1">
+              <i class="bi bi-telephone-fill me-1 text-forest"></i>Phone Number
+            </div>
+            <div class="info-val fw-semibold">
+              {{ selectedUser.contactNumber || selectedUser.contact || 'No phone provided' }}
+            </div>
+            @if (selectedUser.contactNumber || selectedUser.contact) {
+            <a [href]="'tel:' + (selectedUser.contactNumber || selectedUser.contact)"
+              class="btn btn-sm btn-outline-forest mt-2 py-1 px-2 d-inline-block">
+              <i class="bi bi-telephone-fill me-1"></i> Call
+            </a>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Box -->
+      @if (selectedUser.address) {
+      <div class="shipping-dest-box p-3 rounded-3 bg-light border mb-4">
+        <div class="section-title-mini text-muted small fw-bold text-uppercase mb-1">
+          <i class="bi bi-geo-alt-fill text-danger me-1"></i> Registered Address
+        </div>
+        <p class="mb-0 text-dark">
+          {{ selectedUser.address.address }}<br />
+          <strong>{{ selectedUser.address.city }}</strong>, {{ selectedUser.address.state }} – <strong>{{
+            selectedUser.address.pincode }}</strong>
+        </p>
+      </div>
+      }
+
+      <!-- Roles & Permissions -->
+      <div class="p-3 rounded-3 border mb-4">
+        <div class="section-title-mini text-muted small fw-bold text-uppercase mb-2">
+          Assigned Roles & Access
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          @for (role of selectedUser.roles; track role) {
+          @if (role.toUpperCase().includes('ADMIN')) {
+          <span class="badge badge-admin p-2 fs-6">
+            <i class="bi bi-shield-fill-check me-1"></i> Administrator (Full System Access)
+          </span>
+          } @else {
+          <span class="badge badge-user p-2 fs-6">
+            <i class="bi bi-person-fill me-1"></i> Customer / Standard User
+          </span>
+          }
+          }
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">
+          Close
+        </button>
+
+        <a [href]="'mailto:' + selectedUser.email" class="btn btn-forest">
+          <i class="bi bi-envelope-fill me-1"></i> Send Email
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+}

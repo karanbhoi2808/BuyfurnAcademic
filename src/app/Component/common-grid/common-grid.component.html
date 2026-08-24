@@ -1,0 +1,138 @@
+<div class="common-grid-wrapper">
+  <!-- Loading Skeleton State -->
+  @if (isLoading) {
+  <div class="skeleton-table-card mb-4">
+    <div class="skeleton-header-row shimmer"></div>
+    @for (item of [1, 2, 3, 4, 5]; track item) {
+    <div class="skeleton-data-row shimmer"></div>
+    }
+  </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading && (!data || data.length === 0)) {
+  <div class="empty-state-card text-center py-5 bg-white rounded-3 border shadow-sm my-4">
+    <div class="empty-icon-wrapper mb-3">
+      <i class="bi {{ emptyIcon }} text-muted fs-1"></i>
+    </div>
+    <h4 class="empty-title mb-2">{{ emptyTitle }}</h4>
+    <p class="empty-text text-muted max-w-md mx-auto mb-4">
+      {{ emptyMessage }}
+    </p>
+    @if (showEmptyAction) {
+    <button type="button" class="btn btn-outline-forest" (click)="emptyAction.emit()">
+      <i class="bi bi-arrow-counterclockwise me-1"></i> {{ emptyActionLabel }}
+    </button>
+    }
+  </div>
+  }
+
+  <!-- Data Table Content -->
+  @if (!isLoading && data && data.length > 0) {
+  <div class="table-card bg-white rounded-3 border shadow-sm mb-4">
+    <div class="table-responsive">
+      <table class="table align-middle common-data-table mb-0 {{ tableClass }}">
+        <thead>
+          <tr>
+            @for (col of columns; track col.key) {
+            <th scope="col" [style.width]="col.width || 'auto'" [class.text-center]="col.align === 'center'"
+              [class.text-end]="col.align === 'right'" [class.sortable-header]="col.sortable"
+              [class]="col.headerClass || ''" (click)="onSort(col)">
+              <div class="d-inline-flex align-items-center gap-1"
+                [class.justify-content-center]="col.align === 'center'"
+                [class.justify-content-end]="col.align === 'right'">
+                <span>{{ col.header }}</span>
+                @if (col.sortable) {
+                @if (currentSortBy === (col.sortKey || col.key)) {
+                <i class="bi sort-icon text-forest fw-bold" [class.bi-arrow-up]="currentSortDir === 'asc'"
+                  [class.bi-arrow-down]="currentSortDir === 'desc'"></i>
+                } @else {
+                <i class="bi bi-arrow-down-up sort-icon text-muted opacity-50"></i>
+                }
+                }
+              </div>
+            </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of data; track row.id || $index; let idx = $index) {
+          <tr class="grid-row" [class.clickable-row]="rowClickable" (click)="onRowClick(row)">
+            @for (col of columns; track col.key) {
+            <td [class.text-center]="col.align === 'center'" [class.text-end]="col.align === 'right'"
+              [class]="col.cellClass || ''">
+              @if (cellTemplates[col.key]) {
+              <ng-container
+                *ngTemplateOutlet="cellTemplates[col.key]; context: { $implicit: row[col.key], row: row, col: col, index: idx }"></ng-container>
+              } @else {
+              <span>{{ col.formatter ? col.formatter(row[col.key], row) : (row[col.key] ?? '-') }}</span>
+              }
+            </td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    @if (showPagination) {
+    <div
+      class="pagination-card d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 p-3 px-4 border-top">
+      <div class="d-flex align-items-center gap-3">
+        <div class="pagination-info text-muted small">
+          Showing
+          <span class="fw-semibold text-dark">{{ getStartIndex() }}</span>
+          to
+          <span class="fw-semibold text-dark">{{ getEndIndex() }}</span>
+          of
+          <span class="fw-semibold text-dark">{{ totalElements }}</span> {{ itemLabel }}
+        </div>
+
+        <div class="d-flex align-items-center gap-1">
+          <span class="text-muted small">Per page:</span>
+          <select class="form-select form-select-sm page-size-select" [ngModel]="pageSize"
+            (ngModelChange)="onPageSizeChange($event)">
+            @for (size of pageSizeOptions; track size) {
+            <option [value]="size">{{ size }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (totalPages > 1) {
+      <div class="d-flex align-items-center gap-2">
+        <ul class="pagination pagination-clean mb-0">
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0"
+              aria-label="Previous">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+          </li>
+
+          @for (page of getPaginationPages(); track $index) {
+          @if (page === '...') {
+          <li class="page-item disabled"><span class="page-link ellipsis">...</span></li>
+          } @else {
+          <li class="page-item" [class.active]="currentPage === page">
+            <button class="page-link" (click)="goToPage(+page)">
+              {{ +page + 1 }}
+            </button>
+          </li>
+          }
+          }
+
+          <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+            <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
+              aria-label="Next">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+</div>

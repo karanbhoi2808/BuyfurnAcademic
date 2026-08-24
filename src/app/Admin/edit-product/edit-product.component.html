@@ -1,81 +1,300 @@
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <h3 class="text-center mb-4">Edit Product</h3>
-      <form (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="id">ID</label>
-          <input type="text" class="form-control" id="id" [(ngModel)]="product.id" name="id" disabled>
-        </div>
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" class="form-control" id="title" [(ngModel)]="product.title" name="title">
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea class="form-control" id="description" [(ngModel)]="product.description"
-          name="description"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="productImages">Product Images</label>
-          <input type="file" class="form-control" id="productImages" multiple (change)="onFileChange($event)">
-        </div>
-        <div class="form-group">
-          <label for="price">Price</label>
-          <input type="number" step="10" class="form-control" id="price" [(ngModel)]="product.price"
-            name="price">
+<div class="admin-form-container">
+  <!-- Page Header -->
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h1 class="form-page-title mb-0">Edit Product</h1>
+        @if (product.id) {
+        <span class="badge badge-product-id">ID: #{{ product.id }}</span>
+        }
+      </div>
+      <p class="form-page-subtitle mb-0">Modify product inventory specifications, live status, and media assets.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/admin/product" class="btn btn-outline-secondary btn-form-action">
+        <i class="bi bi-arrow-left me-1"></i> Back to Products
+      </a>
+      <!-- <button
+        type="button"
+        class="btn btn-primary-gold btn-form-action"
+        (click)="onSubmit()"
+        [disabled]="isSubmitting || isLoadingProduct || !product.title || !product.price || !product.category"
+      >
+        @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Saving Changes...
+        } @else {
+          <i class="bi bi-check2-circle me-1"></i> Update Product
+        }
+      </button> -->
+    </div>
+  </div>
+
+  @if (isLoadingProduct) {
+  <div class="loading-box text-center py-5">
+    <div class="spinner-border text-forest" role="status">
+      <span class="visually-hidden">Loading product details...</span>
+    </div>
+    <p class="text-muted mt-2">Loading product specifications...</p>
+  </div>
+  }
+
+  @if (!isLoadingProduct) {
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <div class="row g-4">
+      <!-- Main Content Column -->
+      <div class="col-12 col-lg-8">
+        <!-- Card 1: Core Information -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-info-circle me-2 text-forest"></i>General Information</h5>
+            <p class="section-hint">Update key product identifiers and commercial attributes.</p>
           </div>
-          <div class="form-group">
-            <label for="warranty">Warranty</label>
-            <input type="text" class="form-control" id="warranty" [(ngModel)]="product.warranty"
-              name="warranty">
+
+          <div class="row g-3">
+            <!-- Title -->
+            <div class="col-12">
+              <label for="title" class="form-label required-label">Product Title</label>
+              <input type="text" class="form-control custom-input" id="title"
+                placeholder="e.g. Nordic Ergonomic Velvet Armchair" [(ngModel)]="product.title" name="title" required
+                #titleCtrl="ngModel" />
+              @if (titleCtrl.invalid && (titleCtrl.dirty || titleCtrl.touched)) {
+              <div class="text-danger small mt-1">Title is required.</div>
+              }
             </div>
-            <div class="form-group">
-              <label for="category">Category</label>
-              <select class="form-control" id="category" [(ngModel)]="product.category" name="category">
-                <option value="" disabled selected>Select Category</option>
-                @for (category of categories; track category) {
-                  <option [value]="category">{{category}}</option>
+
+            <!-- Category -->
+            <div class="col-12 col-md-6">
+              <label for="category" class="form-label required-label">Category</label>
+              <select class="form-select custom-input" id="category" [(ngModel)]="product.category" name="category"
+                required #catCtrl="ngModel">
+                <option value="" disabled selected>Select a Category</option>
+                @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+              @if (catCtrl.invalid && (catCtrl.dirty || catCtrl.touched)) {
+              <div class="text-danger small mt-1">Category selection is required.</div>
+              }
+            </div>
+
+            <!-- Price -->
+            <div class="col-12 col-md-6">
+              <label for="price" class="form-label required-label">Price (₹)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-forest fw-bold">₹</span>
+                <input type="number" step="1" min="0" class="form-control custom-input" id="price" placeholder="0.00"
+                  [(ngModel)]="product.price" name="price" required #priceCtrl="ngModel" />
+              </div>
+              @if (priceCtrl.invalid && (priceCtrl.dirty || priceCtrl.touched)) {
+              <div class="text-danger small mt-1">Valid price is required.</div>
+              }
+            </div>
+
+            <!-- Stock Status -->
+            <div class="col-12 col-md-6">
+              <label for="stockStatus" class="form-label required-label">Stock Status</label>
+              <select class="form-select custom-input" id="stockStatus" [(ngModel)]="product.stockStatus"
+                name="stockStatus" required>
+                @for (stock of stockOptions; track stock) {
+                <option [value]="stock">{{ stock }}</option>
                 }
               </select>
             </div>
-            <div class="form-group">
-              <label for="color">Color</label>
-              <input type="text" class="form-control" id="color" [(ngModel)]="product.color" name="color">
-            </div>
-            <div class="form-group">
-              <label for="material">Material</label>
-              <input type="text" class="form-control" id="material" [(ngModel)]="product.material"
-                name="material">
-              </div>
-              <div class="form-group">
-                <label for="seatingCapacity">Seating Capacity</label>
-                <input type="number" class="form-control" id="seatingCapacity" [(ngModel)]="product.seatingCapacity"
-                  name="seatingCapacity">
-                </div>
-                <div class="form-group">
-                  <label for="weight">Weight(kg)</label>
-                  <input type="number" step="0.01" class="form-control" id="weight" [(ngModel)]="product.weight"
-                    name="weight">
-                  </div>
-                  <div class="form-group">
-                    <label for="careAndMaintenance">Care and Maintenance</label>
-                    <textarea class="form-control" id="careAndMaintenance" [(ngModel)]="product.careAndMaintenance"
-                    name="careAndMaintenance"></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label for="stock">Stock options</label>
-                    <select class="form-control" id="stock" [(ngModel)]="product.stockStatus" name="stock">
-                      <option value="" disabled>Select stock option</option>
-                      @for ( stock of stockOptions; track  stock) {
-                        <option [value]="stock">{{stock}}</option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Update Product</button>
-                  </div>
-                </form>
-              </div>
+
+            <!-- Warranty -->
+            <div class="col-12 col-md-6">
+              <label for="warranty" class="form-label">Warranty Details</label>
+              <input type="text" class="form-control custom-input" id="warranty"
+                placeholder="e.g. 3 Years Comprehensive Warranty" [(ngModel)]="product.warranty" name="warranty" />
             </div>
           </div>
+        </div>
+
+        <!-- Card 2: Media Management -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-images me-2 text-forest"></i>Product Media</h5>
+            <p class="section-hint">Manage current photos and upload additional assets.</p>
+          </div>
+
+          <!-- Existing Live Images -->
+          @if (product.productImages && product.productImages.length > 0) {
+          <div class="existing-images-box mb-4">
+            <label class="form-label d-block text-muted small fw-semibold">Current Live Images ({{
+              product.productImages.length }})</label>
+            <div class="row g-3">
+              @for (img of product.productImages; track img.id; let idx = $index) {
+              <div class="col-6 col-sm-4 col-md-3">
+                <div class="preview-card existing-card">
+                  <div class="preview-img-wrapper">
+                    <img [src]="img.url" [alt]="img.name || product.title" class="preview-img" />
+                    <span class="live-badge"><i class="bi bi-check-circle-fill me-1"></i>Live</span>
+                  </div>
+                  <div class="preview-details p-2">
+                    <div class="preview-name text-truncate">{{ img.name || 'Image #' + (idx + 1) }}</div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- Upload New Images Dropzone -->
+          <label class="form-label d-block text-muted small fw-semibold">Upload Additional / Replacement Images</label>
+          <div class="image-dropzone" [class.dragging]="isDragging" (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+            <input type="file" id="productImages" #fileInput class="d-none" multiple accept="image/*"
+              (change)="onFileChange($event)" />
+            <div class="dropzone-content text-center py-4">
+              <div class="dropzone-icon mb-2">
+                <i class="bi bi-cloud-arrow-up text-forest"></i>
+              </div>
+              <h6 class="dropzone-title mb-1">Click to select new images or drag & drop here</h6>
+              <p class="dropzone-subtext text-muted mb-0 small">Supports PNG, JPG, JPEG, WEBP up to 10MB each</p>
+            </div>
+          </div>
+
+          <!-- Newly Selected Images Preview -->
+          @if (newImagePreviews.length > 0) {
+          <div class="image-preview-grid mt-4">
+            <label class="form-label d-block text-forest small fw-bold">New Images Ready for Upload ({{
+              newImagePreviews.length }}):</label>
+            <div class="row g-3">
+              @for (img of newImagePreviews; track $index; let idx = $index) {
+              <div class="col-6 col-sm-4 col-md-3">
+                <div class="preview-card new-upload-card">
+                  <div class="preview-img-wrapper">
+                    <img [src]="img.url" [alt]="img.name" class="preview-img" />
+                    <span class="new-badge">New</span>
+                    <button type="button" class="btn-remove-preview" (click)="removeNewImage(idx, $event)"
+                      title="Remove new image">
+                      <i class="bi bi-trash3-fill"></i>
+                    </button>
+                  </div>
+                  <div class="preview-details p-2">
+                    <div class="preview-name text-truncate" [title]="img.name">{{ img.name }}</div>
+                    <div class="preview-size text-muted small">{{ img.size }}</div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Card 3: Specifications -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-sliders2 me-2 text-forest"></i>Technical Specifications</h5>
+            <p class="section-hint">Dimensions, materials, weight, and configuration details.</p>
+          </div>
+
+          <div class="row g-3">
+            <!-- Material -->
+            <div class="col-12 col-md-6">
+              <label for="material" class="form-label">Material</label>
+              <input type="text" class="form-control custom-input" id="material"
+                placeholder="e.g. Solid Oak, Genuine Leather" [(ngModel)]="product.material" name="material" />
+            </div>
+
+            <!-- Color -->
+            <div class="col-12 col-md-6">
+              <label for="color" class="form-label">Color</label>
+              <input type="text" class="form-control custom-input" id="color"
+                placeholder="e.g. Charcoal Grey, Natural Oak" [(ngModel)]="product.color" name="color" />
+            </div>
+
+            <!-- Seating Capacity -->
+            <div class="col-6">
+              <label for="seatingCapacity" class="form-label">Seating Capacity</label>
+              <input type="number" min="1" class="form-control custom-input" id="seatingCapacity" placeholder="e.g. 2"
+                [(ngModel)]="product.seatingCapacity" name="seatingCapacity" />
+            </div>
+
+            <!-- Weight -->
+            <div class="col-6">
+              <label for="weight" class="form-label">Weight (kg)</label>
+              <input type="number" step="0.1" min="0" class="form-control custom-input" id="weight"
+                placeholder="e.g. 18.2" [(ngModel)]="product.weight" name="weight" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Descriptions -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-card-text me-2 text-forest"></i>Descriptions & Maintenance</h5>
+            <p class="section-hint">Provide detailed product descriptions for the storefront.</p>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="description" class="form-label">Product Description</label>
+              <textarea class="form-control custom-input" id="description" rows="4"
+                placeholder="Describe features, aesthetics, ergonomics, and styling..."
+                [(ngModel)]="product.description" name="description"></textarea>
+            </div>
+
+            <div class="col-12">
+              <label for="careAndMaintenance" class="form-label">Care and Maintenance</label>
+              <textarea class="form-control custom-input" id="careAndMaintenance" rows="3"
+                placeholder="e.g. Wipe clean with a soft dry cloth. Avoid abrasive cleaners..."
+                [(ngModel)]="product.careAndMaintenance" name="careAndMaintenance"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Unified Update & Sidebar -->
+      <div class="col-12 col-lg-4">
+        <!-- Update Actions Card -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-save me-2 text-forest"></i>Update Item</h5>
+            <p class="section-hint mb-0">Review item metadata and save changes.</p>
+          </div>
+
+          <div class="summary-list mb-3">
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Product ID</span>
+              <span class="fw-bold font-monospace small">#{{ product.id }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Live Status</span>
+              <span class="badge bg-emerald-light text-emerald fw-semibold">{{ product.stockStatus || 'In Stock'
+                }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Listed Price</span>
+              <span class="fw-bold text-forest small">{{ product.price ? ('₹' + product.price) : 'Not set' }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">New Images Queued</span>
+              <span class="fw-semibold small">{{ selectedFiles.length }}</span>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary-gold w-100 py-2 fw-semibold" (click)="onSubmit()"
+              [disabled]="isSubmitting || !productForm.valid">
+              @if (isSubmitting) {
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Saving...
+              } @else {
+              <i class="bi bi-check2-circle me-1"></i> Save Changes
+              }
+            </button>
+
+            <a routerLink="/admin/product" class="btn btn-outline-secondary w-100">
+              Cancel
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  }
+</div>
