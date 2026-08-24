@@ -1,6 +1,194 @@
-<div class="container">
-    <div class="jumbotron text-center">
-        <h1 class="display-4">Welcome, Admin!</h1>
-        <p class="lead">Manage your store with ease and efficiency.</p>
+<div class="admin-dashboard-container">
+  <!-- Welcome Hero Banner -->
+  <div class="dashboard-hero-card mb-4 position-relative overflow-hidden">
+    <div class="hero-bg-accent"></div>
+    <div
+      class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4 position-relative z-1 p-4">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-gold-dark text-white fw-bold px-2 py-1 fs-7">
+            <i class="bi bi-patch-check-fill me-1"></i> Executive Portal
+          </span>
+          <span class="text-white-50 small">
+            <i class="bi bi-calendar3 me-1"></i> {{ currentDate | date:'fullDate' }}
+          </span>
+        </div>
+        <h1 class="hero-title text-white mb-2">
+          {{ greeting }}, <span class="text-gold">{{ adminName }}</span>!
+        </h1>
+        <p class="hero-subtitle text-white-50 mb-0">
+          Here is what is happening across your BuyFurn store today. Manage catalogue items, monitor customer orders,
+          and track revenue.
+        </p>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-outline-light-forest btn-hero-action" (click)="loadAdminData()"
+          title="Refresh dashboard metrics">
+          <i class="bi bi-arrow-clockwise" [class.spin-animation]="isLoading"></i>
+          <span class="d-none d-sm-inline ms-1">Refresh</span>
+        </button>
+        <a routerLink="/admin/addproduct" class="btn btn-gold btn-hero-action">
+          <i class="bi bi-plus-circle-fill me-1"></i> Add Product
+        </a>
+        <a routerLink="/admin/visualizationorders" class="btn btn-outline-light-forest btn-hero-action">
+          <i class="bi bi-bar-chart-line me-1"></i> Analytics
+        </a>
+        <a routerLink="/" target="_blank" class="btn btn-outline-light-forest btn-hero-action"
+          title="View Customer Storefront">
+          <i class="bi bi-box-arrow-up-right me-1"></i> Storefront
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- Primary KPI Metric Cards -->
+  <div class="row g-3 mb-4">
+    <!-- Gross Revenue -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <a routerLink="/admin/visualizationorders" class="text-decoration-none">
+        <div class="kpi-metric-card h-100 p-3 bg-white rounded-3 border shadow-sm">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="kpi-label">Gross Revenue</span>
+            <div class="kpi-icon bg-forest-light text-forest">
+              <i class="bi bi-wallet2"></i>
+            </div>
+          </div>
+          <h3 class="kpi-val text-dark mb-1">₹{{ totalRevenue | number:'1.0-0' }}</h3>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="kpi-sub text-muted small">{{ ordersProcessedCount || totalOrdersCount }} orders
+              processed</span>
+            <span class="badge bg-emerald-light text-emerald small fw-bold">
+              <i class="bi bi-graph-up-arrow me-1"></i> Realized
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <a routerLink="/admin/orders" class="text-decoration-none">
+        <div class="kpi-metric-card h-100 p-3 bg-white rounded-3 border shadow-sm">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="kpi-label">Total Orders</span>
+            <div class="kpi-icon bg-gold-light text-gold-dark">
+              <i class="bi bi-bag-check-fill"></i>
+            </div>
+          </div>
+          <h3 class="kpi-val text-dark mb-1">{{ totalOrdersCount }}</h3>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="kpi-sub text-muted small">{{ placedOrdersCount }} Placed</span>
+            <span class="badge bg-amber-light text-amber-dark small fw-bold">
+              {{ deliveredOrdersCount }} Delivered
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Catalogue Products -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <a routerLink="/admin/product" class="text-decoration-none">
+        <div class="kpi-metric-card h-100 p-3 bg-white rounded-3 border shadow-sm">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="kpi-label">Active Catalogue</span>
+            <div class="kpi-icon bg-blue-light text-blue">
+              <i class="bi bi-box-seam-fill"></i>
+            </div>
+          </div>
+          <h3 class="kpi-val text-dark mb-1">{{ totalProductsCount }}</h3>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="kpi-sub text-muted small">Live furniture items</span>
+            <span class="badge bg-forest-light text-forest small fw-bold">In Stock</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Registered Users -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <a routerLink="/admin/users" class="text-decoration-none">
+        <div class="kpi-metric-card h-100 p-3 bg-white rounded-3 border shadow-sm">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="kpi-label">Registered Accounts</span>
+            <div class="kpi-icon bg-purple-light text-purple">
+              <i class="bi bi-people-fill"></i>
+            </div>
+          </div>
+          <h3 class="kpi-val text-dark mb-1">{{ totalUsersCount }}</h3>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="kpi-sub text-muted small">Customers & staff</span>
+            <span class="badge bg-emerald-light text-emerald small fw-bold">Active</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Operational Grid: Quick Shortcuts & Activity Stream -->
+  <div class="row g-4 mb-4">
+    <!-- Left Column: Quick Navigation Shortcuts & System Status -->
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom p-3 px-4 d-flex align-items-center justify-content-between">
+          <div>
+            <h5 class="section-card-title mb-0">Management Modules</h5>
+            <span class="text-muted small">Quick shortcuts to store administration sections</span>
+          </div>
+          <span class="badge bg-light text-dark border">4 Hubs</span>
+        </div>
+
+        <div class="card-body p-3 p-md-4">
+          <div class="row g-3">
+            @for (card of shortcutCards; track card.title) {
+            <div class="col-12 col-sm-6">
+              <a [routerLink]="card.link" class="shortcut-card-link text-decoration-none">
+                <div class="shortcut-card p-3 rounded-3 border h-100 d-flex flex-column justify-content-between">
+                  <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="shortcut-icon" [ngClass]="[card.bgClass, card.colorClass]">
+                      <i class="bi" [ngClass]="card.icon"></i>
+                    </div>
+                    <span class="badge bg-light text-muted border small">{{ card.badge }}</span>
+                  </div>
+                  <div>
+                    <h6 class="shortcut-title mb-1 fw-bold text-dark">{{ card.title }}</h6>
+                    <p class="shortcut-desc text-muted small mb-0">{{ card.description }}</p>
+                  </div>
+                  <div class="shortcut-arrow mt-3 pt-2 border-top d-flex align-items-center justify-content-between">
+                    <span class="small fw-semibold" [ngClass]="card.colorClass">Open Module</span>
+                    <i class="bi bi-arrow-right" [ngClass]="card.colorClass"></i>
+                  </div>
+                </div>
+              </a>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Store Health & System Telemetry -->
+      <!-- <div class="card border-0 shadow-sm rounded-3 bg-white p-3 px-4">
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="system-status-indicator">
+              <span class="pulse-dot"></span>
+            </div>
+            <div>
+              <h6 class="mb-0 fw-bold text-dark">Store Services Operational</h6>
+              <span class="text-muted small">Spring Boot REST API & PostgreSQL / H2 Database Connected</span>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-forest border py-2 px-3 small">
+              <i class="bi bi-lightning-charge-fill me-1 text-gold"></i> Razorpay Ready
+            </span>
+            <span class="badge bg-light text-forest border py-2 px-3 small">
+              <i class="bi bi-shield-check me-1 text-emerald"></i> JWT Auth Active
+            </span>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
 </div>

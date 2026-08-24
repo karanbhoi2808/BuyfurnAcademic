@@ -1,84 +1,300 @@
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <h2 class="text-center mb-4">Add Product</h2>
-      <form (ngSubmit)="onSubmit()" #productForm="ngForm">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" class="form-control" id="title" [(ngModel)]="product.title" name="title">
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea class="form-control" id="description" [(ngModel)]="product.description"
-          name="description"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="productImages">Product Images</label>
-          <input type="file" class="form-control" id="productImages" multiple (change)="onFileChange($event)">
-          @if (productForm.submitted && !product.images) {
-            <div class="text-danger">
-              Product images are required.
-            </div>
-          }
-        </div>
-        <div class="form-group">
-          <label for="price">Price</label>
-          <input type="number" step="10" class="form-control" id="price" [(ngModel)]="product.price"
-            name="price">
+<div class="admin-form-container">
+  <!-- Page Header -->
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="form-page-title mb-1">Add New Product</h1>
+      <p class="form-page-subtitle mb-0">Fill in the specifications below to create and list a new furniture item in the
+        catalogue.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/admin/product" class="btn btn-outline-secondary btn-form-action">
+        <i class="bi bi-arrow-left me-1"></i> Back to Products
+      </a>
+      <!-- <button
+        type="button"
+        class="btn btn-primary-gold btn-form-action"
+        (click)="onSubmit()"
+        [disabled]="isSubmitting || !product.title || !product.price || !product.category || selectedFiles.length === 0"
+      >
+        @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Publishing...
+        } @else {
+          <i class="bi bi-cloud-arrow-up-fill me-1"></i> Publish Product
+        }
+      </button> -->
+    </div>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <div class="row g-4">
+      <!-- Main Content Column -->
+      <div class="col-12 col-lg-8">
+        <!-- Card 1: Core Information -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-info-circle me-2 text-forest"></i>General Information</h5>
+            <p class="section-hint">Specify the essential title, category, pricing, and stock status.</p>
           </div>
-          <div class=" form-group">
-            <label for="warranty">Warranty</label>
-            <input type="text" class="form-control" id="warranty" [(ngModel)]="product.warranty"
-              name="warranty">
+
+          <div class="row g-3">
+            <!-- Title -->
+            <div class="col-12">
+              <label for="title" class="form-label required-label">Product Title</label>
+              <input type="text" class="form-control custom-input" id="title"
+                placeholder="e.g. Nordic Ergonomic Velvet Armchair" [(ngModel)]="product.title" name="title" required
+                #titleCtrl="ngModel" />
+              @if (titleCtrl.invalid && (titleCtrl.dirty || titleCtrl.touched)) {
+              <div class="text-danger small mt-1">Title is required.</div>
+              }
             </div>
-            <div class="form-group">
-              <label for="category">Category</label>
-              <select class="form-control" id="category" [(ngModel)]="product.category" name="category">
-                <option value="" disabled selected>Select Category</option>
-                @for ( category of categories; track  category) {
-                  <option [value]="category">{{category}}</option>
+
+            <!-- Category -->
+            <div class="col-12 col-md-6">
+              <label for="category" class="form-label required-label">Category</label>
+              <select class="form-select custom-input" id="category" [(ngModel)]="product.category" name="category"
+                required #catCtrl="ngModel">
+                <option value="" disabled selected>Select a Category</option>
+                @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+              @if (catCtrl.invalid && (catCtrl.dirty || catCtrl.touched)) {
+              <div class="text-danger small mt-1">Category selection is required.</div>
+              }
+            </div>
+
+            <!-- Price -->
+            <div class="col-12 col-md-6">
+              <label for="price" class="form-label required-label">Price (₹)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-forest fw-bold">₹</span>
+                <input type="number" step="1" min="0" class="form-control custom-input" id="price" placeholder="0.00"
+                  [(ngModel)]="product.price" name="price" required #priceCtrl="ngModel" />
+              </div>
+              @if (priceCtrl.invalid && (priceCtrl.dirty || priceCtrl.touched)) {
+              <div class="text-danger small mt-1">Valid price is required.</div>
+              }
+            </div>
+
+            <!-- Stock Status -->
+            <div class="col-12 col-md-6">
+              <label for="stockStatus" class="form-label required-label">Stock Status</label>
+              <select class="form-select custom-input" id="stockStatus" [(ngModel)]="product.stockStatus"
+                name="stockStatus" required>
+                @for (stock of stockOptions; track stock) {
+                <option [value]="stock">{{ stock }}</option>
                 }
               </select>
             </div>
-            <div class="form-group">
-              <label for="color">Color</label>
-              <input type="text" class="form-control" id="color" [(ngModel)]="product.color" name="color">
-            </div>
-            <div class="form-group">
-              <label for="material">Material</label>
-              <input type="text" class="form-control" id="material" [(ngModel)]="product.material"
-                name="material">
-              </div>
-              <div class="form-group">
-                <label for="seatingCapacity">Seating Capacity</label>
-                <input type="number" class="form-control" id="seatingCapacity" [(ngModel)]="product.seatingCapacity"
-                  name="seatingCapacity">
-                </div>
-                <div class="form-group">
-                  <label for="weight">Weight(kg)</label>
-                  <input type="number" step="0.01" class="form-control" id="weight" [(ngModel)]="product.weight"
-                    name="weight">
-                  </div>
-                  <div class="form-group">
-                    <label for="careAndMaintenance">Care and Maintenance</label>
-                    <textarea class="form-control" id="careAndMaintenance" [(ngModel)]="product.careAndMaintenance"
-                    name="careAndMaintenance"></textarea>
-                  </div>
 
-                  <div class="form-group">
-                    <label for="stock">Stock Status</label>
-                    <select class="form-control" id="stock" [(ngModel)]="product.stockStatus" name="stock" required>
-                      <option value="" disabled selected>Select stock option</option>
-                      @for (stock of stockOptions; track stock) {
-                        <option [value]="stock">{{stock}}</option>
-                      }
-
-                    </select>
-                  </div>
-
-                  <button type="submit" class="btn btn-primary btn-block" [disabled]="!productForm.valid">Add
-                  Product</button>
-                </form>
-              </div>
+            <!-- Warranty -->
+            <div class="col-12 col-md-6">
+              <label for="warranty" class="form-label">Warranty Details</label>
+              <input type="text" class="form-control custom-input" id="warranty"
+                placeholder="e.g. 3 Years Comprehensive Warranty" [(ngModel)]="product.warranty" name="warranty" />
             </div>
           </div>
+        </div>
+
+        <!-- Card 2: Product Media & Interactive Image Upload -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="section-title"><i class="bi bi-images me-2 text-forest"></i>Product Media</h5>
+              <p class="section-hint mb-0">Upload high-resolution images for the catalogue (first image acts as primary
+                cover).</p>
+            </div>
+            <span class="badge badge-image-count">{{ imagePreviews.length }} image(s) selected</span>
+          </div>
+
+          <!-- Drag & Drop Upload Zone -->
+          <div class="image-dropzone" [class.dragging]="isDragging" (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+            <input type="file" id="productImages" #fileInput class="d-none" multiple accept="image/*"
+              (change)="onFileChange($event)" />
+            <div class="dropzone-content text-center py-4">
+              <div class="dropzone-icon mb-2">
+                <i class="bi bi-cloud-arrow-up text-forest"></i>
+              </div>
+              <h6 class="dropzone-title mb-1">Click to browse or drag & drop product photos</h6>
+              <p class="dropzone-subtext text-muted mb-0 small">Supports PNG, JPG, JPEG, WEBP up to 10MB each</p>
+            </div>
+          </div>
+
+          <!-- Selected Images Preview Grid -->
+          @if (imagePreviews.length > 0) {
+          <div class="image-preview-grid mt-4">
+            <div class="row g-3">
+              @for (img of imagePreviews; track $index; let idx = $index) {
+              <div class="col-6 col-sm-4 col-md-3">
+                <div class="preview-card" [class.primary-cover]="idx === 0">
+                  <div class="preview-img-wrapper">
+                    <img [src]="img.url" [alt]="img.name" class="preview-img" />
+                    @if (idx === 0) {
+                    <span class="cover-badge"><i class="bi bi-star-fill me-1"></i>Cover</span>
+                    }
+                    <button type="button" class="btn-remove-preview" (click)="removeImage(idx, $event)"
+                      title="Remove image">
+                      <i class="bi bi-trash3-fill"></i>
+                    </button>
+                  </div>
+                  <div class="preview-details p-2">
+                    <div class="preview-name text-truncate" [title]="img.name">{{ img.name }}</div>
+                    <div class="preview-size text-muted small">{{ img.size }}</div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          } @else {
+          <div class="alert alert-warning-subtle mt-3 mb-0 d-flex align-items-center gap-2 p-2 px-3 rounded-3 small">
+            <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+            <span>At least one product image is required to publish this product.</span>
+          </div>
+          }
+        </div>
+
+        <!-- Card 3: Specifications -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-sliders2 me-2 text-forest"></i>Technical Specifications</h5>
+            <p class="section-hint">Dimensions, materials, weight, and configuration details.</p>
+          </div>
+
+          <div class="row g-3">
+            <!-- Material -->
+            <div class="col-12 col-md-6">
+              <label for="material" class="form-label">Material</label>
+              <input type="text" class="form-control custom-input" id="material"
+                placeholder="e.g. Solid Teak Wood, Boucle Fabric" [(ngModel)]="product.material" name="material" />
+            </div>
+
+            <!-- Color -->
+            <div class="col-12 col-md-6">
+              <label for="color" class="form-label">Color</label>
+              <input type="text" class="form-control custom-input" id="color"
+                placeholder="e.g. Olive Green, Walnut Brown" [(ngModel)]="product.color" name="color" />
+            </div>
+
+            <!-- Seating Capacity -->
+            <div class="col-6">
+              <label for="seatingCapacity" class="form-label">Seating Capacity</label>
+              <input type="number" min="1" class="form-control custom-input" id="seatingCapacity" placeholder="e.g. 3"
+                [(ngModel)]="product.seatingCapacity" name="seatingCapacity" />
+            </div>
+
+            <!-- Weight -->
+            <div class="col-6">
+              <label for="weight" class="form-label">Weight (kg)</label>
+              <input type="number" step="0.1" min="0" class="form-control custom-input" id="weight"
+                placeholder="e.g. 24.5" [(ngModel)]="product.weight" name="weight" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Descriptions & Maintenance -->
+        <div class="form-section-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-card-text me-2 text-forest"></i>Descriptions & Maintenance</h5>
+            <p class="section-hint">Provide informative copy to guide customers on care and styling.</p>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="description" class="form-label">Full Product Description</label>
+              <textarea class="form-control custom-input" id="description" rows="4"
+                placeholder="Describe features, aesthetics, ergonomics, and recommended styling..."
+                [(ngModel)]="product.description" name="description"></textarea>
+            </div>
+
+            <div class="col-12">
+              <label for="careAndMaintenance" class="form-label">Care and Maintenance</label>
+              <textarea class="form-control custom-input" id="careAndMaintenance" rows="3"
+                placeholder="e.g. Wipe clean with a soft dry cloth. Avoid abrasive cleaners and direct sunlight..."
+                [(ngModel)]="product.careAndMaintenance" name="careAndMaintenance"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Unified Publishing & Status Sidebar -->
+      <div class="col-12 col-lg-4">
+        <!-- Publishing Control Card -->
+        <div class="form-section-card publishing-card mb-4">
+          <div class="card-section-header">
+            <h5 class="section-title"><i class="bi bi-send me-2 text-forest"></i>Publishing</h5>
+            <p class="section-hint mb-0">Review status and publish to live store.</p>
+          </div>
+
+          <!-- Attributes Summary -->
+          <div class="summary-list mb-3">
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Live Status</span>
+              <span class="badge bg-emerald-light text-emerald fw-semibold">{{ product.stockStatus || 'In Stock'
+                }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Category</span>
+              <span class="fw-semibold small text-truncate max-w-150">{{ product.category || 'Not selected' }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Listed Price</span>
+              <span class="fw-bold text-forest small">{{ product.price ? ('₹' + product.price) : 'Not set' }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted small">Images Attached</span>
+              <span class="fw-semibold small" [class.text-danger]="selectedFiles.length === 0"
+                [class.text-emerald]="selectedFiles.length > 0">
+                {{ selectedFiles.length }} image(s)
+              </span>
+            </div>
+          </div>
+
+          <!-- Publishing Readiness Checklist -->
+          <div class="readiness-box p-3 mb-3 rounded-3 bg-light border">
+            <div class="small fw-bold text-muted mb-2 text-uppercase letter-spacing-1">Publishing Checklist</div>
+            <div class="d-flex align-items-center gap-2 mb-1 small">
+              <i class="bi"
+                [ngClass]="product.title ? 'bi-check-circle-fill text-success' : 'bi-dash-circle text-muted'"></i>
+              <span [class.text-muted]="!product.title">Title provided</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-1 small">
+              <i class="bi"
+                [ngClass]="product.category ? 'bi-check-circle-fill text-success' : 'bi-dash-circle text-muted'"></i>
+              <span [class.text-muted]="!product.category">Category selected</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-1 small">
+              <i class="bi"
+                [ngClass]="product.price > 0 ? 'bi-check-circle-fill text-success' : 'bi-dash-circle text-muted'"></i>
+              <span [class.text-muted]="!product.price">Price defined</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 small">
+              <i class="bi"
+                [ngClass]="selectedFiles.length > 0 ? 'bi-check-circle-fill text-success' : 'bi-dash-circle text-muted'"></i>
+              <span [class.text-muted]="selectedFiles.length === 0">At least 1 photo</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary-gold w-100 py-2 fw-semibold" (click)="onSubmit()"
+              [disabled]="isSubmitting || !productForm.valid || selectedFiles.length === 0">
+              @if (isSubmitting) {
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Publishing...
+              } @else {
+              <i class="bi bi-cloud-arrow-up-fill me-1"></i> Save & Publish
+              }
+            </button>
+
+            <button type="button" class="btn btn-outline-secondary w-100" (click)="resetForm()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Form
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

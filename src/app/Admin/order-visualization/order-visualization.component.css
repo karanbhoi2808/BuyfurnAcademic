@@ -1,4 +1,260 @@
-canvas {
-    height: 500px;
-    width: 500px;
+/* BuyFurn Sales & Order Analytics Styles */
+
+.admin-analytics-container {
+  padding: 0.5rem 0.5rem 3rem 0.5rem;
+  color: var(--bf-text-main, #1c2520);
+}
+
+/* Page Header */
+.page-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.85rem;
+  color: var(--bf-primary-dark, #1e3a2b);
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  color: var(--bf-text-muted, #64748b);
+  font-size: 0.95rem;
+}
+
+.btn-action {
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.btn-forest {
+  background-color: var(--bf-primary-dark, #1e3a2b);
+  color: #ffffff;
+  border: 1px solid var(--bf-primary-dark, #1e3a2b);
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.btn-forest:hover {
+  background-color: var(--bf-primary-medium, #2b4c3f);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Dataset Filter Pills */
+.status-pill-group {
+  display: flex;
+  background-color: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.status-pill-btn {
+  background: none;
+  border: none;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-pill-btn:hover {
+  color: #0f172a;
+}
+
+.status-pill-btn.active {
+  background-color: #ffffff;
+  color: var(--bf-primary-dark, #1e3a2b);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* KPI Cards */
+.kpi-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.kpi-label {
+  font-size: 0.775rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+}
+
+.kpi-val {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.bg-forest-light {
+  background-color: #e8f5ee;
+}
+
+.text-forest {
+  color: var(--bf-primary-dark, #1e3a2b);
+}
+
+.bg-gold-light {
+  background-color: #fefce8;
+}
+
+.text-gold-dark {
+  color: #b45309;
+}
+
+.bg-emerald-light {
+  background-color: #ecfdf5;
+}
+
+.text-emerald {
+  color: #059669;
+}
+
+.bg-blue-light {
+  background-color: #eff6ff;
+}
+
+.text-blue {
+  color: #2563eb;
+}
+
+/* Chart Cards */
+.chart-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.chart-title,
+.table-title,
+.empty-title {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.chart-canvas-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.revenue-canvas-box {
+  height: 350px;
+}
+
+.doughnut-canvas-box {
+  height: 220px;
+}
+
+.pie-canvas-box {
+  height: 160px;
+}
+
+/* Monthly Table */
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.monthly-table {
+  font-size: 0.875rem;
+}
+
+.monthly-table thead th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.775rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.monthly-table td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.bg-forest {
+  background-color: var(--bf-primary-dark, #1e3a2b);
+}
+
+/* Skeleton & Shimmer */
+.skeleton-chart-box {
+  height: 380px;
+  border-radius: 16px;
+  background-color: #f1f5f9;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }

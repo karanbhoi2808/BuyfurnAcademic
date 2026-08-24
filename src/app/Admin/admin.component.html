@@ -1,60 +1,127 @@
-<div class="container-fluid">
-    <div class="row">
-        <nav class="navbar navbar-dark bg-dark col-12 d-md-none ps-3">
-            <div class="d-flex justify-content-between w-100">
-                <!-- Brand logo aligned left for small screens -->
-                <a class="navbar-brand text-light fs-3 fw-bold" routerLink="/admin">
-                    BuyFurn<span class=" text-warning">.</span>
-                </a>
-                <!-- Toggler button -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
-                    aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<div class="admin-layout-wrapper">
+  <!-- Mobile Navbar Header -->
+  <header class="navbar navbar-dark admin-mobile-header d-md-none px-3 py-2">
+    <a class="navbar-brand d-flex align-items-center gap-1 text-white fw-bold fs-4" routerLink="/admin">
+      <span class="brand-name">BuyFurn</span><span class="brand-dot">.</span>
+      <span class="badge bg-gold-dark text-white ms-2 fs-7">Admin</span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
+      aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="bi bi-list fs-2 text-white"></i>
+    </button>
+  </header>
+
+  <div class="admin-shell-body">
+    <!-- Admin Sidebar -->
+    <aside id="sidebarMenu" class="admin-sidebar collapse d-md-block">
+      <div class="sidebar-inner d-flex flex-column h-100">
+        <!-- Desktop Brand Logo -->
+        <div
+          class="sidebar-brand-box px-4 py-4 d-none d-md-flex align-items-center justify-content-between border-bottom-forest">
+          <a class="navbar-brand d-flex align-items-center text-white fw-bold fs-4" routerLink="/admin">
+            <span class="brand-name">BuyFurn</span><span class="brand-dot">.</span>
+            <span class="badge badge-admin-pill ms-2">Admin</span>
+          </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="sidebar-nav-container flex-grow-1 px-3 py-3">
+          <div class="sidebar-section-label px-3 mb-2">MANAGEMENT</div>
+          <ul class="nav flex-column gap-1">
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/admin" [routerLinkActiveOptions]="{exact: true}"
+                routerLinkActive="active">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/admin/product" routerLinkActive="active">
+                <i class="bi bi-box-seam me-2"></i>
+                <span>Products</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/admin/orders" routerLinkActive="active">
+                <i class="bi bi-bag-check me-2"></i>
+                <span>Orders</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/admin/visualizationorders" routerLinkActive="active">
+                <i class="bi bi-bar-chart-line me-2"></i>
+                <span>Order Analytics</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/admin/users" routerLinkActive="active">
+                <i class="bi bi-people me-2"></i>
+                <span>Users</span>
+              </a>
+            </li>
+          </ul>
+
+          <div class="sidebar-section-label px-3 mt-4 mb-2">QUICK LINKS</div>
+          <ul class="nav flex-column gap-1">
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/admin/addproduct" routerLinkActive="active">
+                <i class="bi bi-plus-circle me-2"></i>
+                <span>New Product</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="admin-nav-link" routerLink="/" target="_blank">
+                <i class="bi bi-shop me-2"></i>
+                <span>Storefront</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- User Footer & Logout -->
+        <div class="sidebar-footer px-3 py-3 border-top-forest mt-auto">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2 overflow-hidden">
+              <div class="admin-avatar">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <div class="user-info text-truncate">
+                <div class="admin-username text-truncate">{{ user || 'Administrator' }}</div>
+                <div class="admin-role">Super Admin</div>
+              </div>
             </div>
-        </nav>
+            <button class="btn-logout" (click)="logOut()" routerLink="/" title="Logout">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse ps-3">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
+    <!-- Main Content Area -->
+    <main class="admin-main-content">
+      <!-- Desktop Header Bar -->
+      <header class="admin-topbar d-none d-md-flex align-items-center justify-content-between px-4 py-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="fw-bold text-forest fs-6">Admin Workspace</span>
+          <span class="badge badge-store-mgmt">Store Management</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <a routerLink="/" target="_blank" class="btn btn-sm btn-outline-forest">
+            <i class="bi bi-arrow-up-right-square me-1"></i> Live Store
+          </a>
+          <div class="admin-user-pill">
+            <span class="user-status-dot"></span>
+            <span class="fw-semibold text-forest">{{ user || 'Admin' }}</span>
+          </div>
+        </div>
+      </header>
 
-                    <li class="nav-item">
-                        <a class="nav-link active text-light" [routerLink]="['/admin/dashboard']" hidden>
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" [routerLink]="['/admin/product']">
-                            <i class="bi bi-box-seam"></i> Products
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" [routerLink]="['/admin/orders']">
-                            <i class="bi bi-bag-check"></i> Orders
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" [routerLink]="['/admin/users']">
-                            <i class="bi bi-people"></i> Users
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" (click)="logOut()" routerLink="/">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-
-            </div>
-        </nav>
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-            <nav class="navbar navbar-light d-flex justify-content-end d-none d-md-flex">
-                <a class="navbar-brand text-dark fs-3 fw-bold" routerLink="/admin">
-                    BuyFurn<span class=" text-warning">.</span>
-                </a>
-            </nav>
-            <router-outlet></router-outlet>
-        </main>
-    </div>
+      <div class="admin-page-body px-3 px-md-4 py-3">
+        <div class="admin-content-inner">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>

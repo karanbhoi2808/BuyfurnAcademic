@@ -1,4 +1,158 @@
-img {
-    max-width: 100%;
-    height: 500px;
+/* BuyFurn Orders Management Component Specific Styling */
+
+.admin-orders-container {
+  padding: 0.5rem 0.5rem 3rem 0.5rem;
+  color: var(--bf-text-main, #1c2520);
+}
+
+.btn-mark-delivered {
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.btn-mark-delivered:hover:not(:disabled) {
+  background-color: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  transform: translateY(-1px);
+}
+
+/* Order ID & Date in Grid */
+.order-id-badge {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--bf-primary-dark, #1e3a2b);
+}
+
+.order-date-text {
+  font-size: 0.775rem;
+  white-space: nowrap;
+}
+
+/* Customer Info Column */
+.customer-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.customer-email {
+  font-weight: 600;
+  color: #1e293b;
+  max-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.customer-email i {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.customer-phone {
+  font-size: 0.8rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.customer-phone i {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Product Mini Thumbnail in Table */
+.product-mini-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: #f1f5f9;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-mini-meta {
+  max-width: 180px;
+}
+
+.product-mini-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.badge-category-mini {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  font-size: 0.685rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+}
+
+.address-snippet {
+  max-width: 220px;
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.35;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Modal Details Specific */
+.product-large-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumb-img-lg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-modal-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #0f172a;
 }

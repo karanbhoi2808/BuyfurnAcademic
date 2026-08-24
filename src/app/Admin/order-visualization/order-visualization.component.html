@@ -1,3 +1,242 @@
-<div>
-    <canvas #lineChart></canvas>
+<div class="admin-analytics-container">
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <h1 class="page-title mb-1">Sales & Order Analytics</h1>
+        <p class="page-subtitle mb-0">Visualize revenue trajectories, category breakdowns, and order volume patterns.
+        </p>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-action" (click)="fetchOrders(selectedStatusFilter)"
+          title="Refresh analytics data">
+          <i class="bi bi-arrow-clockwise" [class.spin-animation]="isLoading"></i>
+          <span class="d-none d-sm-inline ms-1">Refresh</span>
+        </button>
+
+        <a routerLink="/admin/orders" class="btn btn-forest btn-action">
+          <i class="bi bi-receipt me-1"></i>
+          <span>Order Management</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div
+      class="analytics-filter-bar mt-3 p-3 bg-white rounded-3 border d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small fw-semibold"><i class="bi bi-funnel me-1"></i>Dataset:</span>
+        <div class="status-pill-group">
+          <button type="button" class="status-pill-btn" [class.active]="selectedStatusFilter === 'all'"
+            (click)="fetchOrders('all')">
+            All Orders
+          </button>
+          <button type="button" class="status-pill-btn" [class.active]="selectedStatusFilter === 'Delivered'"
+            (click)="fetchOrders('Delivered')">
+            Delivered Only
+          </button>
+          <button type="button" class="status-pill-btn" [class.active]="selectedStatusFilter === 'Placed'"
+            (click)="fetchOrders('Placed')">
+            Placed Only
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small fw-semibold">Chart Mode:</span>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-outline-secondary" [class.active]="chartType === 'line'"
+            (click)="toggleChartType('line')">
+            <i class="bi bi-graph-up me-1"></i> Line
+          </button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="chartType === 'bar'"
+            (click)="toggleChartType('bar')">
+            <i class="bi bi-bar-chart-fill me-1"></i> Bar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards -->
+    <div class="row g-3 mt-1">
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon bg-forest-light text-forest">
+            <i class="bi bi-wallet2"></i>
+          </div>
+          <div>
+            <span class="kpi-label">Total Revenue</span>
+            <h3 class="kpi-val">₹{{ totalRevenue | number:'1.0-0' }}</h3>
+            <span class="kpi-sub text-muted small">{{ totalOrders }} total orders</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon bg-gold-light text-gold-dark">
+            <i class="bi bi-cart-check-fill"></i>
+          </div>
+          <div>
+            <span class="kpi-label">Avg Order Value</span>
+            <h3 class="kpi-val">₹{{ averageOrderValue | number:'1.0-0' }}</h3>
+            <span class="kpi-sub text-muted small">Per transaction</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon bg-emerald-light text-emerald">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+          <div>
+            <span class="kpi-label">Peak Sales Month</span>
+            <h3 class="kpi-val text-truncate" style="max-width: 140px;" title="{{ peakMonthName }}">{{ peakMonthName }}
+            </h3>
+            <span class="kpi-sub text-emerald small fw-semibold">₹{{ peakMonthRevenue | number:'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="kpi-card">
+          <div class="kpi-icon bg-blue-light text-blue">
+            <i class="bi bi-truck"></i>
+          </div>
+          <div>
+            <span class="kpi-label">Delivered Orders</span>
+            <h3 class="kpi-val">{{ deliveredCount }}</h3>
+            <span class="kpi-sub text-amber small fw-semibold">{{ placedCount }} in pipeline</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="skeleton-chart-container mb-4">
+    <div class="skeleton-chart-box shimmer mb-3"></div>
+  </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading && isOrderIsEmpty) {
+  <div class="empty-state-card text-center py-5">
+    <div class="empty-icon-wrapper mb-3">
+      <i class="bi bi-pie-chart text-muted fs-1"></i>
+    </div>
+    <h3 class="empty-title mb-2">No Order Data Available</h3>
+    <p class="empty-text text-muted max-w-md mx-auto mb-4">
+      No orders were found for the selected filter "{{ selectedStatusFilter }}". Try switching the dataset filter to
+      "All Orders".
+    </p>
+    <button type="button" class="btn btn-outline-forest" (click)="fetchOrders('all')">
+      <i class="bi bi-arrow-counterclockwise me-1"></i> Load All Orders
+    </button>
+  </div>
+  }
+
+  <!-- Charts & Visualization Dashboard -->
+  @if (!isLoading && !isOrderIsEmpty) {
+  <div class="row g-4 mb-4">
+    <!-- Main Revenue Timeline Chart -->
+    <div class="col-12 col-xl-8">
+      <div class="chart-card h-100">
+        <div class="chart-header d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+          <div>
+            <h5 class="chart-title mb-0">Monthly Revenue Growth</h5>
+            <span class="text-muted small">Timeline progression of total transaction value</span>
+          </div>
+          <span class="badge bg-forest-light text-forest fw-semibold px-2 py-1">
+            <i class="bi bi-activity me-1"></i> {{ chartType === 'line' ? 'Smooth Curve' : 'Bar Columns' }}
+          </span>
+        </div>
+
+        <div class="chart-canvas-wrapper revenue-canvas-box">
+          <canvas #revenueChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Charts: Category & Status -->
+    <div class="col-12 col-xl-4 d-flex flex-column gap-4">
+      <!-- Category Distribution -->
+      <div class="chart-card flex-grow-1">
+        <div class="chart-header mb-3 pb-2 border-bottom">
+          <h5 class="chart-title mb-0">Revenue by Category</h5>
+          <span class="text-muted small">Sales volume across catalogue categories</span>
+        </div>
+        <div class="chart-canvas-wrapper doughnut-canvas-box">
+          <canvas #categoryChart></canvas>
+        </div>
+      </div>
+
+      <!-- Fulfillment Ratio -->
+      <div class="chart-card flex-grow-1">
+        <div class="chart-header mb-3 pb-2 border-bottom">
+          <h5 class="chart-title mb-0">Order Fulfillment Status</h5>
+          <span class="text-muted small">Delivered vs Placed breakdown</span>
+        </div>
+        <div class="chart-canvas-wrapper pie-canvas-box">
+          <canvas #statusChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Performance Breakdown Table -->
+  @if (monthlyBreakdown.length > 0) {
+  <div class="table-card mb-4">
+    <div class="table-header p-3 px-4 border-bottom bg-light d-flex align-items-center justify-content-between">
+      <h5 class="table-title mb-0">Monthly Sales Breakdown</h5>
+      <span class="badge bg-secondary text-white">{{ monthlyBreakdown.length }} Recorded Periods</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle monthly-table mb-0">
+        <thead>
+          <tr>
+            <th scope="col" class="ps-4">Month / Period</th>
+            <th scope="col">Total Orders</th>
+            <th scope="col">Total Revenue</th>
+            <th scope="col">Average Order Value</th>
+            <th scope="col" class="pe-4" style="width: 25%;">Revenue Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of monthlyBreakdown; track row.month) {
+          <tr>
+            <td class="ps-4 fw-bold text-forest">
+              <i class="bi bi-calendar3 me-2 text-muted"></i>{{ row.month }}
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border">{{ row.orderCount }} orders</span>
+            </td>
+            <td class="fw-bold text-dark">
+              ₹{{ row.totalPrice | number:'1.2-2' }}
+            </td>
+            <td class="text-muted">
+              ₹{{ row.avgOrderValue | number:'1.0-0' }}
+            </td>
+            <td class="pe-4">
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1" style="height: 7px;">
+                  <div class="progress-bar bg-forest" role="progressbar" [style.width.%]="row.percentage"
+                    [attr.aria-valuenow]="row.percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span class="small fw-semibold text-muted" style="min-width: 42px;">{{ row.percentage | number:'1.1-1'
+                  }}%</span>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+  }
 </div>

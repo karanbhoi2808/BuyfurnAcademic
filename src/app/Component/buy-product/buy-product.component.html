@@ -103,14 +103,6 @@
                 <span class="small fw-semibold text-dark">100% Quality & Transit Warranty</span>
               </div>
             </div>
-
-            <!-- Mobile Checkout Action (Shown on mobile screens only) -->
-            <div class="d-lg-none mt-4">
-              <button type="submit" class="btn btn-checkout-action w-100 py-3 rounded-3 fw-bold"
-                [disabled]="isSubmitting || orderForm.invalid">
-                <span>Pay ₹{{ calculateGrandTotal() }} & Place Order</span>
-              </button>
-            </div>
           </form>
           }
         </div>
@@ -118,22 +110,11 @@
 
       <!-- Right Column: Reusable Order Summary Component -->
       <div class="col-12 col-lg-5">
-        <app-order-summary
-          [stepBadge]="2"
-          [title]="'Order Summary'"
-          [itemCount]="products.length"
-          [showItemsList]="true"
-          [items]="products"
-          [quantities]="productQuantities"
-          [subtotal]="calculateGrandTotal()"
-          [total]="calculateGrandTotal()"
-          [taxesText]="'Included'"
-          [buttonText]="'Proceed to Payment'"
-          [buttonIcon]="'bi-shield-lock'"
-          [isSubmitting]="isSubmitting"
-          [showPaymentIcons]="true"
-          (increaseQuantity)="increaseQty($event)"
-          (decreaseQuantity)="decreaseQty($event)"
+        <app-order-summary [stepBadge]="2" [title]="'Order Summary'" [itemCount]="products.length"
+          [showItemsList]="true" [items]="products" [quantities]="productQuantities" [subtotal]="calculateGrandTotal()"
+          [total]="calculateGrandTotal()" [taxesText]="'Included'" [buttonText]="'Proceed to Payment'"
+          [buttonIcon]="'bi-shield-lock'" [isSubmitting]="isSubmitting" [showPaymentIcons]="true"
+          (increaseQuantity)="increaseQty($event)" (decreaseQuantity)="decreaseQty($event)"
           (actionClick)="createTransactionAndPlaceOrder()">
         </app-order-summary>
       </div>

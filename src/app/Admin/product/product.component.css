@@ -1,95 +1,253 @@
-.product-section {
-    /* background-color: #f8f9fa; */
-    padding: 2rem 0;
+/* BuyFurn Product Management Component Specific Styling */
+
+.admin-product-container {
+  padding: 0.5rem 0.5rem 3rem 0.5rem;
+  color: var(--bf-text-main, #1c2520);
 }
 
-.intro-section {
-    margin-bottom: 2rem;
+/* Category Chips */
+.category-pills-scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 2px 0;
+  scrollbar-width: none;
 }
 
-.section-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
+.category-pills-scroll::-webkit-scrollbar {
+  display: none;
 }
 
-.btn-primary {
-    background-color: #ffcc00;
-    border: none;
-    color: #212529;
-    padding: 0.5rem 1rem;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
+.category-chip {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  border-radius: 999px;
+  padding: 0.4rem 0.95rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-
-.btn-primary:hover {
-    background-color: #e6b800;
-    color: #fff;
+.category-chip:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
-.btn-secondary {
-    background-color: #007bff;
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
+.category-chip.active {
+  background-color: var(--bf-primary-dark, #1e3a2b);
+  border-color: var(--bf-primary-dark, #1e3a2b);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(30, 58, 43, 0.15);
 }
 
-.btn-secondary:hover {
-    background-color: #0056b3;
+/* Advanced Drawer Inputs */
+.advanced-filter-drawer {
+  animation: fadeIn 0.2s ease;
 }
 
-/* Product item styles */
-.product-item {
-    display: block;
-    text-align: center;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    padding: 1rem;
-    border-radius: 5px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    text-decoration: none;
+.custom-input {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  font-size: 0.875rem;
+  height: 42px;
+  padding: 0.45rem 0.85rem;
+  transition: all 0.2s ease;
 }
 
-
-.product-thumbnail {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 1rem;
-    border-radius: 5px;
+.custom-input:focus {
+  background-color: #ffffff;
+  border-color: var(--bf-primary-dark, #1e3a2b) !important;
+  box-shadow: 0 0 0 3px rgba(30, 58, 43, 0.12) !important;
 }
 
-#product-title,
-#product-price {
-    color: #333;
-    margin-bottom: 0.5rem;
-    text-decoration: dotted;
+/* Active Filter Tags */
+.filter-tag {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  border-radius: 6px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-#product-title {
-    font-size: large;
+.filter-tag button {
+  background: none;
+  border: none;
+  color: #64748b;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
-img {
-    height: 200px;
-    width: 200px;
+.filter-tag button:hover {
+  color: #dc2626;
 }
 
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+.btn-clear-all {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s ease;
 }
 
-.no-data {
-    height: 400px !important;
-    width: 50%;
+.btn-clear-all:hover {
+  background-color: #fef2f2;
+}
+
+/* Product Info Table Cell */
+.product-thumb-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background-color: #f1f5f9;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.product-thumb-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.product-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-thumb-placeholder {
+  font-size: 1.15rem;
+}
+
+.product-meta {
+  max-width: 240px;
+}
+
+.product-title-table {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.product-title-table:hover {
+  color: var(--bf-primary-dark, #1e3a2b);
+}
+
+.product-id-badge {
+  font-family: monospace;
+  font-size: 0.775rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.product-date-text {
+  font-size: 0.775rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.badge-category-mini {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* Stock Status Badges */
+.badge-stock-in {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-stock-soon {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-stock-out {
+  background-color: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.badge-stock-unknown {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* Modal Specific Styling */
+.product-large-thumb {
+  border-radius: 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumb-img-lg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-mini-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: #f1f5f9;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-mini-thumb.active-thumb {
+  border-color: var(--bf-primary-dark, #1e3a2b);
+  box-shadow: 0 0 0 2px rgba(30, 58, 43, 0.3);
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-modal-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #0f172a;
 }

@@ -1,12 +1,352 @@
-.jumbotron {
-    padding: 2rem;
-    border-radius: 0.5rem;
+/* BuyFurn Executive Admin Dashboard Styles */
+
+.admin-dashboard-container {
+  padding: 0.5rem 0.5rem 3rem 0.5rem;
+  color: var(--bf-text-main, #1c2520);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.btn-block {
-    margin-bottom: 1rem;
+/* Dashboard Hero Banner */
+.dashboard-hero-card {
+  background: linear-gradient(135deg, #1e3a2b 0%, #2b4c3f 50%, #162a20 100%);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(30, 58, 43, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.container {
-    margin-top: 20%;
+.hero-bg-accent {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 204, 0, 0.18) 0%, rgba(255, 204, 0, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.95rem;
+  letter-spacing: -0.02em;
+}
+
+.text-gold {
+  color: var(--bf-accent-gold, #ffcc00);
+}
+
+.text-gold-dark {
+  color: #b45309;
+}
+
+.hero-subtitle {
+  font-size: 0.95rem;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.btn-hero-action {
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.btn-gold {
+  background-color: var(--bf-accent-gold, #ffcc00);
+  color: #1e3a2b;
+  border: 1px solid var(--bf-accent-gold, #ffcc00);
+}
+
+.btn-gold:hover {
+  background-color: var(--bf-accent-gold-hover, #e6b800);
+  color: #162a20;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 204, 0, 0.3);
+}
+
+.btn-outline-light-forest {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+}
+
+.btn-outline-light-forest:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Primary KPI Metric Cards */
+.kpi-metric-card {
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07) !important;
+  border-color: rgba(30, 58, 43, 0.25);
+}
+
+.kpi-label {
+  font-size: 0.775rem;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+.kpi-val {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+/* Color Tokens */
+.bg-forest-light {
+  background-color: #e8f5ee;
+}
+
+.text-forest {
+  color: var(--bf-primary-dark, #1e3a2b);
+}
+
+.bg-gold-light {
+  background-color: #fefce8;
+}
+
+.bg-amber-light {
+  background-color: #fffbeb;
+}
+
+.text-amber-dark {
+  color: #d97706;
+}
+
+.bg-emerald-light {
+  background-color: #ecfdf5;
+}
+
+.text-emerald {
+  color: #059669;
+}
+
+.bg-blue-light {
+  background-color: #eff6ff;
+}
+
+.text-blue {
+  color: #2563eb;
+}
+
+.bg-purple-light {
+  background-color: #f5f3ff;
+}
+
+.text-purple {
+  color: #7c3aed;
+}
+
+/* Management Modules & Shortcut Cards */
+.section-card-title {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.shortcut-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  transition: all 0.22s ease;
+  cursor: pointer;
+}
+
+.shortcut-card:hover {
+  border-color: var(--bf-primary-dark, #1e3a2b);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.shortcut-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.shortcut-title {
+  font-size: 0.95rem;
+}
+
+.shortcut-desc {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.shortcut-arrow {
+  border-color: #f1f5f9 !important;
+}
+
+/* System Status Indicator */
+.system-status-indicator {
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+
+.pulse-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Activity Feed */
+.activity-feed {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.activity-item:last-child {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.activity-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.activity-success {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+
+.activity-forest {
+  background-color: #e8f5ee;
+  color: #1e3a2b;
+}
+
+.activity-info {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.activity-warning {
+  background-color: #fffbeb;
+  color: #d97706;
+}
+
+.activity-title {
+  font-size: 0.875rem;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+}
+
+.activity-subtitle {
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.btn-outline-forest {
+  color: var(--bf-primary-dark, #1e3a2b);
+  border: 1px solid var(--bf-primary-dark, #1e3a2b);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.75rem;
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-forest:hover {
+  background-color: var(--bf-primary-dark, #1e3a2b);
+  color: #ffffff;
+}
+
+.btn-icon-subtle {
+  border: none;
+  background: transparent;
+  padding: 0.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon-subtle:hover {
+  background-color: #f1f5f9;
+  color: #0f172a !important;
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
