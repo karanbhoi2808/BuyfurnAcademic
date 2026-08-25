@@ -40,11 +40,12 @@ export class LoginComponent {
     this.userService.login().subscribe({
       next: (response) => {
         this.loading = false;
-        const roles = response.roles;
+        const data = (response && response.data !== undefined) ? response.data : response;
+        const roles = data?.roles || [];
 
         this.userAuthService.setRoles(roles);
-        this.userAuthService.setUserName(response.name);
-        this.userAuthService.setUserEmail(response.email);
+        if (data?.name) this.userAuthService.setUserName(data.name);
+        if (data?.email) this.userAuthService.setUserEmail(data.email);
 
         if (roles.includes('ADMIN')) {
           this.router.navigate(['/admin']);

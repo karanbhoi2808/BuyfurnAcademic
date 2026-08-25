@@ -29,7 +29,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   // Grid Columns Configuration
   columns: GridColumn<OrderItem>[] = [
-    { key: 'orderId', header: 'Order ID & Date', sortable: true, sortKey: 'createdDate', width: '190px' },
+    { key: 'orderId', header: 'Order ID & Date', sortable: true, sortKey: 'createdAt', width: '190px' },
     { key: 'customer', header: 'Customer', width: '200px' },
     { key: 'product', header: 'Product Item', width: '240px' },
     { key: 'address', header: 'Shipping Address', width: '230px' },
@@ -44,7 +44,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   selectedStatusTab: 'all' | 'Placed' | 'Delivered' = 'all';
   searchQuery: string = '';
   sortBy: 'latest' | 'oldest' | 'price_desc' | 'price_asc' = 'latest';
-  currentSortBy: string = 'createdDate';
+  currentSortBy: string = 'createdAt';
   currentSortDir: 'asc' | 'desc' = 'desc';
 
   sortOptions = [
@@ -98,14 +98,14 @@ export class OrdersComponent implements OnInit, OnDestroy {
     this.currentPage = pageNumber;
     this.isLoading = true;
 
-    let sortByField = 'createdDate';
+    let sortByField = 'createdAt';
     let sortDir = 'desc';
 
     if (this.sortBy === 'latest') {
-      sortByField = 'createdDate';
+      sortByField = 'createdAt';
       sortDir = 'desc';
     } else if (this.sortBy === 'oldest') {
-      sortByField = 'createdDate';
+      sortByField = 'createdAt';
       sortDir = 'asc';
     } else if (this.sortBy === 'price_desc') {
       sortByField = 'product.price';
@@ -198,10 +198,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
   onSortChange(sort: any): void {
     this.sortBy = sort;
     if (sort === 'latest') {
-      this.currentSortBy = 'createdDate';
+      this.currentSortBy = 'createdAt';
       this.currentSortDir = 'desc';
     } else if (sort === 'oldest') {
-      this.currentSortBy = 'createdDate';
+      this.currentSortBy = 'createdAt';
       this.currentSortDir = 'asc';
     } else if (sort === 'price_desc') {
       this.currentSortBy = 'product.price';
@@ -218,7 +218,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
     this.currentSortBy = event.sortBy;
     this.currentSortDir = event.sortDir;
 
-    if (event.sortBy === 'createdDate') {
+    if (event.sortBy === 'createdAt') {
       this.sortBy = event.sortDir === 'desc' ? 'latest' : 'oldest';
     } else if (event.sortBy === 'product.price') {
       this.sortBy = event.sortDir === 'desc' ? 'price_desc' : 'price_asc';

@@ -2,7 +2,7 @@ export interface OrderDetails {
     fullName: string;
     address: any;
     contactNumber: string;
-    orderquantities: any;
+    orderQuantities: any;
     transactionId: string;
 }
 
@@ -79,7 +79,7 @@ export interface OrderAddress {
 export interface OrderItem {
     orderId: number;
     orderStatus: 'Placed' | 'Delivered' | string;
-    createdDate?: string | Date;
+    createdAt?: string | Date;
     contact?: string;
     user?: OrderUser;
     address?: OrderAddress;

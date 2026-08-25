@@ -42,7 +42,7 @@ export class BuyProductComponent implements OnInit {
       state: ''
     },
     contactNumber: '',
-    orderquantities: [],
+    orderQuantities: [],
     transactionId: ''
   };
 
@@ -118,7 +118,7 @@ export class BuyProductComponent implements OnInit {
       state: formValues.state || this.orderDetails.address?.state
     };
     this.orderDetails.contactNumber = formValues.contactNumber || this.orderDetails.contactNumber;
-    this.orderDetails.orderquantities = this.getQuntity();
+    this.orderDetails.orderQuantities = this.getQuntity();
 
     this.isSubmitting = true;
 

@@ -1,11 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ProductFilterParams, ProductPageResponse } from '../Interface/product';
 import { OrderAnalyticsResponse, OrderFilterParams, OrderPageResponse } from '../Interface/orderdetails';
 import { UserFilterParams, UserPageResponse } from '../Interface/user';
 import { DashboardCountsResponse } from '../Interface/dashboard';
+import { ApiResponse } from '../Interface/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +17,19 @@ export class AdminService {
   private baseUrlAdmin = environment.baseUrlAdmin;
   private baseUrlLocal = environment.baseUrlLocal;
 
+  private unwrapResponse<T>(res: ApiResponse<T> | T | any): T {
+    if (res && typeof res === 'object' && 'success' in res && 'data' in res) {
+      return res.data;
+    }
+    return res;
+  }
+
   getDashboardCounts(): Observable<DashboardCountsResponse> {
-    return this.httpClient.get<DashboardCountsResponse>(`${this.baseUrlAdmin}/dashboard/counts`);
+    return this.httpClient.get<ApiResponse<DashboardCountsResponse> | DashboardCountsResponse>(
+      `${this.baseUrlAdmin}/dashboard/counts`
+    ).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   getAllUsers(
@@ -62,9 +74,11 @@ export class AdminService {
       httpParams = httpParams.set('role', params.role.trim());
     }
 
-    return this.httpClient.get<UserPageResponse>(`${this.baseUrlLocal}/getall`, {
+    return this.httpClient.get<ApiResponse<UserPageResponse> | UserPageResponse>(`${this.baseUrlLocal}/getall`, {
       params: httpParams
-    });
+    }).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   getAllProducts(
@@ -122,16 +136,20 @@ export class AdminService {
       httpParams = httpParams.set('sortDir', params.sortDir);
     }
 
-    return this.httpClient.get<ProductPageResponse>(`${this.baseUrlAdmin}/get-all-products-for-admin`, {
+    return this.httpClient.get<ApiResponse<ProductPageResponse> | ProductPageResponse>(`${this.baseUrlAdmin}/get-all-products-for-admin`, {
       params: httpParams
-    });
+    }).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   getOrderAnalytics(status: string = 'all'): Observable<OrderAnalyticsResponse> {
     const params = new HttpParams().set('status', status);
-    return this.httpClient.get<OrderAnalyticsResponse>(`${this.baseUrlAdmin}/orders/analytics`, {
+    return this.httpClient.get<ApiResponse<OrderAnalyticsResponse> | OrderAnalyticsResponse>(`${this.baseUrlAdmin}/orders/analytics`, {
       params
-    });
+    }).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   getAllOrders(
@@ -139,7 +157,7 @@ export class AdminService {
     status: string = 'all',
     searchKey: string = '',
     pageSize: number = 10,
-    sortBy: string = 'createdDate',
+    sortBy: string = 'createdAt',
     sortDir: string = 'desc'
   ): Observable<OrderPageResponse> {
     let params: OrderFilterParams = {};
@@ -152,7 +170,7 @@ export class AdminService {
         status: status || 'all',
         searchKey: searchKey || '',
         pageSize: pageSize ?? 10,
-        sortBy: sortBy || 'createdDate',
+        sortBy: sortBy || 'createdAt',
         sortDir: sortDir || 'desc'
       };
     }
@@ -178,8 +196,11 @@ export class AdminService {
       httpParams = httpParams.set('sortDir', params.sortDir.trim());
     }
 
-    return this.httpClient.get<OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, {
+    return this.httpClient.get<ApiResponse<OrderPageResponse> | OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, {
       params: httpParams
-    });
+    }).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 }
+

@@ -203,10 +203,13 @@
 
           <div class="row g-3">
             <div class="col-12">
-              <label for="description" class="form-label">Full Product Description</label>
+              <label for="description" class="form-label required-label">Full Product Description</label>
               <textarea class="form-control custom-input" id="description" rows="4"
                 placeholder="Describe features, aesthetics, ergonomics, and recommended styling..."
-                [(ngModel)]="product.description" name="description"></textarea>
+                [(ngModel)]="product.description" name="description" required #descriptionCtrl="ngModel"></textarea>
+              @if (descriptionCtrl.invalid && (descriptionCtrl.dirty || descriptionCtrl.touched)) {
+              <div class="text-danger small mt-1">Description is required.</div>
+              }
             </div>
 
             <div class="col-12">
@@ -280,7 +283,7 @@
           <!-- Action Buttons -->
           <div class="d-grid gap-2">
             <button type="button" class="btn btn-primary-gold w-100 py-2 fw-semibold" (click)="onSubmit()"
-              [disabled]="isSubmitting || !productForm.valid || selectedFiles.length === 0">
+              [disabled]="isSubmitting || !product.title || !product.price || !product.category || !product.description || selectedFiles.length === 0">
               @if (isSubmitting) {
               <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
               Publishing...
