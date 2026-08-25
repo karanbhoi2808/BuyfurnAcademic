@@ -4,6 +4,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { Product, ProductFilterParams, ProductPageResponse } from '../Interface/product';
 import { OrderDetails, OrderAnalyticsResponse, OrderFilterParams, OrderPageResponse } from '../Interface/orderdetails';
 import { environment } from '../../environments/environment';
+import { ApiResponse } from '../Interface/api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,13 @@ export class ProductService {
   private baseUrlAdmin = environment.baseUrlAdmin;
   private baseUrlLocal = environment.baseUrlLocal;
 
+  private unwrapResponse<T>(res: ApiResponse<T> | T | any): T {
+    if (res && typeof res === 'object' && 'success' in res && 'data' in res) {
+      return res.data;
+    }
+    return res;
+  }
+
   addProduct(product: any, images: File[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('product', JSON.stringify(product));
@@ -22,7 +30,9 @@ export class ProductService {
       formData.append('imgs', image, image.name);
     });
 
-    return this.httpclient.post(`${this.baseUrlAdmin}/add-product`, formData);
+    return this.httpclient.post<ApiResponse<any> | any>(`${this.baseUrlAdmin}/add-product`, formData).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   // Refactored getAllProducts supporting comprehensive filter params
@@ -81,28 +91,29 @@ export class ProductService {
       httpParams = httpParams.set('sortDir', params.sortDir);
     }
 
-    return this.httpclient.get<ProductPageResponse>(`${this.baseUrlLocal}/get-all-products`, {
+    return this.httpclient.get<ApiResponse<ProductPageResponse> | ProductPageResponse>(`${this.baseUrlLocal}/get-all-products`, {
       params: httpParams,
-    });
+    }).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
-
-  // private latestProduct: Product[] | null = null; // Cached product data
 
   getLetestProducts(): Observable<any> {
-    return this.httpclient.get(`${this.baseUrlLocal}/latest`);
+    return this.httpclient.get<ApiResponse<Product[]> | any>(`${this.baseUrlLocal}/latest`).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
-  // clearCache() {
-  //   this.products = null; // Clear cached data
-  //   this.latestProduct = null;
-  // }
-
   getProductById(id: any): Observable<any> {
-    return this.httpclient.get(`${this.baseUrlLocal}/get-by-id/${id}`);
+    return this.httpclient.get<ApiResponse<Product> | any>(`${this.baseUrlLocal}/get-by-id/${id}`).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   deleteProductById(id: any): Observable<any> {
-    return this.httpclient.delete(`${this.baseUrlAdmin}/delete-by-id/${id}`);
+    return this.httpclient.delete<ApiResponse<any> | any>(`${this.baseUrlAdmin}/delete-by-id/${id}`).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
   updateProduct(product: any, images: File[]): Observable<any> {
@@ -112,37 +123,47 @@ export class ProductService {
     images.forEach((image) => {
       formData.append('img', image, image.name);
     });
-    return this.httpclient.post(`${this.baseUrlAdmin}/update-product`, formData);
+    return this.httpclient.post<ApiResponse<any> | any>(`${this.baseUrlAdmin}/update-product`, formData).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
-  placeOrder(orderDetails: OrderDetails, isCartCheckout: boolean) {
-    // console.log(isCartCheckout);
-
-    return this.httpclient.post(
+  placeOrder(orderDetails: OrderDetails, isCartCheckout: boolean): Observable<any> {
+    return this.httpclient.post<ApiResponse<any> | any>(
       `${this.baseUrlLocal}/user/placeOrder/${isCartCheckout}`,
       orderDetails
+    ).pipe(
+      map(res => this.unwrapResponse(res))
     );
   }
 
-  addToCart(productId: any, quantity: any) {
-    return this.httpclient.get(
+  addToCart(productId: any, quantity: any): Observable<any> {
+    return this.httpclient.get<ApiResponse<any> | any>(
       `${this.baseUrlLocal}/user/addToCart/${productId}/${quantity}`
+    ).pipe(
+      map(res => this.unwrapResponse(res))
     );
   }
 
-  getCartDetails() {
-    return this.httpclient.get(`${this.baseUrlLocal}/user/getCartDetails`);
+  getCartDetails(): Observable<any> {
+    return this.httpclient.get<ApiResponse<any> | any>(`${this.baseUrlLocal}/user/getCartDetails`).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
-  getProductDetails(isSinbleProductCheckout: any, productId: any) {
-    return this.httpclient.get<Product[]>(
+  getProductDetails(isSinbleProductCheckout: any, productId: any): Observable<Product[] | any> {
+    return this.httpclient.get<ApiResponse<Product[]> | Product[]>(
       `${this.baseUrlLocal}/user/get-product-details/${isSinbleProductCheckout}/${productId}`
+    ).pipe(
+      map(res => this.unwrapResponse(res))
     );
   }
 
-  removeCartProduct(id: any) {
-    return this.httpclient.delete(
+  removeCartProduct(id: any): Observable<any> {
+    return this.httpclient.delete<ApiResponse<any> | any>(
       `${this.baseUrlLocal}/user/deleteCartProduct/${id}`
+    ).pipe(
+      map(res => this.unwrapResponse(res))
     );
   }
 
@@ -172,7 +193,9 @@ export class ProductService {
         httpParams = httpParams.set('sortDir', paramsOrStatus.sortDir.trim());
       }
 
-      return this.httpclient.get<OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, { params: httpParams });
+      return this.httpclient.get<ApiResponse<OrderPageResponse> | OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, { params: httpParams }).pipe(
+        map(res => this.unwrapResponse(res))
+      );
     }
 
     const status = typeof paramsOrStatus === 'string' ? paramsOrStatus : 'all';
@@ -181,30 +204,41 @@ export class ProductService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    return this.httpclient.get<OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, { params: httpParams });
-  }
-
-  markOrderAsDelivered(id: any) {
-    return this.httpclient.put(
-      `${this.baseUrlAdmin}/markAsDelivered/${id}`,
-      id
+    return this.httpclient.get<ApiResponse<OrderPageResponse> | OrderPageResponse>(`${this.baseUrlAdmin}/allOrders`, { params: httpParams }).pipe(
+      map(res => this.unwrapResponse(res))
     );
   }
 
-  myOrders() {
-    return this.httpclient.get(`${this.baseUrlLocal}/user/myOrders`);
+  markOrderAsDelivered(id: any): Observable<any> {
+    return this.httpclient.put<ApiResponse<any> | any>(
+      `${this.baseUrlAdmin}/markAsDelivered/${id}`,
+      id
+    ).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 
-  createTransaction(amount: number) {
-    return this.httpclient.get(
+  myOrders(): Observable<any> {
+    return this.httpclient.get<ApiResponse<any> | any>(`${this.baseUrlLocal}/user/myOrders`).pipe(
+      map(res => this.unwrapResponse(res))
+    );
+  }
+
+  createTransaction(amount: number): Observable<any> {
+    return this.httpclient.get<ApiResponse<any> | any>(
       `${this.baseUrlLocal}/user/createTransaction/${amount}`
+    ).pipe(
+      map(res => this.unwrapResponse(res))
     );
   }
 
   getOrderAnalytics(status: string = 'all'): Observable<OrderAnalyticsResponse> {
     const params = new HttpParams().set('status', status);
-    return this.httpclient.get<OrderAnalyticsResponse>(`${this.baseUrlAdmin}/orders/analytics`, {
+    return this.httpclient.get<ApiResponse<OrderAnalyticsResponse> | OrderAnalyticsResponse>(`${this.baseUrlAdmin}/orders/analytics`, {
       params
-    });
+    }).pipe(
+      map(res => this.unwrapResponse(res))
+    );
   }
 }
+

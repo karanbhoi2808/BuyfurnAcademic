@@ -78,7 +78,7 @@
         <div class="status-tab-group">
           <button type="button" class="status-tab-btn" [class.active]="selectedRoleFilter === 'ALL'"
             (click)="filterByRole('ALL')">
-            All <span class="badge tab-badge">{{ totalUsers }}</span>
+            All <span class="badge tab-badge bg-slate-light text-slate">{{ totalUsers }}</span>
           </button>
           <button type="button" class="status-tab-btn" [class.active]="selectedRoleFilter === 'ADMIN'"
             (click)="filterByRole('ADMIN')">

@@ -167,11 +167,11 @@ export class EditProductComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.product.title || !this.product.price || !this.product.category) {
+    if (!this.product.title || !this.product.price || !this.product.category || !this.product.description) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Details',
-        text: 'Please ensure Title, Price, and Category are filled.'
+        text: 'Please ensure Title, Price, Category and Description are filled.'
       });
       return;
     }

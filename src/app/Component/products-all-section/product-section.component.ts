@@ -49,7 +49,7 @@ export class ProductSectionComponent {
   isMobileFilterOpen: boolean = false;
 
   sortOptions: SortOption[] = [
-    { value: 'recommended', label: 'Recommended', sortBy: 'createdDate', sortDir: 'desc' },
+    { value: 'recommended', label: 'Recommended', sortBy: 'createdAt', sortDir: 'desc' },
     { value: 'priceLowHigh', label: 'Price: Low to High', sortBy: 'price', sortDir: 'asc' },
     { value: 'priceHighLow', label: 'Price: High to Low', sortBy: 'price', sortDir: 'desc' },
     { value: 'nameAsc', label: 'Name: A to Z', sortBy: 'name', sortDir: 'asc' }

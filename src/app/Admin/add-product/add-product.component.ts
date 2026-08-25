@@ -147,11 +147,11 @@ export class AddProductComponent {
       return;
     }
 
-    if (!this.product.title || !this.product.price || !this.product.category) {
+    if (!this.product.title || !this.product.price || !this.product.category || !this.product.description) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Details',
-        text: 'Please provide Title, Price, and Category.'
+        text: 'Please provide Title, Price, Category and Description.'
       });
       return;
     }

@@ -51,7 +51,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   selectedStockStatus: string = 'ALL';
   minPrice: number | null = null;
   maxPrice: number | null = null;
-  sortBy: string = 'createdDate';
+  sortBy: string = 'createdAt';
   sortDir: 'asc' | 'desc' = 'desc';
   currentSortKey: string = 'latest';
 
@@ -77,7 +77,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   ];
 
   sortOptions = [
-    { label: 'Newest Arrivals', value: 'latest', sortBy: 'createdDate', sortDir: 'desc' },
+    { label: 'Newest Arrivals', value: 'latest', sortBy: 'createdAt', sortDir: 'desc' },
     { label: 'Price: Low to High', value: 'price_asc', sortBy: 'price', sortDir: 'asc' },
     { label: 'Price: High to Low', value: 'price_desc', sortBy: 'price', sortDir: 'desc' },
     { label: 'Product Name: A to Z', value: 'name_asc', sortBy: 'name', sortDir: 'asc' },
@@ -277,7 +277,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.minPrice = null;
     this.maxPrice = null;
     this.currentSortKey = 'latest';
-    this.sortBy = 'createdDate';
+    this.sortBy = 'createdAt';
     this.sortDir = 'desc';
     this.currentPage = 0;
     this.getAllProducts();

@@ -96,7 +96,7 @@
         <div class="status-tab-group">
           <button type="button" class="status-tab-btn" [class.active]="selectedStatusTab === 'all'"
             (click)="onStatusTabChange('all')">
-            All <span class="badge tab-badge">{{ totalOrderCount }}</span>
+            All <span class="badge tab-badge bg-slate-light text-slate">{{ totalOrderCount }}</span>
           </button>
           <button type="button" class="status-tab-btn" [class.active]="selectedStatusTab === 'Placed'"
             (click)="onStatusTabChange('Placed')">
@@ -163,10 +163,12 @@
   <ng-template #orderIdTpl let-row="row">
     <div class="d-flex flex-column">
       <span class="order-id-badge">#{{ row.orderId }}</span>
+      @if(row.createdAt){
       <span class="order-date-text text-muted mt-1">
         <i class="bi bi-calendar3 me-1"></i>
-        {{ row.createdDate | date: 'dd MMM yyyy, h:mm a':'IST' }}
+        {{ row.createdAt | date: 'dd MMM yyyy, h:mm a':'IST' }}
       </span>
+      }
     </div>
   </ng-template>
 
@@ -295,7 +297,7 @@
           <div class="info-block p-3 rounded-3 bg-light border">
             <div class="info-label text-muted small mb-1"><i class="bi bi-calendar-event me-1 text-forest"></i>Placement
               Timestamp</div>
-            <div class="info-val fw-semibold">{{ selectedOrder.createdDate | date: 'dd MMMM yyyy, h:mm a':'IST' }}</div>
+            <div class="info-val fw-semibold">{{ selectedOrder.createdAt | date: 'dd MMMM yyyy, h:mm a':'IST' }}</div>
             <div class="info-sub text-muted small mt-1">Status: {{ selectedOrder.orderStatus }}</div>
           </div>
         </div>
